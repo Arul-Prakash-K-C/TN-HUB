@@ -739,7 +739,7 @@ export async function transitionApplication(
 
 /** Submits a citizen-owned draft by using the workflow's configured transition. */
 export async function submitCitizenDraft(user: AuthenticatedUser, applicationId: string): Promise<Application> {
-  if (user.role !== 'citizen') throw new Error('Only citizens can submit drafts.');
+  if (user.role !== 'citizen' && user.role !== 'operator') throw new Error('Only citizens or operators can submit drafts.');
 
   const snapshot = await getApplicationSnapshot(applicationId);
   if (!snapshot.exists) throw new Error('Application not found.');
@@ -855,4 +855,36 @@ export async function reviewApplicationDocument(
   const application = await getApplicationForUser(user, applicationId);
   if (!application) throw new Error('Application not found.');
   return application;
+}
+
+export async function updateApplicationDraft(
+  user: AuthenticatedUser,
+  applicationId: string,
+  formData: FirestoreFormData
+): Promise<Application> {
+  const db = getFirebaseAdminFirestore();
+  const applicationRef = db.collection('applications').doc(applicationId);
+  const initial = await applicationRef.get();
+  if (!initial.exists) throw new Error('Application not found.');
+
+  const initialData = initial.data() as StoredApplication;
+  const isOwner = initialData.citizenId === user.uid;
+  const isAssistingOperator = initialData.assistedByOperatorId === user.uid;
+  if (!isOwner && !isAssistingOperator && user.role !== 'admin') {
+    throw new Error('Unauthorized to update this application.');
+  }
+
+  if (asApplicationStatus(initialData.status) !== 'DRAFT') {
+    throw new Error('Only drafts can be updated.');
+  }
+
+  const now = Timestamp.now();
+  await applicationRef.update({
+    formData,
+    updatedAt: now
+  });
+
+  const updated = await getApplicationForUser(user, applicationId);
+  if (!updated) throw new Error('Application not found.');
+  return updated;
 }

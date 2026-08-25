@@ -72,12 +72,23 @@
 								<Clock class="h-3.5 w-3.5 text-slate-400" />
 								Created: {new Date(application.createdAt).toLocaleDateString()}
 							</span>
-							<button 
-								onclick={() => selectedApp = application}
-								class="font-bold text-indigo-600 hover:text-indigo-800 transition"
-							>
-								View Details
-							</button>
+							<div class="flex items-center gap-2.5">
+								{#if application.status === 'DRAFT'}
+									<a 
+										href="/operator/applications/{application.id}/edit"
+										class="font-bold text-emerald-600 hover:text-emerald-800 transition"
+									>
+										Edit Draft
+									</a>
+									<span class="text-slate-300">|</span>
+								{/if}
+								<button 
+									onclick={() => selectedApp = application}
+									class="font-bold text-indigo-600 hover:text-indigo-800 transition"
+								>
+									View Details
+								</button>
+							</div>
 						</div>
 					</div>
 				{/each}
@@ -112,13 +123,21 @@
 				</div>
 			</div>
 
-			<div class="flex justify-end pt-2">
+			<div class="flex justify-end gap-2 pt-2">
 				<button 
 					onclick={() => selectedApp = null}
 					class="rounded-xl bg-slate-100 px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-200 transition"
 				>
 					Close
 				</button>
+				{#if selectedApp.status === 'DRAFT'}
+					<a
+						href="/operator/applications/{selectedApp.id}/edit"
+						class="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition"
+					>
+						Resume / Edit Draft
+					</a>
+				{/if}
 			</div>
 		</div>
 	</div>
