@@ -1,0 +1,76 @@
+rules_version = '2';
+
+// Private documents are uploaded and downloaded through server endpoints.
+// Server code verifies Firebase sessions, application ownership, department
+// scope, file type, and file size before it uses the Admin SDK or issues a
+// five-minute signed download URL. These rules also protect direct client SDK
+// reads so a user cannot browse an arbitrary Storage path.
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn() && request.auth.token.role == 'admin';
+    }
+
+    function isCitizen() {
+      return signedIn() && request.auth.token.role == 'citizen';
+    }
+
+    function isDepartmentUser() {
+      return signedIn() && request.auth.token.role == 'department_user';
+    }
+
+    function isOperator() {
+      return signedIn() && request.auth.token.role == 'operator';
+    }
+
+    function applicationExists(applicationId) {
+      return firestore.exists(
+        /databases/(default)/documents/applications/$(applicationId)
+      );
+    }
+
+    function canReadApplicationFile(applicationId) {
+      return applicationExists(applicationId)
+        && (
+          isAdmin()
+          || (isCitizen()
+            && firestore.get(
+              /databases/(default)/documents/applications/$(applicationId)
+            ).data.citizenId == request.auth.uid)
+          || (isDepartmentUser()
+            && firestore.get(
+              /databases/(default)/documents/applications/$(applicationId)
+            ).data.departmentId == request.auth.token.departmentId)
+          || (isOperator()
+            && firestore.get(
+              /databases/(default)/documents/applications/$(applicationId)
+            ).data.assistedByOperatorId == request.auth.uid)
+        );
+    }
+
+    match /citizens/{citizenId}/documents/{documentId}/{fileName} {
+      allow read: if isAdmin()
+        || (isCitizen() && request.auth.uid == citizenId);
+      // Uploads are written only by the server after metadata validation. This
+      // avoids orphaned objects and prevents a client from bypassing document
+      // type, application-state, and ownership checks.
+      allow write: if false;
+    }
+
+    match /applications/{applicationId}/documents/{documentId}/{fileName} {
+      allow read: if canReadApplicationFile(applicationId);
+      // As above, browser SDK writes are intentionally disabled; the existing
+      // upload endpoint writes through Firebase Admin after authorization.
+      allow write: if false;
+    }
+
+    // Deny any path outside the two documented private storage layouts.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "original_department_categories": [
+    "Revenue",
+    "TANGEDCO",
+    "TNEA",
+    "Corporation of Chennai",
+    "Chennai Metro Water",
+    "Municipal Administration",
+    "Directorate of Boilers",
+    "Employment Training",
+    "Drug Control Administration",
+    "Fire & Rescue",
+    "Civil Supplies and Consumer Protection",
+    "Differently Abled Welfare",
+    "Public Health",
+    "Revenue Administration",
+    "Water Resource Department"
+  ],
+  "proposed_citizen_first_categories": [
+    {
+      "category_id": "cat-certificates",
+      "intent_statement": "I need a certificate",
+      "tamil_translation": "எனக்கு ஒரு சான்றிதழ் தேவை",
+      "services_included": [
+        "svc-income-cert",
+        "svc-community-cert",
+        "svc-nativity-cert",
+        "svc-residence-cert",
+        "svc-first-grad-cert",
+        "svc-birth-cert",
+        "svc-death-cert"
+      ]
+    },
+    {
+      "category_id": "cat-ration-card",
+      "intent_statement": "I need to manage my ration card",
+      "tamil_translation": "எனது ரேஷன் கார்டை நிர்வகிக்க வேண்டும்",
+      "services_included": [
+        "svc-new-ration",
+        "svc-ration-add-member",
+        "svc-ration-remove-member",
+        "svc-ration-address-change",
+        "svc-ration-duplicate"
+      ]
+    },
+    {
+      "category_id": "cat-utilities-taxes",
+      "intent_statement": "I want to pay a bill or tax",
+      "tamil_translation": "நான் ஒரு கட்டணம் அல்லது வரி செலுத்த விரும்புகிறேன்",
+      "services_included": [
+        "TEB-601 (Electricity Bill)",
+        "CMW-601 (Water Tax)",
+        "CMA-603 (Property Tax)"
+      ]
+    },
+    {
+      "category_id": "cat-licences-permits",
+      "intent_statement": "I need a professional licence or permit",
+      "tamil_translation": "எனக்கு ஒரு தொழில்முறை உரிமம் அல்லது அனுமதி தேவை",
+      "services_included": [
+        "REV-401 (Pawn Broker)",
+        "REV-402 (Money Lender)",
+        "DBL-401 (Boilers Licence)",
+        "DCA-401 (Drug Licence)"
+      ]
+    },
+    {
+      "category_id": "cat-financial-aid",
+      "intent_statement": "I want to apply for financial assistance / pension",
+      "tamil_translation": "நான் நிதி உதவி / ஓய்வூதியத்திற்கு விண்ணப்பிக்க விரும்புகிறேன்",
+      "services_included": [
+        "REV-201 (IGNOPS)",
+        "REV-202 (Widow Pension)",
+        "REV-203 (Deserted Woman Pension)",
+        "WDA-202 (Maintenance Support)"
+      ]
+    },
+    {
+      "category_id": "cat-grievances",
+      "intent_statement": "I want to report a problem or file a complaint",
+      "tamil_translation": "நான் ஒரு சிக்கலைப் புகாரளிக்க அல்லது புகார் செய்ய விரும்புகிறேன்",
+      "services_included": [
+        "Grievances/Complaints Intake",
+        "CM Helpline Portal Link"
+      ]
+    }
+  ]
+}
