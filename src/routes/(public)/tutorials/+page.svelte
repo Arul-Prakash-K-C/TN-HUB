@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Play, Youtube, Clock, CheckCircle, ExternalLink, HelpCircle } from '@lucide/svelte';
+  import { Play, Video, Clock, CheckCircle, ExternalLink, HelpCircle } from '@lucide/svelte';
   import { tt, locale } from '$lib/i18n';
 
   const t = $derived($tt);
@@ -68,12 +68,12 @@
 
 <div class="bg-slate-50 min-h-screen pb-20">
   <!-- Hero Header -->
-  <div class="bg-gradient-to-br from-[#062206] via-[#0a3d0a] to-[#062206] text-white border-b border-emerald-900 px-6 py-16 sm:px-8">
+  <div class="bg-gradient-to-br from-[#062206] via-[#0a3d0a] to-[#062206] text-white border-b border-[#143A14] px-6 py-16 sm:px-8">
     <div class="mx-auto max-w-7xl">
       <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
         <div>
           <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 px-3 py-1 text-xs font-bold text-emerald-300">
-            <Youtube class="h-4 w-4 text-red-500" />
+            <Video class="h-4 w-4 text-red-500" />
             {currentLocale === 'ta' ? 'வீடியோ கையேடுகள்' : 'Video Guides'}
           </span>
           <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight mt-3">
