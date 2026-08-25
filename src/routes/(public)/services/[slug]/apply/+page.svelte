@@ -81,7 +81,7 @@
         stepError = 'Please enter your Pincode.';
         return false;
       }
-    } else if (currentStep === 2) { // Service Details / Land Details
+    } else if (currentStep === 2) { // Service Details
       if (service?.slug === 'e-adangal-extract') {
         if (!formData.surveyNumber || String(formData.surveyNumber).trim() === '') {
           stepError = 'Please enter the Survey Number.';
@@ -93,6 +93,37 @@
         }
         if (!formData.village || String(formData.village).trim() === '') {
           stepError = 'Please enter the Village.';
+          return false;
+        }
+      } else if (service?.slug === 'income-certificate') {
+        if (!formData.annualIncome || Number(formData.annualIncome) <= 0) {
+          stepError = 'Please enter a valid Annual Income (greater than 0).';
+          return false;
+        }
+        if (!formData.occupation || String(formData.occupation).trim() === '') {
+          stepError = 'Please enter your Occupation.';
+          return false;
+        }
+      } else if (service?.slug === 'community-certificate') {
+        if (!formData.religion || String(formData.religion).trim() === '') {
+          stepError = 'Please enter your Religion.';
+          return false;
+        }
+        if (!formData.communityCategory || String(formData.communityCategory).trim() === '') {
+          stepError = 'Please select your Community Category.';
+          return false;
+        }
+        if (!formData.subCaste || String(formData.subCaste).trim() === '') {
+          stepError = 'Please enter your Sub-Caste Name.';
+          return false;
+        }
+      } else if (service?.slug === 'nativity-certificate') {
+        if (!formData.placeOfBirth || String(formData.placeOfBirth).trim() === '') {
+          stepError = 'Please enter your Place of Birth.';
+          return false;
+        }
+        if (!formData.residenceDurationYears || Number(formData.residenceDurationYears) <= 0) {
+          stepError = 'Please enter a valid duration of residence in years.';
           return false;
         }
       }
@@ -231,7 +262,7 @@
   <div class="bg-surface-secondary min-h-screen">
     <!-- Header -->
     <div class="bg-white border-b border-border">
-      <div class="mx-auto max-w-4xl px-4 py-4 sm:px-6">
+      <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6">
         <a href="/services/{slug}" class="inline-flex items-center gap-1 text-sm text-text-muted hover:text-primary transition mb-2">
           <ArrowLeft class="h-4 w-4" /> {t('common.back')}
         </a>
@@ -241,26 +272,36 @@
       </div>
     </div>
 
-    <!-- Stepper (Numbers never hidden) -->
+    <!-- Stepper (Redesigned as clean progress pills, no hyphens, no scrollbar) -->
     <div class="bg-white border-b border-slate-200 py-4 px-4 sm:px-6">
-      <div class="mx-auto max-w-4xl">
-        <div class="flex items-center justify-between gap-2 overflow-x-auto pb-1">
+      <div class="mx-auto max-w-7xl">
+        <div class="flex items-center justify-start gap-3 overflow-x-auto pb-1" style="scrollbar-width: none; -ms-overflow-style: none;">
           {#each steps as step, i}
-            <div class="flex items-center gap-2 shrink-0">
-              <div class="flex h-8 w-8 items-center justify-center rounded-full text-xs font-black transition-all shadow-xs
-                {i < currentStep ? 'bg-[#062206] text-white border-2 border-[#82da85]' : i === currentStep ? 'bg-emerald-600 text-white ring-4 ring-emerald-100 font-bold' : 'bg-slate-200 text-slate-600'}">
-                {i + 1}
-              </div>
-              <div class="flex items-center gap-1">
-                <span class="text-xs font-bold whitespace-nowrap {i <= currentStep ? 'text-slate-900' : 'text-slate-400'}">
-                  {step}
-                </span>
-                {#if i < currentStep}
-                  <Check class="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-                {/if}
+            <div class="flex items-center gap-3 shrink-0">
+              <div class="flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all text-xs font-bold
+                {i === currentStep 
+                  ? 'bg-emerald-50 border-emerald-200 text-emerald-800 shadow-xs' 
+                  : i < currentStep 
+                    ? 'bg-emerald-50/40 border-emerald-100/50 text-slate-700' 
+                    : 'bg-slate-50 border-slate-100 text-slate-400'}">
+                <div class="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-black shrink-0
+                  {i === currentStep 
+                    ? 'bg-emerald-600 text-white' 
+                    : i < currentStep 
+                      ? 'bg-emerald-500 text-white' 
+                      : 'bg-slate-200 text-slate-500'}">
+                  {#if i < currentStep}
+                    ✓
+                  {:else}
+                    {i + 1}
+                  {/if}
+                </div>
+                <span>{step}</span>
               </div>
               {#if i < steps.length - 1}
-                <div class="w-6 sm:w-10 h-0.5 mx-1 {i < currentStep ? 'bg-[#062206]' : 'bg-slate-200'} shrink-0"></div>
+                <svg class="h-3.5 w-3.5 text-slate-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
               {/if}
             </div>
           {/each}
@@ -269,7 +310,7 @@
     </div>
 
     <!-- Form content -->
-    <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6">
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <div class="rounded-xl border border-border bg-white p-6 shadow-sm animate-fade-in">
         <!-- Step 0: Eligibility -->
         {#if currentStep === 0}
@@ -357,38 +398,87 @@
             </div>
           {:else}
             <div class="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label for="doorNo" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.doorNo')}</label>
-                <input id="doorNo" type="text" bind:value={formData.doorNo} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
-              </div>
-              <div>
-                <label for="street" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.street')}</label>
-                <input id="street" type="text" bind:value={formData.street} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
-              </div>
-              <div>
-                <label for="area" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.area')}</label>
-                <input id="area" type="text" bind:value={formData.area} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
-              </div>
-              <div>
-                <label for="district" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.district')} *</label>
-                <input id="district" type="text" bind:value={formData.district} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
-              </div>
-              <div>
-                <label for="taluk" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.taluk')}</label>
-                <input id="taluk" type="text" bind:value={formData.taluk} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
-              </div>
-              <div>
-                <label for="pincode" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.pincode')} *</label>
-                <input id="pincode" type="text" bind:value={formData.pincode} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
-              </div>
-              <div>
-                <label for="occupation" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.occupation')}</label>
-                <input id="occupation" type="text" bind:value={formData.occupation} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
-              </div>
-              <div>
-                <label for="purpose" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.purpose')}</label>
-                <input id="purpose" type="text" bind:value={formData.purpose} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
-              </div>
+              {#if service.slug === 'income-certificate'}
+                <div>
+                  <label for="annualIncome" class="block text-sm font-medium text-text mb-1.5">Annual Family Income (₹) *</label>
+                  <input id="annualIncome" type="number" bind:value={formData.annualIncome} required placeholder="e.g. 120000" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                </div>
+                <div>
+                  <label for="occupation" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.occupation')} *</label>
+                  <input id="occupation" type="text" bind:value={formData.occupation} required placeholder="e.g. Farmer / Business" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                </div>
+                <div class="sm:col-span-2">
+                  <label for="purpose" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.purpose')}</label>
+                  <input id="purpose" type="text" bind:value={formData.purpose} placeholder="e.g. Scholarship / Higher Education" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                </div>
+              {:else if service.slug === 'community-certificate'}
+                <div>
+                  <label for="religion" class="block text-sm font-medium text-text mb-1.5">Religion *</label>
+                  <input id="religion" type="text" bind:value={formData.religion} required placeholder="e.g. Hinduism / Islam / Christianity" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                </div>
+                <div>
+                  <label for="communityCategory" class="block text-sm font-medium text-text mb-1.5">Community Category *</label>
+                  <select id="communityCategory" bind:value={formData.communityCategory} required class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary">
+                    <option value="">Select Category</option>
+                    <option value="BC">Backward Class (BC)</option>
+                    <option value="MBC">Most Backward Class (MBC)</option>
+                    <option value="SC">Scheduled Caste (SC)</option>
+                    <option value="ST">Scheduled Tribe (ST)</option>
+                    <option value="DNC">Denotified Community (DNC)</option>
+                    <option value="General">General (OC)</option>
+                  </select>
+                </div>
+                <div class="sm:col-span-2">
+                  <label for="subCaste" class="block text-sm font-medium text-text mb-1.5">Sub-Caste Name *</label>
+                  <input id="subCaste" type="text" bind:value={formData.subCaste} required placeholder="e.g. Kongu Vellalar / Kallar" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                </div>
+              {:else if service.slug === 'nativity-certificate'}
+                <div>
+                  <label for="placeOfBirth" class="block text-sm font-medium text-text mb-1.5">Place of Birth *</label>
+                  <input id="placeOfBirth" type="text" bind:value={formData.placeOfBirth} required placeholder="e.g. Madurai" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                </div>
+                <div>
+                  <label for="residenceDurationYears" class="block text-sm font-medium text-text mb-1.5">Duration of Residence in Tamil Nadu (in Years) *</label>
+                  <input id="residenceDurationYears" type="number" bind:value={formData.residenceDurationYears} required placeholder="e.g. 15" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                </div>
+                <div class="sm:col-span-2">
+                  <label for="purpose" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.purpose')}</label>
+                  <input id="purpose" type="text" bind:value={formData.purpose} placeholder="e.g. Government Job / Education" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                </div>
+              {:else}
+                <div>
+                  <label for="doorNo" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.doorNo')}</label>
+                  <input id="doorNo" type="text" bind:value={formData.doorNo} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                </div>
+                <div>
+                  <label for="street" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.street')}</label>
+                  <input id="street" type="text" bind:value={formData.street} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                </div>
+                <div>
+                  <label for="area" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.area')}</label>
+                  <input id="area" type="text" bind:value={formData.area} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                </div>
+                <div>
+                  <label for="district" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.district')} *</label>
+                  <input id="district" type="text" bind:value={formData.district} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                </div>
+                <div>
+                  <label for="taluk" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.taluk')}</label>
+                  <input id="taluk" type="text" bind:value={formData.taluk} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                </div>
+                <div>
+                  <label for="pincode" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.pincode')} *</label>
+                  <input id="pincode" type="text" bind:value={formData.pincode} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                </div>
+                <div>
+                  <label for="occupation" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.occupation')}</label>
+                  <input id="occupation" type="text" bind:value={formData.occupation} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                </div>
+                <div>
+                  <label for="purpose" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.purpose')}</label>
+                  <input id="purpose" type="text" bind:value={formData.purpose} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                </div>
+              {/if}
             </div>
           {/if}
 
@@ -453,12 +543,29 @@
               {:else}
                 <dl class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                   <dt class="text-text-muted">{t('apply.field.fullName')}</dt><dd class="text-text font-medium">{formData.fullName || '—'}</dd>
-                  <dt class="text-text-muted">{t('apply.field.fatherName')}</dt><dd class="text-text font-medium">{formData.fatherName || '—'}</dd>
-                  <dt class="text-text-muted">{t('apply.field.dob')}</dt><dd class="text-text font-medium">{formData.dateOfBirth || '—'}</dd>
-                  <dt class="text-text-muted">{t('apply.field.gender')}</dt><dd class="text-text font-medium">{formData.gender || '—'}</dd>
-                  <dt class="text-text-muted">{t('apply.field.phone')}</dt><dd class="text-text font-medium">{formData.phone || '—'}</dd>
-                  <dt class="text-text-muted">{t('apply.field.district')}</dt><dd class="text-text font-medium">{formData.district || '—'}</dd>
-                  <dt class="text-text-muted">{t('apply.field.pincode')}</dt><dd class="text-text font-medium">{formData.pincode || '—'}</dd>
+                  
+                  {#if service.slug === 'income-certificate'}
+                    <dt class="text-text-muted">Annual Family Income</dt><dd class="text-text font-medium">₹{formData.annualIncome || '—'}</dd>
+                    <dt class="text-text-muted">Occupation</dt><dd class="text-text font-medium">{formData.occupation || '—'}</dd>
+                    <dt class="text-text-muted">Purpose</dt><dd class="text-text font-medium">{formData.purpose || '—'}</dd>
+                  {:else}
+                    <dt class="text-text-muted">{t('apply.field.fatherName')}</dt><dd class="text-text font-medium">{formData.fatherName || '—'}</dd>
+                    <dt class="text-text-muted">{t('apply.field.dob')}</dt><dd class="text-text font-medium">{formData.dateOfBirth || '—'}</dd>
+                    <dt class="text-text-muted">{t('apply.field.gender')}</dt><dd class="text-text font-medium">{formData.gender || '—'}</dd>
+                    <dt class="text-text-muted">{t('apply.field.phone')}</dt><dd class="text-text font-medium">{formData.phone || '—'}</dd>
+                  {/if}
+
+                  {#if service.slug === 'community-certificate'}
+                    <dt class="text-text-muted">Religion</dt><dd class="text-text font-medium">{formData.religion || '—'}</dd>
+                    <dt class="text-text-muted">Community Category</dt><dd class="text-text font-medium">{formData.communityCategory || '—'}</dd>
+                    <dt class="text-text-muted">Sub-Caste Name</dt><dd class="text-text font-medium">{formData.subCaste || '—'}</dd>
+                  {/if}
+
+                  {#if service.slug === 'nativity-certificate'}
+                    <dt class="text-text-muted">Place of Birth</dt><dd class="text-text font-medium">{formData.placeOfBirth || '—'}</dd>
+                    <dt class="text-text-muted">Duration of Residence</dt><dd class="text-text font-medium">{formData.residenceDurationYears || '—'} Years</dd>
+                    <dt class="text-text-muted">Purpose</dt><dd class="text-text font-medium">{formData.purpose || '—'}</dd>
+                  {/if}
                 </dl>
               {/if}
             </div>
