@@ -400,19 +400,65 @@ async function createApplicationForCitizen(
  */
 export async function createAssistedApplicationDraft(
   operator: AuthenticatedUser,
-  citizenId: string,
+  citizenIdOrEmailOrPhone: string,
   input: Omit<CreateApplicationInput, 'submit'>
 ): Promise<CreatedApplication> {
   if (operator.role !== 'operator') throw new Error('Only operators can create assisted drafts.');
-  if (!citizenId.trim() || citizenId.length > 128) throw new Error('A valid citizen account ID is required.');
+  
+  const identifier = citizenIdOrEmailOrPhone.trim();
+  if (!identifier) throw new Error('A valid citizen identifier (UID, email, or phone) is required.');
 
-  const profileSnapshot = await getFirebaseAdminFirestore().collection('users').doc(citizenId).get();
-  if (!profileSnapshot.exists) throw new Error('Citizen account not found.');
-  const profile = profileSnapshot.data() as Record<string, unknown>;
-  if (profile.role !== 'citizen' || profile.isActive === false) throw new Error('Citizen account is unavailable.');
+  const db = getFirebaseAdminFirestore();
+  let citizenId = identifier;
+  let profile: Record<string, any> | undefined;
+
+  // 1. Try search by UID
+  const docRef = db.collection('users').doc(identifier);
+  const docSnap = await docRef.get();
+  if (docSnap.exists) {
+    profile = docSnap.data() as Record<string, any>;
+  } else {
+    // 2. Try search by Email
+    const emailQuery = await db.collection('users')
+      .where('email', '==', identifier)
+      .limit(1)
+      .get();
+    if (!emailQuery.empty) {
+      profile = emailQuery.docs[0].data() as Record<string, any>;
+      citizenId = emailQuery.docs[0].id;
+    } else {
+      // 3. Try search by Phone
+      const phoneQuery = await db.collection('users')
+        .where('phone', '==', identifier)
+        .limit(1)
+        .get();
+      if (!phoneQuery.empty) {
+        profile = phoneQuery.docs[0].data() as Record<string, any>;
+        citizenId = phoneQuery.docs[0].id;
+      }
+    }
+  }
+
+  // 4. Register new citizen placeholder on the fly if not found
+  if (!profile) {
+    const isEmail = identifier.includes('@');
+    const newCitizenRef = db.collection('users').doc();
+    citizenId = newCitizenRef.id;
+
+    profile = {
+      id: citizenId,
+      email: isEmail ? identifier : '',
+      phone: !isEmail ? identifier : '',
+      name: isEmail ? identifier.split('@')[0] : `Citizen (${identifier.substring(identifier.length - 4)})`,
+      role: 'citizen',
+      isActive: true,
+      createdAt: Timestamp.now()
+    };
+    await newCitizenRef.set(profile);
+  }
 
   const email = optionalString(profile.email);
-  const displayName = optionalString(profile.displayName) ?? email?.split('@')[0] ?? 'Citizen';
+  const displayName = optionalString(profile.name) ?? optionalString(profile.displayName) ?? email?.split('@')[0] ?? 'Citizen';
   const citizen: AuthenticatedUser = {
     id: citizenId,
     uid: citizenId,
@@ -420,12 +466,23 @@ export async function createAssistedApplicationDraft(
     name: displayName,
     displayName,
     role: 'citizen',
-    createdAt: toTimestampIso(profile.createdAt) ?? new Date().toISOString(),
+    createdAt: profile.createdAt instanceof Timestamp ? profile.createdAt.toDate().toISOString() : new Date().toISOString(),
     isActive: true,
     preferredLanguage: profile.preferredLanguage === 'ta' ? 'ta' : 'en'
   };
 
-  return createApplicationForCitizen(citizen, { ...input, submit: false }, operator);
+  // Pre-fill application form with the resolved citizen details
+  const updatedInput = {
+    ...input,
+    formData: {
+      email: email ?? '',
+      phone: optionalString(profile.phone) ?? '',
+      fullName: displayName.startsWith('Citizen (') ? '' : displayName,
+      ...input.formData
+    }
+  };
+
+  return createApplicationForCitizen(citizen, { ...updatedInput, submit: false }, operator);
 }
 
 /**

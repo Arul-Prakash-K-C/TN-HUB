@@ -20,10 +20,9 @@
       (service.name.toLowerCase().includes(searchSvc.toLowerCase()) || service.departmentId.includes(searchSvc.toLowerCase()))
     )
   );
-
   async function createAssistedDraft(serviceId: string) {
     if (!citizenId.trim()) {
-      createError = 'Enter the citizen’s Firebase account ID before creating an assisted draft.';
+      createError = 'Enter the citizen’s phone number or email address before creating an assisted draft.';
       return;
     }
 
@@ -105,12 +104,12 @@
         </div>
 
         <div class="mb-5 rounded-2xl border border-indigo-100 bg-indigo-50/60 p-4">
-          <label for="assisted-citizen-id" class="block text-xs font-bold text-indigo-950">Citizen Firebase account ID</label>
+          <label for="assisted-citizen-id" class="block text-xs font-bold text-indigo-950">Citizen Phone Number or Email Address *</label>
           <div class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center">
             <input
               id="assisted-citizen-id"
               bind:value={citizenId}
-              placeholder="Enter the citizen’s account ID after identity verification"
+              placeholder="e.g. 9876543210 or meena@demo.com"
               class="w-full rounded-xl border border-indigo-200 bg-white px-3 py-2 text-xs text-slate-900 outline-none focus:border-indigo-500"
             />
             <a href="/operator/applications" class="shrink-0 text-xs font-bold text-indigo-700 hover:underline">My assisted drafts</a>
