@@ -11,7 +11,7 @@ export function getApplicationsForUser(user: User | null): Application[] {
   if (!user) return [];
 
   // Platform Admin sees all
-  if (user.role === 'sympho_admin' || user.role === 'admin') {
+  if (user.role === 'tnhub_admin' || user.role === 'admin') {
     return mockApplications;
   }
 

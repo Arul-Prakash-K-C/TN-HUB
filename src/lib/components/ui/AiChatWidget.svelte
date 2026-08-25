@@ -20,7 +20,7 @@
     {
       id: '1',
       sender: 'bot',
-      text: 'Vanakkam! 🙏 I am Sympho AI. How can I help you with Tamil Nadu government services today?',
+      text: 'Vanakkam! 🙏 I am Thozhan AI. How can I help you with Tamil Nadu government services today?',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
@@ -79,7 +79,7 @@
   {#if !isOpen}
     <button
       onclick={toggleOpen}
-      aria-label="Open Sympho AI Assistant"
+      aria-label="Open Thozhan AI Assistant"
       class="group flex items-center gap-2.5 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-800 px-5 py-3.5 text-white shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 border border-emerald-500/30"
     >
       <div class="relative flex h-7 w-7 items-center justify-center rounded-full bg-white/20 text-white shadow">
@@ -89,7 +89,7 @@
           <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
         </span>
       </div>
-      <span class="text-xs font-bold tracking-wide">Ask Sympho AI</span>
+      <span class="text-xs font-bold tracking-wide">Thozhan AI</span>
     </button>
   {/if}
 </div>
@@ -106,7 +106,7 @@
           </div>
           <div>
             <div class="flex items-center gap-1.5">
-              <h3 class="text-sm font-bold leading-none">Sympho AI</h3>
+              <h3 class="text-sm font-bold leading-none">Thozhan AI</h3>
               <span class="flex items-center gap-1 rounded-full bg-emerald-500/20 px-2 py-0.5 text-[9px] font-bold text-emerald-400">
                 <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                 ONLINE

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { tt, locale } from '$lib/i18n';
   import { currentUser, isAuthenticated, userRole } from '$lib/stores/auth';
+  import { departments } from '$lib/data/departments';
   import type { ServiceCategory, ImplementationMode } from '$lib/types';
   import {
     Settings,
@@ -13,7 +14,13 @@
     Activity,
     Layers,
     PlusCircle,
-    Shield
+    Shield,
+    FileText,
+    Clock,
+    XCircle,
+    UserCheck,
+    MessageCircleQuestion,
+    TrendingUp
   } from '@lucide/svelte';
 
   let { data } = $props();
@@ -24,16 +31,60 @@
   const authenticated = $derived($isAuthenticated);
   const role = $derived($userRole);
   const services = $derived(data.catalog.services);
+  const stats = $derived(data.stats);
 
   let showInspectorModal = $state(false);
   const totalServices = $derived(services.length);
-  const nativeServices = $derived(services.filter(s => s.implementationMode === 'NATIVE_WORKFLOW').length);
-  const apiServices = $derived(services.filter(s => s.implementationMode === 'API_INTEGRATED').length);
-  const externalServices = $derived(services.filter(s => s.implementationMode === 'EXTERNAL_REDIRECT').length);
+  const nativeServices = $derived(services.filter((s: any) => s.implementationMode === 'NATIVE_WORKFLOW').length);
+  const apiServices = $derived(services.filter((s: any) => s.implementationMode === 'API_INTEGRATED').length);
+  const externalServices = $derived(services.filter((s: any) => s.implementationMode === 'EXTERNAL_REDIRECT').length);
+
+  function getDeptName(deptId: string): string {
+    const dept = departments.find(d => d.id === deptId);
+    return dept ? (currentLocale === 'ta' ? dept.nameTA : dept.shortName || dept.name) : deptId.replace('dept-', '');
+  }
+
+  // Calculate bar widths for chart
+  function barWidth(value: number, max: number): number {
+    return max > 0 ? Math.max(8, (value / max) * 100) : 8;
+  }
+
+  const maxStatusCount = $derived(Math.max(...Object.values(stats.statusBreakdown).map(v => Number(v)), 1));
+  const maxDeptCount = $derived(Math.max(...Object.values(stats.departmentBreakdown).map(v => Number(v)), 1));
+
+  const statusColors: Record<string, string> = {
+    DRAFT: 'bg-slate-400',
+    SUBMITTED: 'bg-blue-500',
+    DOCUMENT_VERIFICATION: 'bg-indigo-500',
+    OFFICER_REVIEW: 'bg-purple-500',
+    FIELD_VERIFICATION: 'bg-violet-500',
+    CLARIFICATION_REQUESTED: 'bg-amber-500',
+    APPROVAL: 'bg-cyan-500',
+    APPROVED: 'bg-emerald-500',
+    REJECTED: 'bg-rose-500',
+    CERTIFICATE_GENERATED: 'bg-green-500',
+    COMPLETED: 'bg-teal-500',
+    CANCELLED: 'bg-gray-500'
+  };
+
+  const statusLabels: Record<string, string> = {
+    DRAFT: 'Draft',
+    SUBMITTED: 'Submitted',
+    DOCUMENT_VERIFICATION: 'Doc Verification',
+    OFFICER_REVIEW: 'Officer Review',
+    FIELD_VERIFICATION: 'Field Verification',
+    CLARIFICATION_REQUESTED: 'Clarification',
+    APPROVAL: 'Approval',
+    APPROVED: 'Approved',
+    REJECTED: 'Rejected',
+    CERTIFICATE_GENERATED: 'Certificate Ready',
+    COMPLETED: 'Completed',
+    CANCELLED: 'Cancelled'
+  };
 </script>
 
 <svelte:head>
-  <title>{t('admin.title')} — Sympho Center</title>
+  <title>{t('admin.title')} — TN Hub</title>
 </svelte:head>
 
 {#if !authenticated || role !== 'admin'}
@@ -59,7 +110,7 @@
               System Administration
             </span>
             <h1 class="mt-2 text-h1 text-white">{t('admin.title')}</h1>
-            <p class="text-xs text-white/70">Overview of 100+ Tamil Nadu Government Services & Workflows</p>
+            <p class="text-xs text-white/70">Platform usage analytics & service architecture overview</p>
           </div>
 
           <button onclick={() => showInspectorModal = true} class="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-primary shadow hover:bg-slate-50 transition">
@@ -70,30 +121,177 @@
     </div>
 
     <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <!-- Platform Analytics Cards -->
+      <!-- Primary Platform Stats -->
       <div class="grid grid-cols-2 gap-4 lg:grid-cols-4 stagger-children">
         <div class="rounded-2xl border border-border bg-white p-5 shadow-sm">
-          <div class="text-xs font-medium text-text-muted">{t('admin.stats.totalServices')}</div>
-          <div class="mt-2 text-3xl font-bold text-primary">{totalServices}</div>
-          <div class="mt-1 text-xs text-success">Active & Functional</div>
+          <div class="flex items-center gap-2 text-xs font-medium text-text-muted">
+            <FileText class="h-4 w-4 text-blue-500" />
+            Total Applications
+          </div>
+          <div class="mt-2 text-3xl font-bold text-primary">{stats.totalApplications}</div>
+          <div class="mt-1 text-[10px] font-bold text-emerald-600">{stats.approvedApplications} approved</div>
         </div>
 
         <div class="rounded-2xl border border-border bg-white p-5 shadow-sm">
-          <div class="text-xs font-medium text-text-muted">{t('admin.stats.nativeServices')}</div>
-          <div class="mt-2 text-3xl font-bold text-success-dark">{nativeServices}</div>
-          <div class="mt-1 text-xs text-text-muted">Direct Sympho Flow</div>
+          <div class="flex items-center gap-2 text-xs font-medium text-text-muted">
+            <Clock class="h-4 w-4 text-amber-500" />
+            Pending Review
+          </div>
+          <div class="mt-2 text-3xl font-bold text-amber-600">{stats.pendingApplications}</div>
+          <div class="mt-1 text-[10px] font-bold text-rose-500">{stats.rejectedApplications} rejected</div>
         </div>
 
         <div class="rounded-2xl border border-border bg-white p-5 shadow-sm">
-          <div class="text-xs font-medium text-text-muted">{t('admin.stats.apiServices')}</div>
-          <div class="mt-2 text-3xl font-bold text-info-dark">{apiServices}</div>
-          <div class="mt-1 text-xs text-text-muted">API Integrated</div>
+          <div class="flex items-center gap-2 text-xs font-medium text-text-muted">
+            <Users class="h-4 w-4 text-indigo-500" />
+            Total Users
+          </div>
+          <div class="mt-2 text-3xl font-bold text-indigo-700">{stats.totalUsers}</div>
+          <div class="mt-1 text-[10px] font-bold text-slate-500">{stats.citizenUsers} citizens • {stats.operatorUsers + stats.officerUsers} officials</div>
         </div>
 
         <div class="rounded-2xl border border-border bg-white p-5 shadow-sm">
-          <div class="text-xs font-medium text-text-muted">{t('admin.stats.externalServices')}</div>
-          <div class="mt-2 text-3xl font-bold text-warning-dark">{externalServices}</div>
-          <div class="mt-1 text-xs text-text-muted">External Redirect</div>
+          <div class="flex items-center gap-2 text-xs font-medium text-text-muted">
+            <Activity class="h-4 w-4 text-emerald-500" />
+            Total Services
+          </div>
+          <div class="mt-2 text-3xl font-bold text-emerald-700">{totalServices}</div>
+          <div class="mt-1 text-[10px] font-bold text-slate-500">{nativeServices} native • {apiServices} API • {externalServices} external</div>
+        </div>
+      </div>
+
+      <!-- Quick Action Cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+        <a href="/admin/approvals" class="rounded-2xl border border-border bg-white p-5 shadow-sm hover:shadow-md transition group">
+          <div class="flex items-center gap-2">
+            <div class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition">
+              <UserCheck class="h-4 w-4" />
+            </div>
+            <div>
+              <span class="text-xs font-bold text-slate-900">Registration Approvals</span>
+              {#if stats.pendingRegistrations > 0}
+                <span class="ml-1.5 inline-flex items-center justify-center w-5 h-5 rounded-full bg-rose-500 text-white text-[9px] font-bold">{stats.pendingRegistrations}</span>
+              {/if}
+            </div>
+          </div>
+          <p class="text-[10px] text-slate-500 mt-2">Pending operator & officer approvals</p>
+        </a>
+
+        <a href="/admin/helpdesk" class="rounded-2xl border border-border bg-white p-5 shadow-sm hover:shadow-md transition group">
+          <div class="flex items-center gap-2">
+            <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center group-hover:scale-110 transition">
+              <MessageCircleQuestion class="h-4 w-4" />
+            </div>
+            <div>
+              <span class="text-xs font-bold text-slate-900">Help Desk</span>
+              {#if stats.pendingQuestions > 0}
+                <span class="ml-1.5 inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-500 text-white text-[9px] font-bold">{stats.pendingQuestions}</span>
+              {/if}
+            </div>
+          </div>
+          <p class="text-[10px] text-slate-500 mt-2">User inquiries & replies</p>
+        </a>
+
+        <a href="/admin/profile" class="rounded-2xl border border-border bg-white p-5 shadow-sm hover:shadow-md transition group">
+          <div class="flex items-center gap-2">
+            <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition">
+              <Shield class="h-4 w-4" />
+            </div>
+            <span class="text-xs font-bold text-slate-900">Admin Profile</span>
+          </div>
+          <p class="text-[10px] text-slate-500 mt-2">View account details</p>
+        </a>
+
+        <a href="/admin/settings" class="rounded-2xl border border-border bg-white p-5 shadow-sm hover:shadow-md transition group">
+          <div class="flex items-center gap-2">
+            <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center group-hover:scale-110 transition">
+              <Settings class="h-4 w-4" />
+            </div>
+            <span class="text-xs font-bold text-slate-900">Settings</span>
+          </div>
+          <p class="text-[10px] text-slate-500 mt-2">Platform configuration</p>
+        </a>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="grid lg:grid-cols-2 gap-6 mt-8">
+        <!-- Application Status Distribution (Horizontal Bar Chart) -->
+        <div class="rounded-2xl border border-border bg-white p-6 shadow-sm">
+          <div class="flex items-center gap-2 mb-5">
+            <BarChart3 class="h-5 w-5 text-primary" />
+            <h2 class="text-sm font-bold text-text">Application Status Distribution</h2>
+          </div>
+          {#if Object.keys(stats.statusBreakdown).length === 0}
+            <p class="text-xs text-slate-400 text-center py-8">No application data yet</p>
+          {:else}
+            <div class="space-y-2.5">
+              {#each Object.entries(stats.statusBreakdown).sort((a, b) => Number(b[1]) - Number(a[1])) as [status, count]}
+                <div class="flex items-center gap-3">
+                  <span class="text-[10px] font-bold text-slate-600 w-28 truncate text-right">{statusLabels[status] || status}</span>
+                  <div class="flex-1 h-6 bg-slate-100 rounded-lg overflow-hidden">
+                    <div
+                      class="h-full rounded-lg flex items-center justify-end pr-2 text-[9px] font-bold text-white transition-all duration-700 {statusColors[status] || 'bg-slate-500'}"
+                      style="width: {barWidth(Number(count), maxStatusCount)}%"
+                    >
+                      {count}
+                    </div>
+                  </div>
+                </div>
+              {/each}
+            </div>
+          {/if}
+        </div>
+
+        <!-- Department Load (Horizontal Bar Chart) -->
+        <div class="rounded-2xl border border-border bg-white p-6 shadow-sm">
+          <div class="flex items-center gap-2 mb-5">
+            <Building2 class="h-5 w-5 text-primary" />
+            <h2 class="text-sm font-bold text-text">Department Application Load</h2>
+          </div>
+          {#if Object.keys(stats.departmentBreakdown).length === 0}
+            <p class="text-xs text-slate-400 text-center py-8">No application data yet</p>
+          {:else}
+            <div class="space-y-2.5">
+              {#each Object.entries(stats.departmentBreakdown).sort((a, b) => Number(b[1]) - Number(a[1])) as [deptId, count]}
+                <div class="flex items-center gap-3">
+                  <span class="text-[10px] font-bold text-slate-600 w-28 truncate text-right">{getDeptName(deptId)}</span>
+                  <div class="flex-1 h-6 bg-slate-100 rounded-lg overflow-hidden">
+                    <div
+                      class="h-full rounded-lg bg-gradient-to-r from-[#071A28] to-[#143A14] flex items-center justify-end pr-2 text-[9px] font-bold text-white transition-all duration-700"
+                      style="width: {barWidth(Number(count), maxDeptCount)}%"
+                    >
+                      {count}
+                    </div>
+                  </div>
+                </div>
+              {/each}
+            </div>
+          {/if}
+        </div>
+      </div>
+
+      <!-- User Breakdown Row -->
+      <div class="grid lg:grid-cols-3 gap-4 mt-6">
+        <div class="rounded-2xl border border-border bg-white p-5 shadow-sm text-center">
+          <div class="mx-auto w-14 h-14 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mb-3">
+            <Users class="h-6 w-6" />
+          </div>
+          <div class="text-2xl font-bold text-slate-900">{stats.citizenUsers}</div>
+          <div class="text-[10px] font-bold text-slate-500 uppercase mt-1">Registered Citizens</div>
+        </div>
+        <div class="rounded-2xl border border-border bg-white p-5 shadow-sm text-center">
+          <div class="mx-auto w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-3">
+            <TrendingUp class="h-6 w-6" />
+          </div>
+          <div class="text-2xl font-bold text-slate-900">{stats.operatorUsers}</div>
+          <div class="text-[10px] font-bold text-slate-500 uppercase mt-1">Kiosk Operators</div>
+        </div>
+        <div class="rounded-2xl border border-border bg-white p-5 shadow-sm text-center">
+          <div class="mx-auto w-14 h-14 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-3">
+            <Shield class="h-6 w-6" />
+          </div>
+          <div class="text-2xl font-bold text-slate-900">{stats.officerUsers}</div>
+          <div class="text-[10px] font-bold text-slate-500 uppercase mt-1">Department Officers</div>
         </div>
       </div>
 
@@ -117,7 +315,7 @@
               {#each services as svc}
                 <tr class="hover:bg-surface-secondary/50">
                   <td class="p-3 font-bold">{svc.name}</td>
-                  <td class="p-3 text-text-muted">{svc.departmentId.replace('dept-', '')}</td>
+                  <td class="p-3 text-text-muted">{getDeptName(svc.departmentId)}</td>
                   <td class="p-3 capitalize">{svc.category}</td>
                   <td class="p-3">
                     {#if svc.implementationMode === 'NATIVE_WORKFLOW'}
@@ -195,4 +393,3 @@
     </div>
   </div>
 {/if}
-

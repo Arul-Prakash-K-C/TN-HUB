@@ -278,3 +278,24 @@ export async function markAllNotificationsRead(user: AuthenticatedUser): Promise
 	}
 	return unread.length;
 }
+
+export async function createNotification(input: NotificationInput): Promise<string> {
+	const db = getFirebaseAdminFirestore();
+	const ref = db.collection('notifications').doc();
+	await ref.set({
+		id: ref.id,
+		recipientId: input.recipientId,
+		type: input.type,
+		title: input.title,
+		message: input.message,
+		applicationId: input.applicationId ?? null,
+		relatedEntityId: input.applicationId ?? null,
+		relatedEntityType: input.applicationId ? 'application' : null,
+		actionUrl: input.actionUrl ?? null,
+		channel: input.channel ?? 'in_app',
+		isRead: false,
+		createdAt: input.createdAt ?? Timestamp.now(),
+		readAt: null
+	});
+	return ref.id;
+}

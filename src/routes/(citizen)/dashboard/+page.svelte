@@ -44,7 +44,7 @@
 </script>
 
 <svelte:head>
-  <title>Citizen Dashboard — Sympho Center</title>
+  <title>Citizen Dashboard — TN Hub</title>
 </svelte:head>
 
 {#if !authenticated || !user}

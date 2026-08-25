@@ -4,11 +4,11 @@
 
   const modules = [
     {
-      title: 'Sympho Center Service Navigation',
+      title: 'TN Hub Service Navigation',
       module: 'Module 1',
       duration: '20 mins',
       level: 'Beginner',
-      color: 'emerald',
+      color: 'primary',
       icon: Monitor,
       lessons: 5,
       desc: 'Learn how to discover services, check eligibility, and prepare required identity & income documents.',
@@ -79,26 +79,26 @@
   ];
 
   function getLevelColor(level: string) {
-    return 'bg-emerald-500/10 text-emerald-700 border-emerald-200';
+    return 'bg-primary-500/10 text-primary-700 border-primary-200';
   }
 
   function getAccentColor(color: string) {
-    return 'from-emerald-600 to-emerald-800';
+    return 'from-primary-600 to-primary-800';
   }
 </script>
 
 <svelte:head>
-  <title>Operator Training Portal — Sympho Center</title>
+  <title>Operator Training Portal — TN Hub</title>
 </svelte:head>
 
 <div class="bg-slate-50 min-h-screen pb-20">
   <!-- Hero Section -->
-  <div class="bg-gradient-to-br from-[#062206] via-[#0a3d0a] to-[#062206] text-white border-b border-emerald-900">
+  <div class="bg-gradient-to-br from-[#062206] via-[#0a3d0a] to-[#062206] text-white border-b border-primary-900">
     <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
       <div class="flex flex-col lg:flex-row items-start lg:items-center gap-8">
         <div class="flex-1">
           <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">Operator Kiosk Training</h1>
-          <p class="mt-3 text-base text-emerald-200/80 max-w-2xl leading-relaxed">Boost your e-Sevai Kiosk performance and navigate workflows effectively.</p>
+          <p class="mt-3 text-base text-primary-200/80 max-w-2xl leading-relaxed">Boost your e-Sevai Kiosk performance and navigate workflows effectively.</p>
           <p class="mt-2 text-sm text-slate-400">Self-paced digital literacy courses designed for Tamil Nadu citizens, e-Sevai operators, and government officers.</p>
         </div>
 
@@ -107,7 +107,7 @@
           {#each stats as stat}
             <div class="rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm px-3.5 py-3 text-center">
               <div class="flex items-center justify-center mb-1.5">
-                <stat.icon class="h-4.5 w-4.5 text-emerald-400" />
+                <stat.icon class="h-4.5 w-4.5 text-primary-400" />
               </div>
               <div class="text-base font-extrabold text-white leading-none">{stat.value}</div>
               <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-1">{stat.label}</div>
@@ -123,16 +123,16 @@
     <div class="flex items-center justify-between mb-8">
       <div>
         <h2 class="text-xl font-bold text-slate-900">Training Modules</h2>
-        <p class="text-sm text-slate-500 mt-1">Complete all modules to earn your Sympho Center digital proficiency certification.</p>
+        <p class="text-sm text-slate-500 mt-1">Complete all modules to earn your TN Hub digital proficiency certification.</p>
       </div>
       <div class="hidden sm:flex items-center gap-2">
-        <span class="flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-[10px] font-bold text-emerald-700">
+        <span class="flex items-center gap-1.5 rounded-full bg-primary-50 border border-primary-200 px-3 py-1 text-[10px] font-bold text-primary-700">
           <CheckCircle2 class="h-3 w-3" /> Beginner
         </span>
-        <span class="flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-[10px] font-bold text-emerald-700">
+        <span class="flex items-center gap-1.5 rounded-full bg-primary-50 border border-primary-200 px-3 py-1 text-[10px] font-bold text-primary-700">
           <CheckCircle2 class="h-3 w-3" /> Intermediate
         </span>
-        <span class="flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-[10px] font-bold text-emerald-700">
+        <span class="flex items-center gap-1.5 rounded-full bg-primary-50 border border-primary-200 px-3 py-1 text-[10px] font-bold text-primary-700">
           <CheckCircle2 class="h-3 w-3" /> Official
         </span>
       </div>
@@ -173,7 +173,7 @@
               <ul class="space-y-1.5">
                 {#each mod.topics.slice(0, 4) as topic}
                   <li class="flex items-start gap-2 text-xs text-slate-600">
-                    <CheckCircle2 class="h-3.5 w-3.5 text-emerald-500 mt-0.5 shrink-0" />
+                    <CheckCircle2 class="h-3.5 w-3.5 text-primary-500 mt-0.5 shrink-0" />
                     <span>{topic}</span>
                   </li>
                 {/each}
@@ -201,16 +201,16 @@
 
   <!-- Certification Notice -->
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="rounded-3xl bg-gradient-to-r from-emerald-50 to-blue-50 border border-emerald-200 p-8 flex flex-col md:flex-row items-center gap-6">
-      <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white shadow-sm border border-emerald-200 shrink-0">
-        <Award class="h-8 w-8 text-emerald-600" />
+    <div class="rounded-3xl bg-gradient-to-r from-primary-50 to-blue-50 border border-primary-200 p-8 flex flex-col md:flex-row items-center gap-6">
+      <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white shadow-sm border border-primary-200 shrink-0">
+        <Award class="h-8 w-8 text-primary-600" />
       </div>
       <div class="flex-1 text-center md:text-left">
         <h3 class="text-lg font-bold text-slate-900">Digital Proficiency Certification</h3>
-        <p class="text-sm text-slate-500 mt-1 max-w-xl">Complete all 6 training modules to receive a Sympho Center Digital Proficiency Certificate. This certification validates your ability to navigate and utilize Tamil Nadu government e-services effectively.</p>
+        <p class="text-sm text-slate-500 mt-1 max-w-xl">Complete all 6 training modules to receive a TN Hub Digital Proficiency Certificate. This certification validates your ability to navigate and utilize Tamil Nadu government e-services effectively.</p>
       </div>
       <div class="shrink-0">
-        <span class="rounded-full bg-emerald-600 px-6 py-2.5 text-xs font-bold text-white shadow-sm">
+        <span class="rounded-full bg-primary-600 px-6 py-2.5 text-xs font-bold text-white shadow-sm">
           Coming Soon
         </span>
       </div>

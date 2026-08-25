@@ -35,8 +35,8 @@
 
   const faqs = [
     {
-      q: 'What is Sympho Center?',
-      a: 'Sympho Center is Tamil Nadu\'s unified citizen service portal integrating government services, DigiLocker document vaults, grievance redressal, and e-Adangal land extracts into one seamless digital platform.'
+      q: 'What is TN Hub?',
+      a: 'TN Hub is Tamil Nadu\'s unified citizen service portal integrating government services, DigiLocker document vaults, grievance redressal, and e-Adangal land extracts into one seamless digital platform.'
     },
     {
       q: 'How do I track my submitted application?',
@@ -48,10 +48,10 @@
     },
     {
       q: 'Is there any fee for submitting applications?',
-      a: 'Most revenue and certificate services (Income, Community, Nativity) on Sympho Center are completely free of government fees. Some services like Transport or Licences may have nominal fees displayed on the service detail page.'
+      a: 'Most revenue and certificate services (Income, Community, Nativity) on TN Hub are completely free of government fees. Some services like Transport or Licences may have nominal fees displayed on the service detail page.'
     },
     {
-      q: 'How do I create an account on Sympho Center?',
+      q: 'How do I create an account on TN Hub?',
       a: 'Click the "Login" button on the top right corner, then select "Create Account". You can register using your email address, mobile number, or link an existing Google account. Aadhaar-based verification may be used for enhanced services.'
     },
     {
@@ -68,7 +68,7 @@
     },
     {
       q: 'What is DigiLocker integration?',
-      a: 'DigiLocker is a Government of India initiative that provides a digital document wallet. When connected to Sympho Center, you can directly fetch verified certificates without re-uploading physical documents.'
+      a: 'DigiLocker is a Government of India initiative that provides a digital document wallet. When connected to TN Hub, you can directly fetch verified certificates without re-uploading physical documents.'
     },
     {
       q: 'How do I file a grievance or complaint?',
@@ -79,16 +79,16 @@
       a: 'If your application is rejected, you will receive a notification with the specific reason. You can address the issue (e.g., upload missing documents, correct information) and resubmit. If you disagree with the decision, you can file a grievance.'
     },
     {
-      q: 'Is Sympho Center available in Tamil?',
-      a: 'Yes. Sympho Center fully supports both Tamil (தமிழ்) and English. You can switch languages at any time using the language toggle button in the header. All forms, notifications, and service information are available in both languages.'
+      q: 'Is TN Hub available in Tamil?',
+      a: 'Yes. TN Hub fully supports both Tamil (தமிழ்) and English. You can switch languages at any time using the language toggle button in the header. All forms, notifications, and service information are available in both languages.'
     },
     {
-      q: 'Which departments are connected to Sympho Center?',
-      a: 'Sympho Center connects services from Revenue, Civil Supplies, Transport, Health, Education, Social Welfare, Labour, Agriculture, Local Government, and more. The full list is available on the Services page filtered by department.'
+      q: 'Which departments are connected to TN Hub?',
+      a: 'TN Hub connects services from Revenue, Civil Supplies, Transport, Health, Education, Social Welfare, Labour, Agriculture, Local Government, and more. The full list is available on the Services page filtered by department.'
     },
     {
-      q: 'How secure is my personal data on Sympho Center?',
-      a: 'Sympho Center uses Firebase Authentication with encrypted sessions, server-side role-based authorization, and Firestore security rules. Your personal data is only accessible to you and authorized government officers processing your application.'
+      q: 'How secure is my personal data on TN Hub?',
+      a: 'TN Hub uses Firebase Authentication with encrypted sessions, server-side role-based authorization, and Firestore security rules. Your personal data is only accessible to you and authorized government officers processing your application.'
     },
     {
       q: 'Can I download approved certificates digitally?',
@@ -105,7 +105,7 @@
     {
       title: 'Terms of Service',
       icon: Scale,
-      desc: 'By using Sympho Center, you agree to provide accurate information for government service applications. Misrepresentation may result in application rejection and legal action under applicable Indian Penal Code provisions.'
+      desc: 'By using TN Hub, you agree to provide accurate information for government service applications. Misrepresentation may result in application rejection and legal action under applicable Indian Penal Code provisions.'
     },
     {
       title: 'Grievance Redressal Policy',
@@ -115,7 +115,7 @@
     {
       title: 'Accessibility Statement',
       icon: FileText,
-      desc: 'Sympho Center is designed to meet WCAG 2.1 AA accessibility standards. We support screen readers, keyboard navigation, high-contrast modes, and bilingual Tamil/English content to ensure inclusive access.'
+      desc: 'TN Hub is designed to meet WCAG 2.1 AA accessibility standards. We support screen readers, keyboard navigation, high-contrast modes, and bilingual Tamil/English content to ensure inclusive access.'
     }
   ];
 </script>
@@ -198,7 +198,7 @@
           </div>
           <div>
             <h2 class="text-lg font-bold text-slate-900">Didn't find your answer?</h2>
-            <p class="text-xs text-slate-500">Send your question to the Sympho Center Help Desk. We'll respond within 24 hours.</p>
+            <p class="text-xs text-slate-500">Send your question to the TN Hub Help Desk. We'll respond within 24 hours.</p>
           </div>
         </div>
 
@@ -208,7 +208,7 @@
               <CheckCircle2 class="h-8 w-8" />
             </div>
             <h3 class="text-lg font-bold text-slate-900">Question Submitted!</h3>
-            <p class="text-sm text-slate-500 mt-2 max-w-md">Your question has been sent to the Sympho Center Help Desk. You will receive a response via email within 24 working hours.</p>
+            <p class="text-sm text-slate-500 mt-2 max-w-md">Your question has been sent to the TN Hub Help Desk. You will receive a response via email within 24 working hours.</p>
             <button
               onclick={() => questionSubmitted = false}
               class="mt-6 text-sm font-bold text-blue-600 hover:text-blue-800 transition"
@@ -248,7 +248,7 @@
                 bind:value={questionText}
                 required
                 rows={4}
-                placeholder="Describe your question about Sympho Center services, processes, or documents..."
+                placeholder="Describe your question about TN Hub services, processes, or documents..."
                 class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none transition resize-none"
               ></textarea>
             </div>
@@ -296,7 +296,7 @@
           <div>
             <h4 class="text-sm font-bold text-amber-800">Important Notice</h4>
             <p class="text-xs text-amber-700 leading-relaxed mt-1">
-              Sympho Center is a hackathon prototype developed for the BuildWhatMovesIndia initiative. 
+              TN Hub is a hackathon prototype developed for the BuildWhatMovesIndia initiative. 
               The policies listed above represent the intended governance framework. Actual government 
               service policies are governed by the Government of Tamil Nadu and relevant departments.
             </p>

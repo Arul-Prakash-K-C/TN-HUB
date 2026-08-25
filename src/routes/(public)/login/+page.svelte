@@ -19,11 +19,17 @@
   let showPassword = $state(false);
   let error = $state('');
   let loading = $state(false);
+  let desiredDeptId = $state('dept-revenue');
+  let registrationSuccess = $state(false);
+
+  import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+  import { getFirebaseAuth } from '$lib/firebase/client';
 
   function selectTab(tab: 'citizen' | 'operator' | 'department' | 'admin') {
     activeTab = tab;
-    if (tab !== 'citizen') authMode = 'login';
+    if (tab === 'admin') authMode = 'login';
     error = '';
+    registrationSuccess = false;
     if (tab === 'citizen') {
       email = 'meena@demo.com';
       password = 'demo123';
@@ -42,32 +48,71 @@
   async function handleAuthentication() {
     if (!email || !password) { error = 'Please enter email and password'; return; }
     if (authMode === 'register' && (!displayName.trim() || password !== confirmPassword)) {
-      error = t('common.error');
+      error = 'Please fill all fields and match passwords.';
       return;
     }
     loading = true;
     error = '';
+    registrationSuccess = false;
     
-    const success = authMode === 'register'
-      ? await auth.registerCitizen(email, password, displayName)
-      : await auth.login(email, password);
-    if (success) {
-      const redirectParam = $page.url.searchParams.get('redirect');
-      if (redirectParam) {
-        goto(redirectParam);
+    try {
+      if (authMode === 'register') {
+        if (activeTab === 'citizen') {
+          const success = await auth.registerCitizen(email, password, displayName);
+          if (success) {
+            const redirectParam = $page.url.searchParams.get('redirect');
+            goto(redirectParam || getPortalRedirectForRole($userRole));
+          } else {
+            error = 'Registration failed. Email might already be registered.';
+          }
+        } else {
+          // Official registration flow (Operator/Officer)
+          const credential = await createUserWithEmailAndPassword(getFirebaseAuth(), email, password);
+          if (displayName.trim()) {
+            await updateProfile(credential.user, { displayName: displayName.trim() });
+          }
+          
+          const registerRes = await fetch('/api/auth/register-official', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
+              uid: credential.user.uid,
+              email: credential.user.email,
+              name: displayName.trim(),
+              desiredRole: activeTab === 'operator' ? 'operator' : 'department_user',
+              departmentId: activeTab === 'department' ? desiredDeptId : null
+            })
+          });
+          
+          if (!registerRes.ok) {
+            const body = await registerRes.json();
+            throw new Error(body.message || 'Registration failed at admin registry.');
+          }
+          
+          registrationSuccess = true;
+          displayName = '';
+          confirmPassword = '';
+          authMode = 'login';
+        }
       } else {
-        const portalPath = getPortalRedirectForRole($userRole);
-        goto(portalPath);
+        const success = await auth.login(email, password);
+        if (success) {
+          const redirectParam = $page.url.searchParams.get('redirect');
+          goto(redirectParam || getPortalRedirectForRole($userRole));
+        } else {
+          error = 'Invalid email, password, or your account is pending approval.';
+        }
       }
-    } else {
-      error = 'Invalid email or password.';
+    } catch (cause: any) {
+      error = cause instanceof Error ? cause.message : 'Authentication failed.';
+    } finally {
+      loading = false;
     }
-    loading = false;
   }
 </script>
 
 <svelte:head>
-  <title>Single Sign-On — Sympho Center</title>
+  <title>Single Sign-On — TN Hub</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </svelte:head>
 
@@ -129,6 +174,12 @@
           </button>
         </div>
 
+        {#if registrationSuccess}
+          <div class="mb-4 rounded-2xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-xs font-bold text-emerald-800">
+            Official account registration request submitted! Your account is currently pending administrator verification. You can log in once approved.
+          </div>
+        {/if}
+
         {#if error}
           <div class="mb-4 rounded-2xl border border-rose-300 bg-rose-50 px-4 py-3 text-xs font-medium text-rose-800">
             {error}
@@ -165,8 +216,18 @@
                     required
                     class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-xs font-medium text-slate-900 outline-none transition focus:border-emerald-500 focus:bg-white"
                   />
-                </div>
               </div>
+              
+              {#if activeTab === 'department'}
+                <div class="mt-4">
+                  <label for="dept-select" class="block text-xs font-bold text-slate-800 mb-1.5">Select Assigned Department *</label>
+                  <select id="dept-select" bind:value={desiredDeptId} required class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 px-4 text-xs font-medium text-slate-900 outline-none transition focus:border-emerald-500">
+                    {#each departments as dept}
+                      <option value={dept.id}>{currentLocale === 'ta' ? dept.nameTA : dept.name}</option>
+                    {/each}
+                  </select>
+                </div>
+              {/if}
             {/if}
             <div>
               <label for="user-email" class="block text-xs font-bold text-slate-800 mb-1.5">
@@ -265,14 +326,14 @@
             </button>
           </form>
 
-          {#if activeTab === 'citizen'}
+          {#if activeTab !== 'admin'}
             <div class="mt-4 text-center text-xs font-medium text-slate-500">
               {#if authMode === 'login'}
                 {t('auth.noAccount')}
-                <button type="button" onclick={() => { authMode = 'register'; error = ''; }} class="ml-1 font-bold text-emerald-700 hover:underline">{t('auth.register')}</button>
+                <button type="button" onclick={() => { authMode = 'register'; error = ''; registrationSuccess = false; }} class="ml-1 font-bold text-emerald-700 hover:underline">{t('auth.register')}</button>
               {:else}
                 {t('auth.hasAccount')}
-                <button type="button" onclick={() => { authMode = 'login'; error = ''; }} class="ml-1 font-bold text-emerald-700 hover:underline">{t('auth.login')}</button>
+                <button type="button" onclick={() => { authMode = 'login'; error = ''; registrationSuccess = false; }} class="ml-1 font-bold text-emerald-700 hover:underline">{t('auth.login')}</button>
               {/if}
             </div>
           {/if}

@@ -29,7 +29,7 @@
 </script>
 
 <svelte:head>
-  <title>{t('profile.title')} — Sympho Center</title>
+  <title>{t('profile.title')} — TN Hub</title>
 </svelte:head>
 
 <div class="bg-slate-50 min-h-screen pb-12">
@@ -85,7 +85,7 @@
 
             <div>
               <label for="profile-aadhaar" class="block text-xs font-semibold text-slate-500 mb-1">{t('apply.field.aadhaar')}</label>
-              <input id="profile-aadhaar" type="text" value="XXXX XXXX 4329" readonly class="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-900" />
+              <input id="profile-aadhaar" type="text" value={user.aadhaarNumber || 'Not Linked'} readonly class="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-900" />
             </div>
           </div>
         </div>

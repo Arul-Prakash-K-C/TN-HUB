@@ -47,7 +47,7 @@ export const services: Service[] = [
     ],
     faqs: [
       { question: 'What is the validity of an Income Certificate?', questionTA: 'வருமான சான்றிதழின் செல்லுபடியாகும் காலம் என்ன?', answer: 'The Income Certificate is generally valid for 1 year from the date of issue.', answerTA: 'வருமான சான்றிதழ் பொதுவாக வழங்கப்பட்ட நாளிலிருந்து 1 ஆண்டு செல்லும்.' },
-      { question: 'Can I apply online?', questionTA: 'ஆன்லைனில் விண்ணப்பிக்க முடியுமா?', answer: 'Yes, you can apply through Sympho Center. The application will be processed by the Revenue Department.', answerTA: 'ஆம், சிம்போ மையம் மூலம் விண்ணப்பிக்கலாம். விண்ணப்பம் வருவாய் துறையால் செயலாக்கப்படும்.' },
+      { question: 'Can I apply online?', questionTA: 'ஆன்லைனில் விண்ணப்பிக்க முடியுமா?', answer: 'Yes, you can apply through TN Hub. The application will be processed by the Revenue Department.', answerTA: 'ஆம், TN Hub மூலம் விண்ணப்பிக்கலாம். விண்ணப்பம் வருவாய் துறையால் செயலாக்கப்படும்.' },
       { question: 'Is there any fee?', questionTA: 'ஏதாவது கட்டணம் உள்ளதா?', answer: 'No, the Income Certificate is issued free of charge.', answerTA: 'இல்லை, வருமான சான்றிதழ் இலவசமாக வழங்கப்படுகிறது.' }
     ],
     workflowId: 'wf-income-cert',
@@ -521,6 +521,51 @@ export const services: Service[] = [
     version: 1,
     createdAt: '2026-01-01T00:00:00Z',
     updatedAt: '2026-08-01T00:00:00Z'
+  },
+  // ===================== TRANSPORT DEPARTMENT =====================
+  {
+    id: 'svc-tnstc-booking',
+    slug: 'tnstc-bus-booking',
+    name: 'TNSTC Bus Booking',
+    nameTA: 'டிஎன்எஸ்டிசி பேருந்து முன்பதிவு',
+    shortDescription: 'Book TNSTC government buses online via TNSTC portal',
+    shortDescriptionTA: 'TNSTC போர்ட்டல் வழியாக அரசு பேருந்துகளை ஆன்லைனில் முன்பதிவு செய்யுங்கள்',
+    description: 'Book tickets for Tamil Nadu State Transport Corporation (TNSTC) and State Express Transport Corporation (SETC) buses online. This service redirects you to the official TNSTC backend for live seat availability, booking, and cancellation.',
+    descriptionTA: 'தமிழ்நாடு அரசுப் போக்குவரத்துக் கழகம் (TNSTC) மற்றும் விரைவுப் போக்குவரத்துக் கழக (SETC) பேருந்துகளுக்கான பயணச்சீட்டுகளை ஆன்லைனில் முன்பதிவு செய்யுங்கள். இந்த சேவை அதிகாரப்பூர்வ TNSTC இணையதளத்திற்கு உங்களை அழைத்துச் செல்லும்.',
+    departmentId: 'dept-transport',
+    category: 'transport',
+    implementationMode: 'EXTERNAL_REDIRECT',
+    eligibility: [
+      'Open to all citizens for travel booking'
+    ],
+    eligibilityTA: [
+      'பயண முன்பதிவு செய்ய அனைத்து குடிமக்களுக்கும் திறக்கப்பட்டுள்ளது'
+    ],
+    whoCanApply: 'Any individual planning to travel on TNSTC/SETC buses',
+    whoCanApplyTA: 'TNSTC/SETC பேருந்துகளில் பயணிக்க திட்டமிட்டுள்ள எந்தவொரு தனிநபரும்',
+    requiredDocuments: [],
+    fee: 0,
+    feeDescription: 'As per ticket fare',
+    feeDescriptionTA: 'பயணச்சீட்டு கட்டணத்தின்படி',
+    processingTimeDays: 0,
+    processingTimeDescription: 'Instant Booking',
+    processingTimeDescriptionTA: 'உடனடி முன்பதிவு',
+    applicationSteps: [
+      { step: 1, title: 'Search Route', titleTA: 'வழித்தடத்தை தேடுங்கள்', description: 'Enter source, destination and date', descriptionTA: 'புறப்படும் இடம், சேரும் இடம் மற்றும் தேதியை உள்ளிடுங்கள்' },
+      { step: 2, title: 'Select Bus & Seats', titleTA: 'பேருந்து மற்றும் இருக்கைகளைத் தேர்ந்தெடுங்கள்', description: 'Choose your preferred bus and select seats', descriptionTA: 'உங்களுக்கு விருப்பமான பேருந்தைத் தேர்ந்தெடுத்து இருக்கைகளைத் தேர்ந்தெடுக்கவும்' },
+      { step: 3, title: 'Payment', titleTA: 'கட்டணம் செலுத்துதல்', description: 'Pay the ticket fare online', descriptionTA: 'பயணச்சீட்டு கட்டணத்தை ஆன்லைனில் செலுத்துங்கள்' }
+    ],
+    faqs: [
+      { question: 'Can I cancel my bus ticket online?', questionTA: 'ஆன்லைனில் பஸ் டிக்கெட்டை ரத்து செய்ய முடியுமா?', answer: 'Yes, tickets booked online can be cancelled through the TNSTC portal.', answerTA: 'ஆம், ஆன்லைனில் முன்பதிவு செய்த டிக்கெட்டுகளை TNSTC போர்டல் மூலம் ரத்து செய்யலாம்.' }
+    ],
+    externalUrl: 'https://www.tnstc.in/',
+    externalDepartmentName: 'Tamil Nadu State Transport Corporation',
+    relatedServiceIds: [],
+    isActive: true,
+    isOnline: true,
+    version: 1,
+    createdAt: '2026-08-25T00:00:00Z',
+    updatedAt: '2026-08-25T00:00:00Z'
   }
 ];
 

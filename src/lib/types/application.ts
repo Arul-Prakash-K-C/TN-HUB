@@ -52,7 +52,7 @@ export interface ApplicationFormData {
   gender?: string;
   phone?: string;
   email?: string;
-  aadhaarLast4?: string;
+  aadhaarNumber?: string;
   
   // Address
   doorNo?: string;

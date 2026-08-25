@@ -26,7 +26,7 @@
 </script>
 
 <svelte:head>
-  <title>Sympho Center — One Center. Every Government Service.</title>
+  <title>TN Hub — One Center. Every Government Service.</title>
   <meta name="description" content="Discover, apply, track and manage government services from one unified platform." />
 </svelte:head>
 
@@ -43,7 +43,7 @@
       </div>
 
       <h1 class="text-4xl font-black tracking-tight text-white sm:text-6xl lg:text-7xl leading-[1.1]">
-        SYMPHO CENTER
+        TN HUB
       </h1>
       <h2 class="mt-4 text-xl font-bold text-slate-300 sm:text-2xl tracking-wide">
         One Center. Every Government Service.
@@ -80,7 +80,7 @@
       <div class="mt-6 flex justify-center">
         <a href="/chatbot" class="flex items-center gap-2 rounded-full bg-slate-800/80 border border-slate-700 px-5 py-2.5 text-xs font-bold text-slate-300 hover:bg-slate-800 hover:text-white transition">
           <Bot class="h-4 w-4 text-[#007AFF]" />
-          Ask Sympho
+          Thozhan AI
         </a>
       </div>
 
@@ -88,11 +88,11 @@
   </div>
 </section>
 
-<!-- The Sympho Concept Section (AliceBlue) -->
+<!-- The TN Hub Concept Section (AliceBlue) -->
 <section class="bg-[#F0F8FF] py-20 sm:py-24 border-y border-slate-200">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-16">
-      <h2 class="text-3xl font-black text-[#071A28] tracking-tight sm:text-4xl">The Sympho Concept</h2>
+      <h2 class="text-3xl font-black text-[#071A28] tracking-tight sm:text-4xl">The TN Hub Concept</h2>
       <p class="mt-4 text-sm font-medium text-slate-600 max-w-2xl mx-auto">
         A unified, predictable experience across every department. No more navigating dozens of disconnected government portals.
       </p>

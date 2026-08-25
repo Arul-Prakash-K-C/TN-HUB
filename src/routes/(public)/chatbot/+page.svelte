@@ -76,7 +76,7 @@
 </script>
 
 <svelte:head>
-  <title>{t('chatbot.title')} — Sympho Center</title>
+  <title>{t('chatbot.title')} — TN Hub</title>
 </svelte:head>
 
 <div class="bg-white flex-1 flex flex-col w-full min-h-[calc(100vh-4rem)] relative">

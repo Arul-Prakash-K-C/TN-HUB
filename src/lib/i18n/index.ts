@@ -13,7 +13,7 @@ const translations: Record<Locale, Record<string, string>> = localeModules;
 
 // Create locale store with browser persistence
 function createLocaleStore() {
-  const stored = typeof window !== 'undefined' ? localStorage.getItem('sympho-locale') : null;
+  const stored = typeof window !== 'undefined' ? localStorage.getItem('tnhub-locale') : null;
   const initial: Locale = stored && stored in translations ? stored as Locale : 'en';
   const { subscribe, set, update } = writable<Locale>(initial);
 
@@ -21,7 +21,7 @@ function createLocaleStore() {
     subscribe,
     set: (value: Locale) => {
       if (typeof window !== 'undefined') {
-        localStorage.setItem('sympho-locale', value);
+        localStorage.setItem('tnhub-locale', value);
         document.documentElement.lang = value;
       }
       set(value);
@@ -30,7 +30,7 @@ function createLocaleStore() {
       update(current => {
         const next: Locale = current === 'en' ? 'ta' : 'en';
         if (typeof window !== 'undefined') {
-          localStorage.setItem('sympho-locale', next);
+          localStorage.setItem('tnhub-locale', next);
           document.documentElement.lang = next;
         }
         return next;

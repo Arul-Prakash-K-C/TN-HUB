@@ -9,7 +9,7 @@ export type CanonicalUserRole = 'citizen' | 'department_user' | 'operator' | 'ad
  * Legacy aliases are retained only while the Phase 1 mock fixtures remain in
  * the repository. Firebase sessions are normalised to CanonicalUserRole.
  */
-export type LegacyUserRole = 'officer' | 'dept_admin' | 'sympho_admin';
+export type LegacyUserRole = 'officer' | 'dept_admin' | 'tnhub_admin';
 
 export type UserRole = CanonicalUserRole | LegacyUserRole;
 
@@ -44,11 +44,12 @@ export interface AuthenticatedUser extends User {
   uid: string;
   displayName: string;
   role: CanonicalUserRole;
+  aadhaarNumber?: string;
 }
 
 export interface CitizenProfile extends User {
   role: 'citizen';
-  aadhaarLast4?: string;
+  aadhaarNumber?: string;
   dateOfBirth?: string;
   gender?: 'male' | 'female' | 'other';
   address?: Address;
@@ -92,7 +93,7 @@ export interface OperatorProfile extends User {
 }
 
 export interface AdminProfile extends User {
-  role: 'dept_admin' | 'sympho_admin' | 'admin';
+  role: 'dept_admin' | 'tnhub_admin' | 'admin';
   departmentId?: string;
   permissions: string[];
 }

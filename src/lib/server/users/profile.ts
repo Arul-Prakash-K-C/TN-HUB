@@ -63,8 +63,11 @@ export async function ensureUserProfile(sessionUser: AuthenticatedUser): Promise
 
     const existing = snapshot.data() as Partial<ProfileData>;
     if (existing.isActive === false) {
-      throw new Error('This account has been disabled.');
+      throw new Error('This account is pending approval or has been disabled.');
     }
+
+    const mergedRole = existing.role || sessionUser.role;
+    const mergedDept = existing.departmentId || sessionUser.departmentId;
 
     // Custom claims remain the authorization source of truth. This mirror is
     // refreshed only by Firebase Admin code during a verified session.
@@ -72,8 +75,8 @@ export async function ensureUserProfile(sessionUser: AuthenticatedUser): Promise
       email: sessionUser.email,
       displayName: sessionUser.displayName,
       photoURL: sessionUser.photoURL ?? null,
-      role: sessionUser.role,
-      departmentId: sessionUser.departmentId ?? null,
+      role: mergedRole,
+      departmentId: mergedDept ?? null,
       updatedAt: now
     });
 
@@ -81,10 +84,12 @@ export async function ensureUserProfile(sessionUser: AuthenticatedUser): Promise
     const photoURL = stringValue(existing.photoURL, sessionUser.photoURL);
     // A verified custom claim can immediately disable an account even when
     // its previously mirrored profile is still marked active.
-    const isActive = sessionUser.isActive;
+    const isActive = existing.isActive !== undefined ? existing.isActive : sessionUser.isActive;
 
     return {
       ...sessionUser,
+      role: mergedRole,
+      departmentId: mergedDept ?? undefined,
       name: displayName,
       displayName,
       phone: stringValue(existing.phone),

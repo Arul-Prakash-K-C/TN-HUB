@@ -47,7 +47,7 @@
 </script>
 
 <svelte:head>
-  <title>{application ? application.applicationNumber : 'Application'} — Sympho Center</title>
+  <title>{application ? application.applicationNumber : 'Application'} — TN Hub</title>
 </svelte:head>
 
 {#if !application}
@@ -87,14 +87,15 @@
             </p>
           </div>
 
-          {#if application.status === 'COMPLETED' || application.status === 'APPROVED'}
-            <button
-              onclick={() => alert('Mock Certificate Downloaded!')}
+          {#if application.status === 'COMPLETED' || application.status === 'APPROVED' || application.status === 'CERTIFICATE_GENERATED'}
+            <a
+              href="/certificate/{application.id}"
+              target="_blank"
               class="inline-flex items-center gap-2 rounded-xl bg-success px-5 py-3 text-sm font-semibold text-white shadow transition hover:bg-success-dark"
             >
               <Download class="h-4 w-4" />
               {t('application.downloadCertificate')}
-            </button>
+            </a>
           {/if}
         </div>
       </div>

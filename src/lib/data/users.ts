@@ -5,7 +5,7 @@ export const demoCredentials: DemoCredentials[] = [
   { email: 'rajesh@demo.com', password: 'demo123', role: 'officer', name: 'Rajesh Kumar (Revenue Dept)' },
   { email: 'kavitha@demo.com', password: 'demo123', role: 'department_user', name: 'Kavitha Selvam (Civil Supplies)' },
   { email: 'kannan@demo.com', password: 'demo123', role: 'operator', name: 'Kannan M (e-Sevai Kiosk Operator)' },
-  { email: 'priya@demo.com', password: 'demo123', role: 'sympho_admin', name: 'Priya Sundaram (Admin)' }
+  { email: 'priya@demo.com', password: 'demo123', role: 'tnhub_admin', name: 'Priya Sundaram (Admin)' }
 ];
 
 export const demoCitizen: CitizenProfile = {
@@ -19,7 +19,7 @@ export const demoCitizen: CitizenProfile = {
   lastLoginAt: '2026-08-22T09:00:00Z',
   isActive: true,
   preferredLanguage: 'en',
-  aadhaarLast4: '4329',
+  aadhaarNumber: '123456784329',
   dateOfBirth: '1995-03-14',
   gender: 'female',
   address: {
@@ -101,7 +101,7 @@ export const demoAdmin: AdminProfile = {
   email: 'priya@demo.com',
   name: 'Priya Sundaram',
   nameTA: 'பிரியா சுந்தரம்',
-  role: 'sympho_admin',
+  role: 'tnhub_admin',
   phone: '9876543212',
   createdAt: '2025-01-01T00:00:00Z',
   lastLoginAt: '2026-08-22T07:00:00Z',

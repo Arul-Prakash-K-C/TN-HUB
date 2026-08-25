@@ -9,7 +9,7 @@ const roleAliases: Record<string, CanonicalUserRole> = {
   dept_admin: 'department_user',
   operator: 'operator',
   admin: 'admin',
-  sympho_admin: 'admin'
+  tnhub_admin: 'admin'
 };
 
 function claimString(value: unknown): string | undefined {
@@ -40,7 +40,7 @@ export function createAuthenticatedUser(input: FirebaseIdentityInput): Authentic
   const claims = input.claims ?? {};
   const role = normalizeUserRole(claims.role);
   const email = input.email ?? '';
-  const displayName = input.displayName?.trim() || claimString(claims.displayName) || email.split('@')[0] || 'Sympho user';
+  const displayName = input.displayName?.trim() || claimString(claims.displayName) || email.split('@')[0] || 'TN Hub user';
   const preferredLanguage = claims.preferredLanguage === 'ta' ? 'ta' : 'en';
   const createdAt = new Date((input.issuedAt ?? Math.floor(Date.now() / 1000)) * 1000).toISOString();
   const departmentId = role === 'department_user' ? claimString(claims.departmentId) : undefined;

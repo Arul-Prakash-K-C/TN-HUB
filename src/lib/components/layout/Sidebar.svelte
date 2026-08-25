@@ -38,7 +38,7 @@
       TN
     </div>
     <div class="flex flex-col overflow-hidden">
-      <span class="font-extrabold text-sm tracking-tight text-white leading-tight">Sympho Center</span>
+      <span class="font-extrabold text-sm tracking-tight text-white leading-tight">TN Hub</span>
       <span class="text-[10px] font-bold text-[#9df79e] uppercase tracking-wider truncate">
         Citizen Portal
       </span>
@@ -112,7 +112,7 @@
       </a>
     {/if}
 
-    <!-- Ask Sympho AI Chat -->
+    <!-- Thozhan AI Chat -->
     <a 
       href="/chatbot" 
       class="flex items-center gap-3 px-3.5 py-2.5 font-medium rounded-lg transition-all text-xs {isActive('/chatbot') ? 'bg-[#143A14] text-white font-bold border-l-4 border-[#9df79e]' : 'text-white/70 hover:text-white hover:bg-[#143A14]/50'}"

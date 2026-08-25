@@ -15,8 +15,13 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		throw error(400, 'Invalid form data.');
 	}
 
+	const id = params.id;
+	if (!id) {
+		throw error(400, 'Application ID is required.');
+	}
+
 	try {
-		const application = await updateApplicationDraft(locals.user, params.id, body.formData as Record<string, any>);
+		const application = await updateApplicationDraft(locals.user, id, body.formData as Record<string, any>);
 		return json({ application });
 	} catch (cause) {
 		const message = cause instanceof Error ? cause.message : 'Unable to update this application.';

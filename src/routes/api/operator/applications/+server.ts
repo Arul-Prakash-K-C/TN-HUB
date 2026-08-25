@@ -19,12 +19,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, 'Invalid assisted application request.');
 	}
 
-	if (typeof body.citizenId !== 'string' || typeof body.serviceId !== 'string' || !isFormData(body.formData)) {
-		throw error(400, 'A citizen account, service, and valid form data are required.');
+	let citizenId = typeof body.citizenId === 'string' && body.citizenId.trim() !== '' 
+		? body.citizenId.trim() 
+		: `kiosk-temp-${Date.now()}`;
+
+	if (typeof body.serviceId !== 'string' || !isFormData(body.formData)) {
+		throw error(400, 'A service and valid form data are required.');
 	}
 
 	try {
-		return json({ application: await createAssistedApplicationDraft(locals.user, body.citizenId, {
+		return json({ application: await createAssistedApplicationDraft(locals.user, citizenId, {
 			serviceId: body.serviceId,
 			formData: body.formData
 		}) }, { status: 201 });

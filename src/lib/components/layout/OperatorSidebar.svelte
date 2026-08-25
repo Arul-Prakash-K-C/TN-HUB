@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { LayoutDashboard, Inbox, LogOut, GraduationCap } from '@lucide/svelte';
+  import { LayoutDashboard, Inbox, LogOut, GraduationCap, AlertCircle, User, Settings, HelpCircle } from '@lucide/svelte';
   import { auth, isAuthenticated } from '$lib/stores/auth';
   import LogoutModal from '$lib/components/ui/LogoutModal.svelte';
   import { t } from '$lib/i18n';
@@ -37,7 +37,7 @@
       TN
     </div>
     <div class="flex flex-col overflow-hidden">
-      <span class="font-extrabold text-sm tracking-tight text-white leading-tight">Sympho Center</span>
+      <span class="font-extrabold text-sm tracking-tight text-white leading-tight">TN Hub</span>
       <span class="text-[10px] font-bold text-[#9df79e] uppercase tracking-wider truncate">
         {t('operator.portal')}
       </span>
@@ -63,16 +63,48 @@
     </a>
 
     <a 
+      href="/operator/grievance" 
+      class="flex items-center gap-3 px-3.5 py-2.5 font-medium rounded-lg transition-all text-xs {isActive('/operator/grievance') ? 'bg-[#143A14] text-white font-bold border-l-4 border-[#9df79e]' : 'text-white/70 hover:text-white hover:bg-[#143A14]/50'}"
+    >
+      <AlertCircle class="h-4 w-4 shrink-0" />
+      <span>Grievance Desk</span>
+    </a>
+
+    <a 
       href="/operator/training" 
       class="flex items-center gap-3 px-3.5 py-2.5 font-medium rounded-lg transition-all text-xs {isActive('/operator/training') ? 'bg-[#143A14] text-white font-bold border-l-4 border-[#9df79e]' : 'text-white/70 hover:text-white hover:bg-[#143A14]/50'}"
     >
       <GraduationCap class="h-4 w-4 shrink-0" />
       <span>Training Portal</span>
     </a>
-
   </nav>
 
-  <div class="mt-auto flex flex-col gap-1 border-t border-[#143A14] pt-4">
+  <!-- Bottom Links -->
+  <div class="flex flex-col gap-1 border-t border-[#143A14] pt-4">
+    <a 
+      href="/operator/profile" 
+      class="flex items-center gap-3 px-3.5 py-2.5 font-medium rounded-lg transition-all text-xs {isActive('/operator/profile') ? 'bg-[#143A14] text-white font-bold border-l-4 border-[#9df79e]' : 'text-white/70 hover:text-white hover:bg-[#143A14]/50'}"
+    >
+      <User class="h-4 w-4 shrink-0" />
+      <span>Profile</span>
+    </a>
+
+    <a 
+      href="/operator/settings" 
+      class="flex items-center gap-3 px-3.5 py-2.5 font-medium rounded-lg transition-all text-xs {isActive('/operator/settings') ? 'bg-[#143A14] text-white font-bold border-l-4 border-[#9df79e]' : 'text-white/70 hover:text-white hover:bg-[#143A14]/50'}"
+    >
+      <Settings class="h-4 w-4 shrink-0" />
+      <span>Settings</span>
+    </a>
+
+    <a 
+      href="/operator/help" 
+      class="flex items-center gap-3 px-3.5 py-2.5 font-medium rounded-lg transition-all text-xs {isActive('/operator/help') ? 'bg-[#143A14] text-white font-bold border-l-4 border-[#9df79e]' : 'text-white/70 hover:text-white hover:bg-[#143A14]/50'}"
+    >
+      <HelpCircle class="h-4 w-4 shrink-0" />
+      <span>Help Desk</span>
+    </a>
+
     <button 
       onclick={() => showLogoutModal = true}
       class="flex items-center gap-3 px-3.5 py-2.5 text-rose-300 font-bold text-xs rounded-lg hover:bg-rose-950/40 transition-all w-full text-left"

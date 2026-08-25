@@ -83,7 +83,7 @@
           TN
         </div>
         <div class="hidden sm:block">
-          <div class="text-sm font-extrabold tracking-tight leading-none text-white">Sympho Center</div>
+          <div class="text-sm font-extrabold tracking-tight leading-none text-white">TN Hub</div>
           <div class="text-[10px] font-bold text-[#9df79e] leading-tight uppercase tracking-wider mt-0.5">
             One Center. Every Government Service.
           </div>

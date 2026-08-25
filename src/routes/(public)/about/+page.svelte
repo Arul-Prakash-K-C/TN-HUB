@@ -17,7 +17,7 @@
     {
       title: 'National e-Governance Plan (NeGP)',
       icon: Network,
-      content: 'Tamil Nadu has progressively aligned its e-Governance strategies in consonance with NeGP since its formulation in May 2006. Sympho Center extends this vision into a modern, unified citizen interface layer.'
+      content: 'Tamil Nadu has progressively aligned its e-Governance strategies in consonance with NeGP since its formulation in May 2006. TN Hub extends this vision into a modern, unified citizen interface layer.'
     },
     {
       title: 'Common Service Centres (CSCs / e-Sevai)',
@@ -80,7 +80,7 @@
           <ul class="mt-3 space-y-2 text-xs font-medium text-slate-700">
             <li class="flex items-start gap-2">
               <CheckCircle2 class="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
-              <span>Simple and unified front-end delivery interfaces (Sympho Center)</span>
+              <span>Simple and unified front-end delivery interfaces (TN Hub)</span>
             </li>
             <li class="flex items-start gap-2">
               <CheckCircle2 class="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />

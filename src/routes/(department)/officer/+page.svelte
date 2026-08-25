@@ -68,7 +68,7 @@
 </script>
 
 <svelte:head>
-  <title>Officer Portal — Sympho Center</title>
+  <title>Officer Portal — TN Hub</title>
 </svelte:head>
 
 {#if !authenticated || role !== 'officer'}

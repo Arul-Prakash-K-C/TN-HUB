@@ -36,7 +36,7 @@
       TN
     </div>
     <div class="flex flex-col overflow-hidden">
-      <span class="font-extrabold text-sm tracking-tight text-white leading-tight">Sympho Center</span>
+      <span class="font-extrabold text-sm tracking-tight text-white leading-tight">TN Hub</span>
       <span class="text-[10px] font-bold text-[#9df79e] uppercase tracking-wider truncate">
         {user?.departmentName || 'Revenue Department'}
       </span>
@@ -73,7 +73,7 @@
       class="flex items-center gap-3 px-3.5 py-2.5 font-medium rounded-lg transition-all text-xs {isActive('/department/applications') ? 'bg-[#143A14] text-white font-bold border-l-4 border-[#9df79e]' : 'text-white/70 hover:text-white hover:bg-[#143A14]/50'}"
     >
       <Inbox class="h-4 w-4 shrink-0" />
-      <span>{t('dept.applicationsQueue')}</span>
+      <span>Application Queue</span>
     </a>
 
     <a 
@@ -89,15 +89,18 @@
       class="flex items-center gap-3 px-3.5 py-2.5 font-medium rounded-lg transition-all text-xs {isActive('/department/reports') ? 'bg-[#143A14] text-white font-bold border-l-4 border-[#9df79e]' : 'text-white/70 hover:text-white hover:bg-[#143A14]/50'}"
     >
       <BarChart3 class="h-4 w-4 shrink-0" />
-      <span>{t('dept.reports')}</span>
+      <span>Reports</span>
     </a>
+  </nav>
 
+  <!-- Bottom Links -->
+  <div class="flex flex-col gap-1 mt-auto">
     <a 
       href="/department/profile" 
       class="flex items-center gap-3 px-3.5 py-2.5 font-medium rounded-lg transition-all text-xs {isActive('/department/profile') ? 'bg-[#143A14] text-white font-bold border-l-4 border-[#9df79e]' : 'text-white/70 hover:text-white hover:bg-[#143A14]/50'}"
     >
       <User class="h-4 w-4 shrink-0" />
-      <span>{t('department.profile')}</span>
+      <span>Profile</span>
     </a>
 
     <a 
@@ -115,10 +118,11 @@
       <PhoneCall class="h-4 w-4 shrink-0" />
       <span>{t('footer.contact')}</span>
     </a>
-  </nav>
+
+  </div>
 
   <!-- Sign out -->
-  <div class="mt-auto border-t border-[#143A14] pt-4">
+  <div class="border-t border-[#143A14] pt-4">
     <button 
       onclick={() => showLogoutModal = true}
       class="flex items-center gap-3 px-3.5 py-2.5 text-rose-300 font-bold text-xs rounded-lg hover:bg-rose-950/40 transition-all w-full text-left"

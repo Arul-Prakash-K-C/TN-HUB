@@ -99,7 +99,7 @@ export const departments: Department[] = [
     description: 'Manages driving licences, vehicle registration and transport services',
     descriptionTA: 'ஓட்டுநர் உரிமம், வாகன பதிவு மற்றும் போக்குவரத்து சேவைகளை நிர்வகிக்கிறது',
     icon: 'car',
-    serviceCount: 1,
+    serviceCount: 2,
     headOfficer: 'Transport Commissioner',
     contactEmail: 'transport@tn.gov.in',
     contactPhone: '044-25670007',

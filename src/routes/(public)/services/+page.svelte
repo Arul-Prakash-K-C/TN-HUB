@@ -77,7 +77,7 @@
 </script>
 
 <svelte:head>
-  <title>{t('services.title')} — Sympho Center</title>
+  <title>{t('services.title')} — TN Hub</title>
 </svelte:head>
 
 <div class="bg-slate-50 min-h-screen pb-16 flex flex-col w-full">

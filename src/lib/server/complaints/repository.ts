@@ -36,7 +36,7 @@ export async function listComplaints(user: User): Promise<ComplaintRecord[]> {
   const role = normalizeUserRole(user.role);
 
   let snapshot;
-  if (role === 'citizen') {
+  if (role === 'citizen' || role === 'operator') {
     snapshot = await db.collection('complaints')
       .where('citizenId', 'in', [user.uid, user.id || user.uid])
       .get();

@@ -34,7 +34,7 @@
 </script>
 
 <svelte:head>
-  <title>{t('notifications.title')} — Sympho Center</title>
+  <title>{t('notifications.title')} — TN Hub</title>
 </svelte:head>
 
 <div class="bg-slate-50 min-h-screen pb-12">

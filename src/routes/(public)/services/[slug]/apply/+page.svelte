@@ -25,6 +25,55 @@
   let stepError = $state('');
   let isSubmitting = $state(false);
 
+  let phoneVerified = $state(false);
+  let emailVerified = $state(false);
+  let phoneOtpSent = $state(false);
+  let emailOtpSent = $state(false);
+  let phoneOtp = $state('');
+  let emailOtp = $state('');
+  let phoneOtpError = $state('');
+  let emailOtpError = $state('');
+
+  function sendPhoneOtp() {
+    if (!formData.phone || !/^\d{10}$/.test(String(formData.phone))) {
+      stepError = 'Please enter a valid 10-digit phone number.';
+      return;
+    }
+    stepError = '';
+    phoneOtpSent = true;
+    phoneOtp = '';
+    phoneOtpError = '';
+  }
+
+  function verifyPhoneOtp() {
+    if (phoneOtp === '123456') {
+      phoneVerified = true;
+      phoneOtpError = '';
+    } else {
+      phoneOtpError = 'Invalid OTP. Enter 123456 to verify.';
+    }
+  }
+
+  function sendEmailOtp() {
+    if (!formData.email || !String(formData.email).includes('@')) {
+      stepError = 'Please enter a valid email address.';
+      return;
+    }
+    stepError = '';
+    emailOtpSent = true;
+    emailOtp = '';
+    emailOtpError = '';
+  }
+
+  function verifyEmailOtp() {
+    if (emailOtp === '123456') {
+      emailVerified = true;
+      emailOtpError = '';
+    } else {
+      emailOtpError = 'Invalid OTP. Enter 123456 to verify.';
+    }
+  }
+
   const steps = $derived([
     t('apply.step.eligibility'),
     t('apply.step.personal'),
@@ -46,7 +95,7 @@
             phone: citizen.phone || '',
             dateOfBirth: citizen.dateOfBirth || '',
             gender: citizen.gender || '',
-            aadhaarLast4: citizen.aadhaarLast4 || '',
+            aadhaarNumber: citizen.aadhaarNumber || '',
             doorNo: citizen.address?.doorNo || '',
             street: citizen.address?.street || '',
             area: citizen.address?.area || '',
@@ -76,6 +125,18 @@
       }
       if (!formData.phone || String(formData.phone).trim() === '') {
         stepError = 'Please enter your Phone Number.';
+        return false;
+      }
+      if (!phoneVerified) {
+        stepError = 'Please verify your phone number via OTP first.';
+        return false;
+      }
+      if (formData.email && String(formData.email).trim() !== '' && !emailVerified) {
+        stepError = 'Please verify your email address via OTP first.';
+        return false;
+      }
+      if (formData.aadhaarNumber && !/^\d{12}$/.test(String(formData.aadhaarNumber))) {
+        stepError = 'Aadhaar Number must be exactly 12 digits.';
         return false;
       }
     } else if (currentStep === 2) { // Service Details
@@ -166,9 +227,15 @@
     }
   }
 
-  async function submitApplication() {
-    if (!service || isSubmitting) return;
+  let showConfirmModal = $state(false);
 
+  function triggerSubmitConfirm() {
+    if (!service || isSubmitting) return;
+    showConfirmModal = true;
+  }
+
+  async function submitApplication() {
+    showConfirmModal = false;
     isSubmitting = true;
     stepError = '';
 
@@ -200,6 +267,7 @@
         const uploadResponse = await fetch(`/api/applications/${body.application.id}/documents`, {
           method: 'POST',
           credentials: 'same-origin',
+          headers: { 'Accept': 'application/json' },
           body: documentData
         });
         if (!uploadResponse.ok) {
@@ -210,7 +278,8 @@
 
       const submitResponse = await fetch(`/api/applications/${body.application.id}/submit`, {
         method: 'POST',
-        credentials: 'same-origin'
+        credentials: 'same-origin',
+        headers: { 'Accept': 'application/json' }
       });
       const submitBody = await submitResponse.json().catch(() => null) as { application?: { trackingId?: string }; message?: string } | null;
       if (!submitResponse.ok || !submitBody?.application?.trackingId) {
@@ -218,7 +287,7 @@
       }
 
       applicationId = submitBody.application.trackingId;
-      submitted = true;
+      goto(`/applications`);
     } catch (cause) {
       stepError = cause instanceof Error ? cause.message : 'Unable to submit the application.';
     } finally {
@@ -228,7 +297,7 @@
 </script>
 
 <svelte:head>
-  <title>{t('apply.title', { service: service ? (currentLocale === 'ta' ? service.nameTA : service.name) : '' })} — Sympho Center</title>
+  <title>{t('apply.title', { service: service ? (currentLocale === 'ta' ? service.nameTA : service.name) : '' })} — TN Hub</title>
 </svelte:head>
 
 {#if !authenticated}
@@ -362,15 +431,53 @@
             </div>
             <div>
               <label for="phone" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.phone')} *</label>
-              <input id="phone" type="tel" bind:value={formData.phone} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+              <div class="flex gap-2">
+                <input id="phone" type="tel" bind:value={formData.phone} disabled={phoneVerified || phoneOtpSent} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                {#if !phoneVerified && !phoneOtpSent}
+                  <button type="button" onclick={sendPhoneOtp} class="px-4 py-2 bg-[#062206] text-white text-xs font-bold rounded-lg hover:bg-[#143A14] transition whitespace-nowrap">Send OTP</button>
+                {/if}
+                {#if phoneVerified}
+                  <span class="inline-flex items-center gap-1 text-emerald-600 font-bold text-xs"><Check class="h-4 w-4 shrink-0" /> Verified</span>
+                {/if}
+              </div>
+              {#if phoneOtpSent && !phoneVerified}
+                <div class="mt-2 flex gap-2 items-center">
+                  <input type="text" bind:value={phoneOtp} placeholder="OTP (e.g. 123456)" class="w-full max-w-[140px] rounded-lg border border-border py-1.5 px-2 text-xs outline-none" />
+                  <button type="button" onclick={verifyPhoneOtp} class="px-3 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 transition">Confirm</button>
+                  <button type="button" onclick={() => phoneOtpSent = false} class="text-xs text-slate-500 hover:underline">Change</button>
+                </div>
+                {#if phoneOtpError}
+                  <p class="text-[10px] text-rose-600 font-bold mt-1">{phoneOtpError}</p>
+                {/if}
+                <p class="text-[10px] text-slate-400 font-bold mt-1">Mock OTP: Use <strong>123456</strong></p>
+              {/if}
             </div>
             <div>
               <label for="email" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.email')}</label>
-              <input id="email" type="email" bind:value={formData.email} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+              <div class="flex gap-2">
+                <input id="email" type="email" bind:value={formData.email} disabled={emailVerified || emailOtpSent} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                {#if formData.email && String(formData.email).trim() !== '' && !emailVerified && !emailOtpSent}
+                  <button type="button" onclick={sendEmailOtp} class="px-4 py-2 bg-[#062206] text-white text-xs font-bold rounded-lg hover:bg-[#143A14] transition whitespace-nowrap">Send OTP</button>
+                {/if}
+                {#if emailVerified}
+                  <span class="inline-flex items-center gap-1 text-emerald-600 font-bold text-xs"><Check class="h-4 w-4 shrink-0" /> Verified</span>
+                {/if}
+              </div>
+              {#if emailOtpSent && !emailVerified}
+                <div class="mt-2 flex gap-2 items-center">
+                  <input type="text" bind:value={emailOtp} placeholder="OTP (e.g. 123456)" class="w-full max-w-[140px] rounded-lg border border-border py-1.5 px-2 text-xs outline-none" />
+                  <button type="button" onclick={verifyEmailOtp} class="px-3 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 transition">Confirm</button>
+                  <button type="button" onclick={() => emailOtpSent = false} class="text-xs text-slate-500 hover:underline">Change</button>
+                </div>
+                {#if emailOtpError}
+                  <p class="text-[10px] text-rose-600 font-bold mt-1">{emailOtpError}</p>
+                {/if}
+                <p class="text-[10px] text-slate-400 font-bold mt-1">Mock OTP: Use <strong>123456</strong></p>
+              {/if}
             </div>
             <div>
-              <label for="aadhaarLast4" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.aadhaar')}</label>
-              <input id="aadhaarLast4" type="text" bind:value={formData.aadhaarLast4} maxlength="4" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+              <label for="aadhaarNumber" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.aadhaar')}</label>
+              <input id="aadhaarNumber" type="text" pattern="[0-9]{12}" bind:value={formData.aadhaarNumber} maxlength="12" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="12-digit number" />
             </div>
           </div>
 
@@ -421,7 +528,16 @@
               {:else if service.slug === 'community-certificate'}
                 <div>
                   <label for="religion" class="block text-sm font-medium text-text mb-1.5">Religion *</label>
-                  <input id="religion" type="text" bind:value={formData.religion} required placeholder="e.g. Hinduism / Islam / Christianity" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                  <select id="religion" bind:value={formData.religion} required class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary">
+                    <option value="">Select Religion</option>
+                    <option value="Hinduism">Hinduism</option>
+                    <option value="Islam">Islam</option>
+                    <option value="Christianity">Christianity</option>
+                    <option value="Sikhism">Sikhism</option>
+                    <option value="Buddhism">Buddhism</option>
+                    <option value="Jainism">Jainism</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
                 <div>
                   <label for="communityCategory" class="block text-sm font-medium text-text mb-1.5">Community Category *</label>
@@ -437,7 +553,16 @@
                 </div>
                 <div class="sm:col-span-2">
                   <label for="subCaste" class="block text-sm font-medium text-text mb-1.5">Sub-Caste Name *</label>
-                  <input id="subCaste" type="text" bind:value={formData.subCaste} required placeholder="e.g. Kongu Vellalar / Kallar" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                  <select id="subCaste" bind:value={formData.subCaste} required class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary">
+                    <option value="">Select Sub-Caste</option>
+                    <option value="Adidravidar">Adidravidar</option>
+                    <option value="Kongu Vellalar">Kongu Vellalar</option>
+                    <option value="Kallar">Kallar</option>
+                    <option value="Maravar">Maravar</option>
+                    <option value="Vanniyar">Vanniyar</option>
+                    <option value="Nadar">Nadar</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
               {:else if service.slug === 'nativity-certificate'}
                 <div>
@@ -647,9 +772,9 @@
             </button>
           {:else}
             <button
-              onclick={submitApplication}
+              onclick={triggerSubmitConfirm}
               disabled={!declarationAgreed || isSubmitting}
-              class="inline-flex items-center gap-2 rounded-lg bg-success px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-success-dark disabled:opacity-50 disabled:cursor-not-allowed"
+              class="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-light disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Check class="h-4 w-4" />
               {isSubmitting ? t('common.loading') : t('apply.confirm')}
@@ -659,4 +784,29 @@
       </div>
     </div>
   </div>
+
+  {#if showConfirmModal}
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm px-4">
+      <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl animate-scale-up">
+        <h3 class="text-h3 text-text mb-3">Confirm Submission</h3>
+        <p class="text-sm text-text-secondary leading-relaxed mb-6">
+          Are you sure you want to submit this application? This action cannot be undone. Please ensure all details are correct.
+        </p>
+        <div class="flex items-center justify-end gap-3">
+          <button
+            onclick={() => showConfirmModal = false}
+            class="rounded-lg px-4 py-2 text-sm font-medium text-text-muted hover:bg-surface-secondary transition"
+          >
+            Cancel
+          </button>
+          <button
+            onclick={submitApplication}
+            class="rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-white hover:bg-primary-light transition"
+          >
+            Confirm & Submit
+          </button>
+        </div>
+      </div>
+    </div>
+  {/if}
 {/if}

@@ -21,7 +21,7 @@
 </script>
 
 <svelte:head>
-  <title>{service ? (currentLocale === 'ta' ? service.nameTA : service.name) : 'Service'} — Sympho Center</title>
+  <title>{service ? (currentLocale === 'ta' ? service.nameTA : service.name) : 'Service'} — TN Hub</title>
 </svelte:head>
 
 {#if service}
@@ -195,14 +195,15 @@
                     </div>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  disabled
-                  class="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-semibold text-white opacity-60"
+                <a
+                  href={service.externalUrl || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-semibold text-white transition hover:bg-primary-light"
                 >
                   <ExternalLink class="h-4 w-4" />
                   {t('service.goToPortal')}
-                </button>
+                </a>
               {:else}
                 <a
                   href={authenticated ? `/services/${service.slug}/apply` : '/login'}

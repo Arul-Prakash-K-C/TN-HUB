@@ -40,7 +40,7 @@
     <a href={isDept ? "/department/dashboard" : portal === 'operator' ? "/operator/dashboard" : portal === 'admin' ? "/admin" : "/"} class="flex items-center gap-2.5">
       <div class="w-7 h-7 {isDept ? 'bg-[#82da85] text-[#062206]' : 'bg-white/10 text-white'} rounded-full flex items-center justify-center font-black text-xs shadow-xs">TN</div>
       <div>
-        <h1 class="text-xs font-black tracking-tight uppercase leading-none">{isDept ? (user?.departmentName || 'Revenue Dept') : 'SYMPHO CENTER'}</h1>
+        <h1 class="text-xs font-black tracking-tight uppercase leading-none">{isDept ? (user?.departmentName || 'Revenue Dept') : 'TN HUB'}</h1>
         <p class="text-[9px] text-[#9df79e] font-bold tracking-wider leading-none mt-0.5">{isDept ? 'Officer Portal' : portal === 'operator' ? t('operator.portal') : portal === 'admin' ? t('admin.portal') : 'Citizen Platform'}</p>
       </div>
     </a>

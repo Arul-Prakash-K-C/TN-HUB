@@ -4,7 +4,7 @@ import type { AuthenticatedUser } from '$lib/types';
 import { getFirebaseAdminAuth } from '$lib/server/firebase/admin';
 import { ensureUserProfile } from '$lib/server/users/profile';
 
-export const SESSION_COOKIE_NAME = 'sympho-session';
+export const SESSION_COOKIE_NAME = 'tnhub-session';
 export const SESSION_DURATION_MS = 1000 * 60 * 60 * 24 * 5;
 
 async function toSessionUser(token: DecodedIdToken): Promise<AuthenticatedUser> {

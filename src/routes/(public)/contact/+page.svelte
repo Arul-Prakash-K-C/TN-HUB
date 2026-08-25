@@ -52,7 +52,7 @@
             <h3 class="text-sm font-bold text-slate-900">{t('contact.headquarters')}</h3>
           </div>
           <p class="text-xs text-slate-500 leading-relaxed">
-            Sympho Center Citizen Platform,<br />
+            TN Hub Citizen Platform,<br />
             BuildWhatMovesIndia Hackathon Hub,<br />
             Chennai, Tamil Nadu.
           </p>
@@ -76,7 +76,7 @@
             </div>
             <h3 class="text-sm font-bold text-slate-900">{t('contact.emailSupport')}</h3>
           </div>
-          <p class="text-sm text-slate-800 font-mono font-bold">support@symphocenter.org</p>
+          <p class="text-sm text-slate-800 font-mono font-bold">support@tnhub.org</p>
           <p class="text-[11px] text-slate-400 mt-1">Average response within 24 hours</p>
         </div>
       </div>

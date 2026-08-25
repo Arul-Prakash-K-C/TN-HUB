@@ -49,7 +49,7 @@
     },
     {
       id: 'digilocker',
-      title: currentLocale === 'ta' ? 'டிஜிலாக்கர் கணக்கை இணைப்பது எப்படி' : 'How to Link DigiLocker to Sympho Center',
+      title: currentLocale === 'ta' ? 'டிஜிலாக்கர் கணக்கை இணைப்பது எப்படி' : 'How to Link DigiLocker to TN Hub',
       desc: currentLocale === 'ta' ? 'ஆவணங்களை உடனடியாகச் சரிபார்க்க உங்கள் டிஜிலாக்கர் கணக்கை எவ்வாறு இணைப்பது.' : 'Learn how to securely link DigiLocker to instantly retrieve verified identity, address, and academic certificates.',
       duration: '5 mins',
       youtubeId: 'Q8T2tP5vD_Q',
@@ -63,7 +63,7 @@
 </script>
 
 <svelte:head>
-  <title>{currentLocale === 'ta' ? 'சேவை வீடியோ பயிற்சிகள்' : 'Service Video Tutorials'} — Sympho Center</title>
+  <title>{currentLocale === 'ta' ? 'சேவை வீடியோ பயிற்சிகள்' : 'Service Video Tutorials'} — TN Hub</title>
 </svelte:head>
 
 <div class="bg-slate-50 min-h-screen pb-20">
@@ -82,7 +82,7 @@
           <p class="mt-3 text-base text-emerald-200/80 max-w-2xl leading-relaxed">
             {currentLocale === 'ta' 
               ? 'அரசு சேவைகளுக்கு ஆன்லைனில் எவ்வாறு எளிதாக விண்ணப்பிப்பது என்பதை விளக்கும் அதிகாரப்பூர்வ மற்றும் கல்வி சார்ந்த வீடியோக்கள்.'
-              : 'Official and educational video tutorials showing you step-by-step how to apply for various government services on the Sympho Center portal.'}
+              : 'Official and educational video tutorials showing you step-by-step how to apply for various government services on the TN Hub portal.'}
           </p>
         </div>
       </div>
@@ -202,7 +202,7 @@
         <p class="text-sm text-slate-500 mt-1 max-w-xl">
           {currentLocale === 'ta' 
             ? 'விண்ணப்ப முறைகள் பற்றி மேலும் விவரங்களுக்கு எங்களின் உதவி பக்கத்தைப் பார்வையிடலாம் அல்லது எங்களின் AI சேவையிடம் கேட்கலாம்.' 
-            : 'If you need help with documentation or are facing errors, visit our Help Desk or ask Sympho AI Chatbot for instant guidance.'}
+            : 'If you need help with documentation or are facing errors, visit our Help Desk or ask Thozhan AI Chatbot for instant guidance.'}
         </p>
       </div>
       <div class="shrink-0 flex gap-2">

@@ -94,12 +94,13 @@
   }
 
   function getWorkflowAction(type: 'approve' | 'reject' | 'clarify') {
-    const targetStates = type === 'approve'
-      ? ['APPROVED', 'COMPLETED']
-      : type === 'reject'
-        ? ['REJECTED']
-        : ['CLARIFICATION_REQUESTED'];
-    return availableActions.find((action) => targetStates.includes(action.toState));
+    if (type === 'approve') {
+      return availableActions.find(a => !['REJECTED', 'CLARIFICATION_REQUESTED'].includes(a.toState));
+    } else if (type === 'reject') {
+      return availableActions.find(a => a.toState === 'REJECTED');
+    } else {
+      return availableActions.find(a => a.toState === 'CLARIFICATION_REQUESTED');
+    }
   }
 
   async function handleAction(type: 'approve' | 'reject' | 'clarify') {
@@ -132,7 +133,7 @@
 </script>
 
 <svelte:head>
-  <title>Application Review — {appState ? appState.applicationNumber : 'Sympho Center'}</title>
+  <title>Application Review — {appState ? appState.applicationNumber : 'TN Hub'}</title>
 </svelte:head>
 
 <div class="min-h-screen bg-slate-50 text-slate-900 font-sans pb-24">
@@ -174,9 +175,6 @@
           <button class="px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-2xl text-xs font-bold hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-2 shadow-sm">
             <Printer class="h-4 w-4" /> Print
           </button>
-          <button class="px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-2xl text-xs font-bold hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-2 shadow-sm">
-            <Share2 class="h-4 w-4" /> Share
-          </button>
         </div>
       </div>
 
@@ -202,10 +200,12 @@
               
               <!-- Form Data Values -->
               {#each Object.entries(appState.formData) as [key, val]}
-                <div>
-                  <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1 capitalize">{key.replace(/([A-Z])/g, ' $1')}</span>
-                  <span class="text-sm font-bold text-slate-900">{String(val)}</span>
-                </div>
+                {#if val && String(val).trim() !== ''}
+                  <div>
+                    <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1 capitalize">{key.replace(/([A-Z])/g, ' $1')}</span>
+                    <span class="text-sm font-bold text-slate-900">{String(val)}</span>
+                  </div>
+                {/if}
               {/each}
             </div>
           </div>

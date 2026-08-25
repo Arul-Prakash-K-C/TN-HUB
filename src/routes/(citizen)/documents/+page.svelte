@@ -68,7 +68,7 @@
 </script>
 
 <svelte:head>
-  <title>{t('documents.title')} — Sympho Center</title>
+  <title>{t('documents.title')} — TN Hub</title>
 </svelte:head>
 
 <div class="bg-slate-50 min-h-screen pb-12 flex flex-col w-full">
@@ -253,7 +253,7 @@
       </div>
 
       <p class="text-xs text-slate-500 leading-relaxed">
-        By clicking Allow, you permit Sympho Center to securely access your Aadhaar, Driving Licence, and educational certificates from DigiLocker for instant service verification.
+        By clicking Allow, you permit TN Hub to securely access your Aadhaar, Driving Licence, and educational certificates from DigiLocker for instant service verification.
       </p>
 
       <div class="mt-6 flex justify-end gap-3">
