@@ -3,6 +3,7 @@
   import AiChatWidget from '$lib/components/ui/AiChatWidget.svelte';
   import { auth } from '$lib/stores/auth';
   import { onMount } from 'svelte';
+  import { page } from '$app/stores';
 
   import { t, locale } from '$lib/i18n';
 
@@ -21,5 +22,7 @@
   {@render children()}
 
   <!-- Global Floating AI Chat Widget -->
-  <AiChatWidget />
+  {#if !$page.url.pathname.includes('/chatbot')}
+    <AiChatWidget />
+  {/if}
 </div>
