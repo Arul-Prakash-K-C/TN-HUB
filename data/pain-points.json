@@ -1,0 +1,56 @@
+[
+  {
+    "pain_point": "Contradictory sign-in state",
+    "affected_users": "Returning citizens with saved credentials",
+    "current_experience": "A banner urging them to register as a 'New User' appears immediately after the page loads, despite an existing active account being detected.",
+    "evidence": "e-sevai.docx audit: Finding 1",
+    "impact": "Creates doubt about account validity, leading to duplicate registrations and user confusion.",
+    "severity": "HIGH",
+    "sympho_solution": "Single, honest authentication state. If an active session or credentials are found, show a dashboard shortcut and hide all registration banners."
+  },
+  {
+    "pain_point": "Non-functional apply links",
+    "affected_users": "Citizens trying to apply online",
+    "current_experience": "In the master services list table, the 'link to apply' column is identical for all 100+ services and redirects to the homepage instead of the form.",
+    "evidence": "e-sevai.docx audit: Finding 2",
+    "impact": "Users must restart navigation from scratch, doubling application time and creating frustration.",
+    "severity": "HIGH",
+    "sympho_solution": "Direct deep-linking. Every service card in the catalog points to its specific wizard endpoint (/services/[slug]/apply)."
+  },
+  {
+    "pain_point": "Unfiltered and sorting-blind service list",
+    "affected_users": "All citizens",
+    "current_experience": "500+ services are listed alphabetically by internal code, paginated 10 at a time, forcing citizens to scan long pages.",
+    "evidence": "e-sevai.docx audit: Finding 3 & 12",
+    "impact": "Highly common services (like Community/Income) are buried, making discovery slow and error-prone.",
+    "severity": "HIGH",
+    "sympho_solution": "Search-as-you-type bar and intent-based grouping (e.g., 'I need a certificate') as the default landing view, prioritizing high-traffic services."
+  },
+  {
+    "pain_point": "Missing or inaccurate document requirements",
+    "affected_users": "Self-service applicants",
+    "current_experience": "Several services list document requirements as 'NA' or have incomplete document information.",
+    "evidence": "e-sevai.docx audit: Finding 4",
+    "impact": "Citizens cannot prepare documents in advance, leading to rejected applications and wasted time.",
+    "severity": "HIGH",
+    "sympho_solution": "Strict schema validation for services. Every service must define a specific required/optional document array visible before the application starts."
+  },
+  {
+    "pain_point": "Stale Citizen Charter",
+    "affected_users": "Citizens referencing SLAs",
+    "current_experience": "The 'Citizen Charter' sidebar link opens a static PDF from 2015, which is over a decade old and unrevised.",
+    "evidence": "e-sevai.docx audit: Finding 16",
+    "impact": "Citizens read incorrect processing timelines and commitments that may no longer be accurate.",
+    "severity": "MEDIUM",
+    "sympho_solution": "Maintained HTML-based policy pages. Display the last audited SLA dates directly next to service turnaround descriptions."
+  },
+  {
+    "pain_point": "Fragmented tracking systems",
+    "affected_users": "Applicants tracking their status",
+    "current_experience": "Citizens check application status across three different URLs depending on the channel originally used.",
+    "evidence": "e-sevai.docx audit: Finding 7",
+    "impact": "Users check the wrong page, believe their application is lost, and flood customer support.",
+    "severity": "MEDIUM",
+    "sympho_solution": "Unified application tracking timeline. A single lookup page (/applications/[id]) maps the entire workflow clearly."
+  }
+]

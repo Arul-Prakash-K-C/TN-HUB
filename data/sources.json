@@ -1,0 +1,47 @@
+[
+  {
+    "source_id": "src-tnesevai-list",
+    "source_url": "https://www.tnesevai.tn.gov.in/EsevaiServiceList.html",
+    "source_name": "Tamil Nadu e-Sevai Service List",
+    "page_title": "List of Services Offered in eSevai Centres",
+    "retrieved_date": "2026-08-23",
+    "status": "VERIFIED",
+    "evidence_note": "Contains the complete list of 86+ primary government services, service codes, department mappings, and associated service fees."
+  },
+  {
+    "source_id": "src-tnesevai-home",
+    "source_url": "https://www.tnesevai.tn.gov.in/NewIndex.html",
+    "source_name": "Tamil Nadu e-Sevai Home Portal",
+    "page_title": "e-Sevai Portal Home",
+    "retrieved_date": "2026-08-23",
+    "status": "VERIFIED",
+    "evidence_note": "Confirms the 4-step offline service model and includes driver files, helpdesk contact (18004251333 / 1100), and link to search coordinates."
+  },
+  {
+    "source_id": "src-tnega-home",
+    "source_url": "https://tnega.tn.gov.in/home",
+    "source_name": "TNeGA Home Portal",
+    "page_title": "Tamil Nadu e-Governance Agency Projects",
+    "retrieved_date": "2026-08-23",
+    "status": "VERIFIED",
+    "evidence_note": "Details state e-governance policies, e-Sevai administration, and department integrations."
+  },
+  {
+    "source_id": "src-ux4g-home",
+    "source_url": "https://www.ux4g.gov.in/",
+    "source_name": "UX4G Government of India Design System",
+    "page_title": "UX4G Design System 3.0",
+    "retrieved_date": "2026-08-23",
+    "status": "VERIFIED",
+    "evidence_note": "Specifies design principles, contrast modes, skip to main content, and standard accessibility patterns for citizen portals."
+  },
+  {
+    "source_id": "src-audit-doc",
+    "source_url": "e-sevai.docx (project workspace asset)",
+    "source_name": "Internal e-Sevai UX Audit Document",
+    "page_title": "Key Findings of Citizen Portal Audit",
+    "retrieved_date": "2026-08-23",
+    "status": "VERIFIED",
+    "evidence_note": "Provides 16 core citizen friction points and state bugs verified using active test sessions on the live portal."
+  }
+]

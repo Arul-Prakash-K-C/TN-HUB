@@ -1,0 +1,163 @@
+[
+  {
+    "service_id": "svc-income-cert",
+    "service_name": "Income Certificate",
+    "service_name_tamil": "வருமான சான்றிதழ்",
+    "department": "Revenue Department",
+    "category": "revenue",
+    "subcategory": "certificates",
+    "description": "An official document certifying the annual income of an individual or family, issued by the Revenue Department.",
+    "purpose": "Required to apply for scholarships, educational admission concessions, government subsidies, and welfare schemes.",
+    "target_users": "Any resident of Tamil Nadu requiring income certification.",
+    "eligibility": [
+      "Must be a resident of Tamil Nadu",
+      "Must be an Indian citizen"
+    ],
+    "required_documents": [
+      "Aadhaar Card",
+      "Ration Card / Smart Card",
+      "Salary Certificate / Income Proof",
+      "Address Proof"
+    ],
+    "optional_documents": [
+      "Income Tax Returns (if applicable)"
+    ],
+    "fee": 60,
+    "processing_time": "5-7 working days",
+    "application_method": "Online / CSC",
+    "application_channel": "e-Sevai Portal / Assisted Center",
+    "service_center_available": true,
+    "online_available": true,
+    "official_url": "https://www.tnesevai.tn.gov.in/",
+    "status": "ACTIVE",
+    "source_url": "https://www.tnesevai.tn.gov.in/EsevaiServiceList.html"
+  },
+  {
+    "service_id": "svc-community-cert",
+    "service_name": "Community Certificate",
+    "service_name_tamil": "சமூக சான்றிதழ்",
+    "department": "Revenue Department",
+    "category": "revenue",
+    "subcategory": "certificates",
+    "description": "An official document certifying the community/caste category of an individual.",
+    "purpose": "Essential to obtain reservation benefits in education admissions and government jobs in Tamil Nadu.",
+    "target_users": "Residents belonging to recognized caste categories (SC, ST, BC, MBC, DNC).",
+    "eligibility": [
+      "Must be a resident of Tamil Nadu",
+      "Must belong to a recognized community category"
+    ],
+    "required_documents": [
+      "Aadhaar Card",
+      "Transfer Certificate (TC) from school",
+      "Parent's Community Certificate / Caste Certificate"
+    ],
+    "optional_documents": [
+      "Sibling's Community Certificate"
+    ],
+    "fee": 60,
+    "processing_time": "7-10 working days",
+    "application_method": "Online / CSC",
+    "application_channel": "e-Sevai Portal / Assisted Center",
+    "service_center_available": true,
+    "online_available": true,
+    "official_url": "https://www.tnesevai.tn.gov.in/",
+    "status": "ACTIVE",
+    "source_url": "https://www.tnesevai.tn.gov.in/EsevaiServiceList.html"
+  },
+  {
+    "service_id": "svc-nativity-cert",
+    "service_name": "Nativity Certificate",
+    "service_name_tamil": "பூர்வீக சான்றிதழ்",
+    "department": "Revenue Department",
+    "category": "revenue",
+    "subcategory": "certificates",
+    "description": "Certifies that a person is a native/domicile of Tamil Nadu.",
+    "purpose": "Mandated for educational admissions (especially counseling processes like TNEA) and state government recruitment.",
+    "target_users": "Individuals who are born in or have domicile in Tamil Nadu.",
+    "eligibility": [
+      "Must be a native of Tamil Nadu or residing for a continuous specified period (usually 5+ years)"
+    ],
+    "required_documents": [
+      "Aadhaar Card",
+      "Birth Certificate",
+      "Parent's Residence Proof / Ration Card",
+      "School TC showing place of study"
+    ],
+    "optional_documents": [
+      "Parent's Nativity Certificate"
+    ],
+    "fee": 60,
+    "processing_time": "5-7 working days",
+    "application_method": "Online / CSC",
+    "application_channel": "e-Sevai Portal / Assisted Center",
+    "service_center_available": true,
+    "online_available": true,
+    "official_url": "https://www.tnesevai.tn.gov.in/",
+    "status": "ACTIVE",
+    "source_url": "https://www.tnesevai.tn.gov.in/EsevaiServiceList.html"
+  },
+  {
+    "service_id": "svc-new-ration",
+    "service_name": "New Ration Card",
+    "service_name_tamil": "புதிய ரேஷன் கார்டு",
+    "department": "Civil Supplies and Consumer Protection",
+    "category": "civil_supplies",
+    "subcategory": "ration_card",
+    "description": "Application to obtain a new Public Distribution System (PDS) smart card for a family.",
+    "purpose": "Enables the purchase of subsidized food grains and serves as a vital identity and address proof.",
+    "target_users": "Families residing in Tamil Nadu without an existing ration card.",
+    "eligibility": [
+      "Must be a resident of Tamil Nadu",
+      "Must not hold a ration card in any other state / family card already"
+    ],
+    "required_documents": [
+      "Aadhaar Cards of all family members",
+      "Address Proof (Utility Bill / Rent Agreement)",
+      "Name Deletion Certificate from previous family card (if moving out)"
+    ],
+    "optional_documents": [
+      "Gas Connection Bill / LPG Consumer Card"
+    ],
+    "fee": 60,
+    "processing_time": "10-15 working days",
+    "application_method": "Online / CSC",
+    "application_channel": "e-Sevai Portal / Assisted Center / TNPDS Portal",
+    "service_center_available": true,
+    "online_available": true,
+    "official_url": "https://www.tnpds.gov.in/",
+    "status": "ACTIVE",
+    "source_url": "https://www.tnesevai.tn.gov.in/EsevaiServiceList.html"
+  },
+  {
+    "service_id": "svc-first-grad-cert",
+    "service_name": "First Graduate Certificate",
+    "service_name_tamil": "முதல் பட்டதாரி சான்றிதழ்",
+    "department": "Revenue Department",
+    "category": "revenue",
+    "subcategory": "certificates",
+    "description": "Certifies that the applicant is the first person in their family to pursue graduation.",
+    "purpose": "Aims to help students from non-educated families secure fee concessions in engineering, medical and other professional college counseling.",
+    "target_users": "Students whose parents and siblings are not graduates.",
+    "eligibility": [
+      "Applicant must be a native of Tamil Nadu",
+      "No other family member (parents or siblings) should be a graduate"
+    ],
+    "required_documents": [
+      "Aadhaar Card",
+      "School TC / Provisional Certificate of applicant",
+      "Declaration signed by parents and candidate",
+      "Family smart card / Ration Card",
+      "TCs or highest education certificates of all family members"
+    ],
+    "optional_documents": [],
+    "fee": 60,
+    "processing_time": "7-10 working days",
+    "application_method": "Online / CSC",
+    "application_channel": "e-Sevai Portal / Assisted Center",
+    "service_center_available": true,
+    "online_available": true,
+    "official_url": "https://www.tnesevai.tn.gov.in/",
+    "status": "ACTIVE",
+    "source_url": "https://www.tnesevai.tn.gov.in/EsevaiServiceList.html"
+  }
+]

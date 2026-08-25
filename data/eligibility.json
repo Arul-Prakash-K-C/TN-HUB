@@ -1,0 +1,81 @@
+{
+  "eligibility_simplification_principle": "Replace complex legalistic paragraphs with dynamic YES/NO question trees in Sympho Center's wizard, preventing users from filling out applications they do not qualify for.",
+  "service_rules": [
+    {
+      "service_id": "svc-income-cert",
+      "sympho_wizard_questions": [
+        {
+          "question_id": "q-resident-tn",
+          "text": "Are you a permanent resident of Tamil Nadu?",
+          "tamil_text": "நீங்கள் தமிழ்நாட்டின் நிரந்தர குடியிருப்பாளரா?",
+          "expected_answer": true,
+          "failure_message": "Only permanent residents of Tamil Nadu are eligible for this certificate."
+        },
+        {
+          "question_id": "q-citizen-in",
+          "text": "Are you a citizen of India?",
+          "tamil_text": "நீங்கள் இந்திய குடிமகனா?",
+          "expected_answer": true,
+          "failure_message": "Applicant must be a citizen of India."
+        }
+      ]
+    },
+    {
+      "service_id": "svc-community-cert",
+      "sympho_wizard_questions": [
+        {
+          "question_id": "q-resident-tn",
+          "text": "Are you a permanent resident of Tamil Nadu?",
+          "tamil_text": "நீங்கள் தமிழ்நாட்டின் நிரந்தர குடியிருப்பாளரா?",
+          "expected_answer": true,
+          "failure_message": "Only permanent residents of Tamil Nadu are eligible for this certificate."
+        },
+        {
+          "question_id": "q-recognized-caste",
+          "text": "Do you belong to a recognized community category (SC, ST, BC, MBC, or DNC) in Tamil Nadu?",
+          "tamil_text": "நீங்கள் தமிழ்நாட்டில் அங்கீகரிக்கப்பட்ட சமூகப் பிரிவைச் (SC, ST, BC, MBC, அல்லது DNC) சேர்ந்தவரா?",
+          "expected_answer": true,
+          "failure_message": "You must belong to a recognized caste category in Tamil Nadu to apply for a community certificate."
+        }
+      ]
+    },
+    {
+      "service_id": "svc-first-grad-cert",
+      "sympho_wizard_questions": [
+        {
+          "question_id": "q-native-tn",
+          "text": "Are you a native of Tamil Nadu?",
+          "tamil_text": "நீங்கள் தமிழ்நாட்டைப் பூர்வீகமாகக் கொண்டவரா?",
+          "expected_answer": true,
+          "failure_message": "Only natives of Tamil Nadu can apply for a first graduate concession."
+        },
+        {
+          "question_id": "q-family-graduates",
+          "text": "Are any of your family members (parents, siblings, or grandparents) graduates?",
+          "tamil_text": "உங்கள் குடும்ப உறுப்பினர்கள் (பெற்றோர், உடன்பிறப்புகள், அல்லது தாத்தா பாட்டி) யாராவது பட்டதாரியா?",
+          "expected_answer": false,
+          "failure_message": "If any family member has completed a graduation degree, you are not eligible for this certificate."
+        }
+      ]
+    },
+    {
+      "service_id": "svc-new-ration",
+      "sympho_wizard_questions": [
+        {
+          "question_id": "q-resident-tn",
+          "text": "Are you a permanent resident of Tamil Nadu?",
+          "tamil_text": "நீங்கள் தமிழ்நாட்டின் நிரந்தர குடியிருப்பாளரா?",
+          "expected_answer": true,
+          "failure_message": "Only permanent residents of Tamil Nadu can apply for a ration card."
+        },
+        {
+          "question_id": "q-existing-card",
+          "text": "Do you or any member of your family hold an active ration card in Tamil Nadu or any other state?",
+          "tamil_text": "உங்களுக்கோ அல்லது உங்கள் குடும்ப உறுப்பினருக்கோ தமிழ்நாட்டிலோ அல்லது வேறு எந்த மாநிலத்திலோ செயலில் உள்ள ரேஷன் கார்டு உள்ளதா?",
+          "expected_answer": false,
+          "failure_message": "A family can only hold one active ration card. If a member already holds a card, they must apply for 'Name Deletion' first."
+        }
+      ]
+    }
+  ]
+}
