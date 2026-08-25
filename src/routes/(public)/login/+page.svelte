@@ -4,11 +4,13 @@
   import { auth, userRole } from '$lib/stores/auth';
   import { getPortalRedirectForRole } from '$lib/utils/authGuard';
   import { departments } from '$lib/data/departments';
-  import { tt } from '$lib/i18n';
+  import { tt, locale } from '$lib/i18n';
   import { User, Building2, Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, UserPlus, Monitor } from '@lucide/svelte';
 
   const t = $derived($tt);
-  let activeTab = $state<'citizen' | 'department'>('citizen');
+  const currentLocale = $derived($locale);
+
+  let activeTab = $state<'citizen' | 'operator' | 'department' | 'admin'>('citizen');
   let authMode = $state<'login' | 'register'>('login');
   let email = $state('meena@demo.com');
   let password = $state('demo123');
@@ -18,15 +20,21 @@
   let error = $state('');
   let loading = $state(false);
 
-  function selectTab(tab: 'citizen' | 'department') {
+  function selectTab(tab: 'citizen' | 'operator' | 'department' | 'admin') {
     activeTab = tab;
-    if (tab === 'department') authMode = 'login';
+    if (tab !== 'citizen') authMode = 'login';
     error = '';
     if (tab === 'citizen') {
       email = 'meena@demo.com';
       password = 'demo123';
+    } else if (tab === 'operator') {
+      email = 'kannan@demo.com';
+      password = 'demo123';
     } else if (tab === 'department') {
       email = 'rajesh@demo.com';
+      password = 'demo123';
+    } else if (tab === 'admin') {
+      email = 'priya@demo.com';
       password = 'demo123';
     }
   }
@@ -79,11 +87,11 @@
 
       <!-- Tab Switcher: Citizen vs Department vs Onboarding -->
       <div class="p-6 sm:p-8">
-        <div class="mb-6 grid grid-cols-2 gap-1.5 rounded-2xl bg-slate-100 p-1.5 border border-slate-200">
+        <div class="mb-6 grid grid-cols-2 lg:grid-cols-4 gap-1.5 rounded-2xl bg-slate-100 p-1.5 border border-slate-200">
           <button
             type="button"
             onclick={() => selectTab('citizen')}
-            class="flex items-center justify-center gap-1.5 rounded-xl py-2 text-[11px] font-bold transition-all
+            class="flex items-center justify-center gap-1.5 rounded-xl py-2 text-[10px] sm:text-[11px] font-bold transition-all
               {activeTab === 'citizen' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-900'}"
           >
             <User class="h-3.5 w-3.5 {activeTab === 'citizen' ? 'text-emerald-600' : ''}" />
@@ -92,12 +100,32 @@
 
           <button
             type="button"
+            onclick={() => selectTab('operator')}
+            class="flex items-center justify-center gap-1.5 rounded-xl py-2 text-[10px] sm:text-[11px] font-bold transition-all
+              {activeTab === 'operator' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-900'}"
+          >
+            <Monitor class="h-3.5 w-3.5 {activeTab === 'operator' ? 'text-emerald-600' : ''}" />
+            <span>{currentLocale === 'ta' ? 'ஈ-சேவை' : 'Operator'}</span>
+          </button>
+
+          <button
+            type="button"
             onclick={() => selectTab('department')}
-            class="flex items-center justify-center gap-1.5 rounded-xl py-2 text-[11px] font-bold transition-all
+            class="flex items-center justify-center gap-1.5 rounded-xl py-2 text-[10px] sm:text-[11px] font-bold transition-all
               {activeTab === 'department' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-900'}"
           >
             <Building2 class="h-3.5 w-3.5 {activeTab === 'department' ? 'text-emerald-600' : ''}" />
-            <span>{t('auth.tabDepartment')}</span>
+            <span>{currentLocale === 'ta' ? 'அதிகாரி' : 'Officer'}</span>
+          </button>
+
+          <button
+            type="button"
+            onclick={() => selectTab('admin')}
+            class="flex items-center justify-center gap-1.5 rounded-xl py-2 text-[10px] sm:text-[11px] font-bold transition-all
+              {activeTab === 'admin' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-900'}"
+          >
+            <ShieldCheck class="h-3.5 w-3.5 {activeTab === 'admin' ? 'text-emerald-600' : ''}" />
+            <span>{currentLocale === 'ta' ? 'நிர்வாகி' : 'Admin'}</span>
           </button>
         </div>
 
@@ -113,8 +141,12 @@
             <div>
               {#if activeTab === 'citizen'}
                 <strong>{t('auth.tabCitizen')} Workspace:</strong> {t('auth.citizenWorkspace')}
-              {:else}
+              {:else if activeTab === 'operator'}
+                <strong>{currentLocale === 'ta' ? 'உதவி கியோஸ்க் போர்டல்' : 'Assisted Kiosk Portal'}:</strong> {currentLocale === 'ta' ? 'குடிமக்களுக்கு உதவ விண்ணப்ப வரைவுகளை உருவாக்கவும்.' : 'Assist citizens and create application drafts on their behalf.'}
+              {:else if activeTab === 'department'}
                 <strong>{t('auth.tabDepartment')} Official Workspace:</strong> {t('auth.officerWorkspace')}
+              {:else}
+                <strong>{currentLocale === 'ta' ? 'நிர்வாக கன்சோல்' : 'Administration Console'}:</strong> {currentLocale === 'ta' ? 'அமைப்புகளை நிர்வகிக்கவும் மற்றும் தணிக்கை பதிவுகளை சரிபார்க்கவும்.' : 'Manage platform configurations and review audit logs.'}
               {/if}
             </div>
           </div>
@@ -138,7 +170,15 @@
             {/if}
             <div>
               <label for="user-email" class="block text-xs font-bold text-slate-800 mb-1.5">
-                {activeTab === 'citizen' ? t('auth.citizenEmail') : t('auth.officerEmail')}
+                {#if activeTab === 'citizen'}
+                  {t('auth.citizenEmail')}
+                {:else if activeTab === 'operator'}
+                  {currentLocale === 'ta' ? 'இயக்குநர் மின்னஞ்சல்' : 'Operator Email Address'}
+                {:else if activeTab === 'department'}
+                  {t('auth.officerEmail')}
+                {:else}
+                  {currentLocale === 'ta' ? 'நிர்வாகி மின்னஞ்சல்' : 'Admin Email Address'}
+                {/if}
               </label>
               <div class="relative">
                 <Mail class="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -208,7 +248,18 @@
                 <span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
                 <span>{t('common.loading')}</span>
               {:else}
-                <span>{authMode === 'register' ? t('auth.registerButton') : t('auth.signInTo', { portal: activeTab === 'citizen' ? t('auth.tabCitizen') : t('auth.tabDepartment') })}</span>
+                <span>
+                  {#if authMode === 'register'}
+                    {t('auth.registerButton')}
+                  {:else}
+                    {t('auth.signInTo', { 
+                      portal: activeTab === 'citizen' ? t('auth.tabCitizen') : 
+                              activeTab === 'operator' ? (currentLocale === 'ta' ? 'இயக்குநர் போர்டல்' : 'Operator Kiosk') :
+                              activeTab === 'department' ? t('auth.tabDepartment') : 
+                              (currentLocale === 'ta' ? 'நிர்வாக போர்டல்' : 'Admin Console')
+                    })}
+                  {/if}
+                </span>
                 <ArrowRight class="h-4 w-4" />
               {/if}
             </button>
