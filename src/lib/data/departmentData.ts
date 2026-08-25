@@ -1,5 +1,5 @@
 import type { User, Application } from '$lib/types';
-import { mockApplications } from '$lib/data/applications';
+import { applications as mockApplications } from '$lib/data/applications';
 import { canAccessApplication } from '$lib/utils/authGuard';
 
 /**

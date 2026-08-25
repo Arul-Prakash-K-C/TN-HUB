@@ -216,6 +216,7 @@
                     required
                     class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-xs font-medium text-slate-900 outline-none transition focus:border-emerald-500 focus:bg-white"
                   />
+                </div>
               </div>
               
               {#if activeTab === 'department'}
@@ -229,6 +230,7 @@
                 </div>
               {/if}
             {/if}
+            
             <div>
               <label for="user-email" class="block text-xs font-bold text-slate-800 mb-1.5">
                 {#if activeTab === 'citizen'}

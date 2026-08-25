@@ -1,7 +1,7 @@
 <script lang="ts">
   import { tt, locale } from '$lib/i18n';
   import { currentUser, isAuthenticated, userRole } from '$lib/stores/auth';
-  import { mockApplications } from '$lib/data/applications';
+  import { applications as mockApplications } from '$lib/data/applications';
   import {
     Shield,
     CheckCircle,

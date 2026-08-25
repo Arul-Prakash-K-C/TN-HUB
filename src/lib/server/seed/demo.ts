@@ -1,5 +1,5 @@
 import { Timestamp, type DocumentReference } from 'firebase-admin/firestore';
-import { mockApplications } from '$lib/data/applications';
+import { applications as mockApplications } from '$lib/data/applications';
 import { mockDocuments } from '$lib/data/documents';
 import { departments } from '$lib/data/departments';
 import { mockNotifications } from '$lib/data/notifications';
@@ -330,15 +330,14 @@ export async function seedDemoFirestore(): Promise<DemoSeedResult> {
   const pending = documents.filter((document) => {
     if (existing.has(document.ref.path)) {
       result[document.collection].skipped += 1;
-      return false;
     }
-    return true;
+    return true; // Force include all
   });
 
   for (let index = 0; index < pending.length; index += 400) {
     const batch = db.batch();
     for (const document of pending.slice(index, index + 400)) {
-      batch.create(document.ref, document.data);
+      batch.set(document.ref, document.data, { merge: true });
       result[document.collection].created += 1;
     }
     await batch.commit();

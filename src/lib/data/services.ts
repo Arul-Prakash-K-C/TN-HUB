@@ -453,29 +453,6 @@ export const services: Service[] = [
     isActive: true, isOnline: true, version: 1, createdAt: '2026-01-01T00:00:00Z', updatedAt: '2026-08-01T00:00:00Z'
   },
   {
-    id: 'svc-driving-licence',
-    slug: 'driving-licence',
-    name: 'Driving Licence Information',
-    nameTA: 'ஓட்டுநர் உரிம தகவல்',
-    shortDescription: 'Driving licence applications via Transport Department portal',
-    shortDescriptionTA: 'போக்குவரத்து துறை போர்டல் வழியாக ஓட்டுநர் உரிம விண்ணப்பங்கள்',
-    description: 'Driving licence applications are currently processed through the Transport Department\'s Parivahan portal. You will be redirected to their website.',
-    descriptionTA: 'ஓட்டுநர் உரிம விண்ணப்பங்கள் தற்போது போக்குவரத்து துறையின் பரிவாகன் போர்டல் வழியாக செயலாக்கப்படுகின்றன.',
-    departmentId: 'dept-transport', category: 'licences', implementationMode: 'EXTERNAL_REDIRECT',
-    eligibility: ['Must meet age requirements', 'Must pass driving test'],
-    eligibilityTA: ['வயது தேவைகளை பூர்த்தி செய்ய வேண்டும்', 'ஓட்டுநர் தேர்வில் தேர்ச்சி பெற வேண்டும்'],
-    whoCanApply: 'Eligible Indian citizens', whoCanApplyTA: 'தகுதியுள்ள இந்திய குடிமக்கள்',
-    requiredDocuments: [],
-    fee: 0, feeDescription: 'Varies', feeDescriptionTA: 'மாறுபடும்',
-    processingTimeDays: 30, processingTimeDescription: 'Varies', processingTimeDescriptionTA: 'மாறுபடும்',
-    applicationSteps: [],
-    faqs: [],
-    externalUrl: 'https://parivahan.gov.in',
-    externalDepartmentName: 'Transport Department - Parivahan',
-    relatedServiceIds: [],
-    isActive: true, isOnline: true, version: 1, createdAt: '2026-01-01T00:00:00Z', updatedAt: '2026-08-01T00:00:00Z'
-  },
-  {
     id: 'svc-e-adangal',
     slug: 'e-adangal-extract',
     name: 'e-Adangal Extract',
@@ -558,7 +535,7 @@ export const services: Service[] = [
     faqs: [
       { question: 'Can I cancel my bus ticket online?', questionTA: 'ஆன்லைனில் பஸ் டிக்கெட்டை ரத்து செய்ய முடியுமா?', answer: 'Yes, tickets booked online can be cancelled through the TNSTC portal.', answerTA: 'ஆம், ஆன்லைனில் முன்பதிவு செய்த டிக்கெட்டுகளை TNSTC போர்டல் மூலம் ரத்து செய்யலாம்.' }
     ],
-    externalUrl: 'https://www.tnstc.in/',
+    externalUrl: 'https://vazhi-cyan.vercel.app/',
     externalDepartmentName: 'Tamil Nadu State Transport Corporation',
     relatedServiceIds: [],
     isActive: true,
