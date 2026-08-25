@@ -1,0 +1,95 @@
+{
+  "workflow_mapping_concepts": [
+    {
+      "sympho_step": "SUBMIT",
+      "gov_equivalent": "Citizen Submission",
+      "description": "Citizen fills the form and submits. Supporting documents are securely linked from Sympho Vault or uploaded."
+    },
+    {
+      "sympho_step": "VAO_VERIFY",
+      "gov_equivalent": "Village Administrative Officer (VAO) Review",
+      "description": "Local level administrator verifies the physical residence, caste, and income statements of the applicant."
+    },
+    {
+      "sympho_step": "RI_REVIEW",
+      "gov_equivalent": "Revenue Inspector (RI) Review",
+      "description": "Sub-divisional inspector reviews VAO comments, checks discrepancies, and recommends approval/rejection."
+    },
+    {
+      "sympho_step": "TAHSILDAR_APPROVE",
+      "gov_equivalent": "Deputy Tahsildar / Tahsildar Final Sign-off",
+      "description": "Final authority signs off digitally. The certificate is cryptographically e-signed and registered in the state database."
+    }
+  ],
+  "standard_workflows": [
+    {
+      "workflow_id": "wf-revenue-cert",
+      "associated_services": [
+        "svc-income-cert",
+        "svc-community-cert",
+        "svc-nativity-cert",
+        "svc-first-grad-cert"
+      ],
+      "stages": [
+        {
+          "stage_index": 1,
+          "stage_name": "SUBMITTED",
+          "actor": "CITIZEN",
+          "action": "Form Submission & Fee Payment",
+          "description": "Application registered and uniquely numbered. Assigned to local VAO."
+        },
+        {
+          "stage_index": 2,
+          "stage_name": "VAO_REVIEW",
+          "actor": "VILLAGE_ADMINISTRATIVE_OFFICER",
+          "action": "Field Verification & Local Auditing",
+          "description": "VAO performs local check and uploads a recommendation report."
+        },
+        {
+          "stage_index": 3,
+          "stage_name": "RI_REVIEW",
+          "actor": "REVENUE_INSPECTOR",
+          "action": "Cross-verification & Reconciliation",
+          "description": "RI checks the documents and VAO's comments, recommending to Tahsildar."
+        },
+        {
+          "stage_index": 4,
+          "stage_name": "FINAL_DECISION",
+          "actor": "DEPUTY_TAHSILDAR",
+          "action": "Digital Signature & Dispatch",
+          "description": "Deputy Tahsildar approves or rejects. System issues a digitally signed PDF."
+        }
+      ]
+    },
+    {
+      "workflow_id": "wf-civil-supplies",
+      "associated_services": [
+        "svc-new-ration",
+        "svc-ration-add-member"
+      ],
+      "stages": [
+        {
+          "stage_index": 1,
+          "stage_name": "SUBMITTED",
+          "actor": "CITIZEN",
+          "action": "Form Submission",
+          "description": "Application registered. Aadhaar details matched via UIDAI API."
+        },
+        {
+          "stage_index": 2,
+          "stage_name": "ASO_REVIEW",
+          "actor": "ASSISTANT_SECTION_OFFICER",
+          "action": "Document Verification",
+          "description": "ASO reviews the address proof and delete-certificates."
+        },
+        {
+          "stage_index": 3,
+          "stage_name": "TSO_APPROVE",
+          "actor": "TALUK_SUPPLY_OFFICER",
+          "action": "Approval & Smart Card Generation",
+          "description": "TSO grants final approval. Card details push to state PDS warehouse and printing queue."
+        }
+      ]
+    }
+  ]
+}

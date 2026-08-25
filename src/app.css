@@ -1,0 +1,191 @@
+@import 'tailwindcss';
+
+/* ============================================
+   TN HUB DESIGN SYSTEM TOKENS
+   Inspired by TN Hub (https://www.tnhub.org/)
+   ============================================ */
+
+@theme {
+  --color-primary-50: #ddffce;
+  --color-primary-100: #d2f9c2;
+  --color-primary-200: #bee8ad;
+  --color-primary-300: #a2cf90;
+  --color-primary-400: #82b26e;
+  --color-primary-500: #659650;
+  --color-primary-600: #4c7938;
+  --color-primary-700: #386125;
+  --color-primary-800: #274b15;
+  --color-primary-900: #1a3b08;
+  --color-primary-950: #061f00;
+  
+  --color-accent-50: #ebfbe4;
+  --color-accent-100: #e0f1d9;
+  --color-accent-200: #cee0c5;
+  --color-accent-300: #b4c7ab;
+  --color-accent-400: #95a98c;
+  --color-accent-500: #798d6f;
+  --color-accent-600: #5f7256;
+  --color-accent-700: #495a41;
+  --color-accent-800: #36452f;
+  --color-accent-900: #293622;
+  --color-accent-950: #121c0d;
+  
+  --color-neutral-50: #f4f6f2;
+  --color-neutral-100: #eaece7;
+  --color-neutral-200: #d8dad5;
+  --color-neutral-300: #bfc1bc;
+  --color-neutral-400: #a0a39e;
+  --color-neutral-500: #848782;
+  --color-neutral-600: #696c67;
+  --color-neutral-700: #535551;
+  --color-neutral-800: #3f413d;
+  --color-neutral-900: #30322e;
+  --color-neutral-950: #181916;
+
+  --color-background: #ffffff;
+  --color-foreground: #181916;
+  --color-card: #ffffff;
+  --color-card-foreground: #181916;
+  --color-border: #d8dad5;
+  --color-input: #d8dad5;
+  --color-ring: #598944;
+  --color-muted: #eaece7;
+  --color-muted-foreground: #848782;
+  --color-primary: #598944;
+  --color-primary-foreground: #ffffff;
+  --color-accent: #b3c9a9;
+  --color-accent-foreground: #181916;
+
+  /* Typography - Font Family */
+  --font-sans: 'Hanken Grotesk', 'Noto Sans Tamil', system-ui, -apple-system, sans-serif;
+  --font-tamil: 'Noto Sans Tamil', 'Hanken Grotesk', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  /* Stitch Theme Tokens for Government Department Portal */
+  --color-sidebar-bg: #062206;
+  --color-sidebar-item-active: #143A14;
+  --color-secondary-fixed: #9df79e;
+  --color-on-tertiary: #ffffff;
+  --color-surface-container-low: #f2f4f6;
+  --color-surface-container-high: #e6e8ea;
+  --color-surface-container-highest: #e0e3e5;
+  --color-surface-container-lowest: #ffffff;
+  --color-status-new-bg: #E3F2FD;
+  --color-status-new-text: #1565C0;
+  --color-status-pending-bg: #FFF3E0;
+  --color-status-pending-text: #E65100;
+  --color-status-approved-bg: #E8F5E9;
+  --color-status-approved-text: #2E7D32;
+  --color-status-correction-bg: #FCE4EC;
+  --color-status-correction-text: #C2185B;
+  --color-status-rejected-bg: #FFEBEE;
+  --color-status-rejected-text: #C62828;
+  --color-status-review-bg: #F3E5F5;
+  --color-status-review-text: #7B1FA2;
+  --color-table-header-bg: #ECEEF0;
+  --color-outline-variant: #c3c8bd;
+}
+
+/* Dark mode — apply under a .dark selector */
+.dark {
+  --color-background: #181916;
+  --color-foreground: #f4f6f2;
+  --color-card: #30322e;
+  --color-card-foreground: #f4f6f2;
+  --color-border: #3f413d;
+  --color-input: #3f413d;
+  --color-ring: #82b26e;
+  --color-muted: #3f413d;
+  --color-muted-foreground: #a0a39e;
+  --color-primary: #82b26e;
+  --color-primary-foreground: #181916;
+  --color-accent: #95a98c;
+  --color-accent-foreground: #181916;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background-color: var(--color-background);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Tamil text class */
+.tamil-text {
+  font-family: var(--font-tamil);
+  line-height: 1.8;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  z-index: 9999;
+  padding: 0.75rem 1.5rem;
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 0 0 var(--radius-md) 0;
+  transition: top 150ms ease;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

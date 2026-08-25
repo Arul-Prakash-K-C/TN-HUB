@@ -1,0 +1,30 @@
+[
+  {
+    "opportunity_id": "opp-ai-discovery",
+    "pain_addressed": "Citizens struggle to find services in a flat list of 500+ rows.",
+    "sympho_feature": "AI-Powered Service Discovery & Natural Language Search",
+    "description": "An interactive chatbot assistant (Ask Sympho) that translates natural language intents (e.g., 'I want to apply for a college fee concession') directly into the correct service recommendation ('First Graduate Certificate') and guides the user through the process.",
+    "impact_metrics": "90% reduction in discovery search time, eliminates navigation steps."
+  },
+  {
+    "opportunity_id": "opp-doc-vault",
+    "pain_addressed": "Citizens must repeatedly upload the same documents (Aadhaar, Ration Card) for different applications.",
+    "sympho_feature": "Sympho Document Vault & DigiLocker Integration",
+    "description": "A secure personal vault that saves and encrypts citizen documents upon first upload or pulls them directly from DigiLocker. Subsequent applications auto-reference the saved files with a single click.",
+    "impact_metrics": "Eliminates redundant file uploads entirely, prevents document loss errors."
+  },
+  {
+    "opportunity_id": "opp-smart-checklists",
+    "pain_addressed": "Services list document requirements as 'NA' or hide them until mid-application.",
+    "sympho_feature": "Dynamic Pre-application checklists",
+    "description": "Shows an upfront, clear, multi-language list of mandatory vs optional documents before the citizen begins filling out a form, complete with sample images or templates.",
+    "impact_metrics": "Lowers rejection rates due to missing paperwork by 40%."
+  },
+  {
+    "opportunity_id": "opp-unified-timeline",
+    "pain_addressed": "Status checking is fragmented across three URLs with vague government terminology.",
+    "sympho_feature": "Unified Application Progress Timeline",
+    "description": "Renders a clean progress bar showing exactly where the application is in the process (e.g. 'VAO Verified', 'With Tahsildar') with expected SLAs and simple-language status descriptions.",
+    "impact_metrics": "Drastically reduces citizen anxiety and status-lookup support requests."
+  }
+]

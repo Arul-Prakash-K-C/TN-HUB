@@ -1,0 +1,125 @@
+[
+  {
+    "department_id": "dept-revenue",
+    "department_name": "Revenue Department",
+    "department_name_tamil": "வருவாய் துறை",
+    "description": "Handles land records, certificates, and revenue administration",
+    "major_services": [
+      "Community Certificate",
+      "Nativity Certificate",
+      "Income Certificate",
+      "First Graduate Certificate",
+      "Legal Heir Certificate",
+      "OBC Certificate"
+    ],
+    "service_categories": ["Revenue", "Certificates", "Pensions"],
+    "official_website": "https://tnrevenue.gov.in",
+    "contact_information": {
+      "email": "revenue@tn.gov.in",
+      "phone": "044-25670001"
+    },
+    "source_url": "https://tnega.tn.gov.in/home"
+  },
+  {
+    "department_id": "dept-civil-supplies",
+    "department_name": "Civil Supplies Department",
+    "department_name_tamil": "குடிமைப் பொருள் வழங்கல் துறை",
+    "description": "Manages public distribution system and ration card services",
+    "major_services": [
+      "New Ration Card",
+      "Add Family Member to Ration Card",
+      "Remove Family Member from Ration Card",
+      "Ration Card Address Change",
+      "Duplicate Ration Card"
+    ],
+    "service_categories": ["Civil Supplies", "Ration Card"],
+    "official_website": "https://www.tncsc.tn.gov.in",
+    "contact_information": {
+      "email": "civilsupplies@tn.gov.in",
+      "phone": "044-25670002"
+    },
+    "source_url": "https://tnega.tn.gov.in/home"
+  },
+  {
+    "department_id": "dept-social-welfare",
+    "department_name": "Social Welfare Department",
+    "department_name_tamil": "சமூக நலத்துறை",
+    "description": "Implements social welfare schemes for underprivileged sections",
+    "major_services": [
+      "Welfare Scheme Application"
+    ],
+    "service_categories": ["Welfare Schemes", "Pensions"],
+    "official_website": "https://www.tnsocialwelfare.tn.gov.in",
+    "contact_information": {
+      "email": "socialwelfare@tn.gov.in",
+      "phone": "044-25670003"
+    },
+    "source_url": "https://tnega.tn.gov.in/home"
+  },
+  {
+    "department_id": "dept-local-govt",
+    "department_name": "Local Government Department",
+    "department_name_tamil": "உள்ளாட்சித் துறை",
+    "description": "Manages birth, death registrations and local body services",
+    "major_services": [
+      "Birth Certificate Request",
+      "Death Certificate Request"
+    ],
+    "service_categories": ["Certificates", "Local Government"],
+    "official_website": "https://www.tnurbantree.tn.gov.in",
+    "contact_information": {
+      "email": "localgov@tn.gov.in",
+      "phone": "044-25670004"
+    },
+    "source_url": "https://tnega.tn.gov.in/home"
+  },
+  {
+    "department_id": "dept-health",
+    "department_name": "Health & Family Welfare Department",
+    "department_name_tamil": "சுகாதார மற்றும் குடும்ப நலத்துறை",
+    "description": "Provides healthcare services and health scheme enrollment",
+    "major_services": [
+      "Health Scheme Enrollment"
+    ],
+    "service_categories": ["Healthcare"],
+    "official_website": "https://www.tnhealth.tn.gov.in",
+    "contact_information": {
+      "email": "health@tn.gov.in",
+      "phone": "044-25670005"
+    },
+    "source_url": "https://tnega.tn.gov.in/home"
+  },
+  {
+    "department_id": "dept-drugs-control",
+    "department_name": "Drugs Control Department",
+    "department_name_tamil": "மருந்து கட்டுப்பாட்டு துறை",
+    "description": "Regulates drug manufacturing, distribution and licensing",
+    "major_services": [
+      "Drug Licensing Application"
+    ],
+    "service_categories": ["Licences"],
+    "official_website": "https://www.tndrugscontrol.tn.gov.in",
+    "contact_information": {
+      "email": "drugscontrol@tn.gov.in",
+      "phone": "044-25670006"
+    },
+    "source_url": "https://tnega.tn.gov.in/home"
+  },
+  {
+    "department_id": "dept-transport",
+    "department_name": "Transport Department",
+    "department_name_tamil": "போக்குவரத்து துறை",
+    "description": "Manages driving licences, vehicle registration and transport services",
+    "major_services": [
+      "Driving Licence Renewal",
+      "Vehicle Tax Payment"
+    ],
+    "service_categories": ["Licences", "Transport"],
+    "official_website": "https://www.tnsta.gov.in",
+    "contact_information": {
+      "email": "transport@tn.gov.in",
+      "phone": "044-25670007"
+    },
+    "source_url": "https://tnega.tn.gov.in/home"
+  }
+]
