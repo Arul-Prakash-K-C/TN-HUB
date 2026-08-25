@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
+  import { untrack } from 'svelte';
   import { tt, locale } from '$lib/i18n';
   import { currentUser, isAuthenticated } from '$lib/stores/auth';
   import { ArrowLeft, ArrowRight, Save, Check, Upload, FileText, AlertCircle } from '@lucide/svelte';
@@ -33,31 +34,35 @@
     t('apply.step.declaration')
   ]);
 
-  // Pre-fill from user profile
+  // Pre-fill from user profile only once
   $effect(() => {
     if (user && user.role === 'citizen') {
-      const citizen = user as any;
-      formData = {
-        fullName: citizen.name || '',
-        email: citizen.email || '',
-        phone: citizen.phone || '',
-        dateOfBirth: citizen.dateOfBirth || '',
-        gender: citizen.gender || '',
-        aadhaarLast4: citizen.aadhaarLast4 || '',
-        doorNo: citizen.address?.doorNo || '',
-        street: citizen.address?.street || '',
-        area: citizen.address?.area || '',
-        city: citizen.address?.city || '',
-        district: citizen.district || '',
-        taluk: citizen.taluk || '',
-        village: citizen.village || '',
-        pincode: citizen.pincode || '',
-        annualIncome: citizen.annualIncome || undefined,
-        occupation: citizen.occupation || '',
-        community: citizen.community || '',
-        religion: citizen.religion || '',
-        purpose: ''
-      };
+      untrack(() => {
+        if (!formData.fullName && !formData.phone) {
+          const citizen = user as any;
+          formData = {
+            fullName: citizen.name || '',
+            email: citizen.email || '',
+            phone: citizen.phone || '',
+            dateOfBirth: citizen.dateOfBirth || '',
+            gender: citizen.gender || '',
+            aadhaarLast4: citizen.aadhaarLast4 || '',
+            doorNo: citizen.address?.doorNo || '',
+            street: citizen.address?.street || '',
+            area: citizen.address?.area || '',
+            city: citizen.address?.city || '',
+            district: citizen.district || '',
+            taluk: citizen.taluk || '',
+            village: citizen.village || '',
+            pincode: citizen.pincode || '',
+            annualIncome: citizen.annualIncome || undefined,
+            occupation: citizen.occupation || '',
+            community: citizen.community || '',
+            religion: citizen.religion || '',
+            purpose: ''
+          };
+        }
+      });
     }
   });
 
@@ -501,9 +506,18 @@
                   </span>
                 </div>
                 {#if uploadedDocs[doc.id]}
-                  <div class="flex items-center gap-2 rounded-lg bg-success-light p-3 text-sm text-success-dark">
-                    <Check class="h-4 w-4" />
-                    {uploadedDocs[doc.id].name}
+                  <div class="flex items-center justify-between rounded-lg bg-emerald-50 border border-emerald-150 p-3 text-sm text-emerald-800">
+                    <div class="flex items-center gap-2">
+                      <Check class="h-4 w-4 text-emerald-600" />
+                      <span class="font-medium truncate">{uploadedDocs[doc.id].name}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onclick={() => { delete uploadedDocs[doc.id]; uploadedDocs = { ...uploadedDocs }; }}
+                      class="text-xs font-bold text-rose-600 hover:text-rose-800 hover:underline px-2.5 py-1.5 rounded-lg hover:bg-rose-50 transition shrink-0"
+                    >
+                      Remove
+                    </button>
                   </div>
                 {:else}
                   <div class="flex gap-2">
@@ -514,7 +528,14 @@
                     </label>
                     {#if doc.digilockerAvailable}
                       <button
-                        onclick={() => { uploadedDocs[doc.id] = { name: `${doc.name} (DigiLocker)`, size: 250000 }; }}
+                        onclick={() => {
+                          const dummyBlob = new Blob(
+                            ["%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R >>\nendobj\n4 0 obj\n<< /Length 40 >>\nstream\nBT /F1 24 Tf 100 700 Td (DigiLocker Document Verified) Tj ET\nendstream\nendobj\nxref\n0 5\n0000000000 65535 f\n0000000009 00000 n\n0000000056 00000 n\n0000000111 00000 n\n0000000212 00000 n\ntrailer\n<< /Size 5 /Root 1 0 R >>\nstartxref\n303\n%%EOF"],
+                            { type: "application/pdf" }
+                          );
+                          const mockFile = new File([dummyBlob], `${doc.id}_digilocker.pdf`, { type: "application/pdf" });
+                          uploadedDocs[doc.id] = { name: `${doc.name} (DigiLocker).pdf`, size: mockFile.size, file: mockFile };
+                        }}
                         class="rounded-lg border border-info bg-info-light px-4 py-2 text-xs font-medium text-info-dark hover:bg-info/10 transition"
                       >
                         DigiLocker

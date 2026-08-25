@@ -275,7 +275,7 @@ export async function loadPublicCatalog(): Promise<{ services: Service[]; depart
   return {
     services: serviceSnapshots.docs
       .map((snapshot) => toUiService(snapshot.data() as CatalogService))
-      .filter((service) => service.isActive),
+      .filter((service) => service.isActive && service.implementationMode === 'NATIVE_WORKFLOW'),
     departments: departmentSnapshots.docs
       .map((snapshot) => toUiDepartment(snapshot.data() as CatalogDepartment))
       .filter((department) => department.isActive)
@@ -291,7 +291,9 @@ export async function loadAdminCatalog(): Promise<{ services: Service[]; departm
   ]);
 
   return {
-    services: serviceSnapshots.docs.map((snapshot) => toUiService(snapshot.data() as CatalogService)),
+    services: serviceSnapshots.docs
+      .map((snapshot) => toUiService(snapshot.data() as CatalogService))
+      .filter((service) => service.implementationMode === 'NATIVE_WORKFLOW'),
     departments: departmentSnapshots.docs.map((snapshot) => toUiDepartment(snapshot.data() as CatalogDepartment))
   };
 }
@@ -305,5 +307,5 @@ export async function loadPublicServiceBySlug(slug: string): Promise<Service | n
 
   if (snapshot.empty) return null;
   const service = toUiService(snapshot.docs[0].data() as CatalogService);
-  return service.isActive ? service : null;
+  return service.isActive && service.implementationMode === 'NATIVE_WORKFLOW' ? service : null;
 }

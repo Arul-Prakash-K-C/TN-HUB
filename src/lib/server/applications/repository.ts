@@ -337,7 +337,7 @@ async function createApplicationForCitizen(
       serviceId: service.id,
       serviceName: service.name,
       citizenId: citizen.uid,
-      citizenName: citizen.displayName,
+      citizenName: (input.formData.fullName as string) || citizen.displayName,
       ...(assistedByOperator ? {
         assistedByOperatorId: assistedByOperator.uid,
         assistedByOperatorName: assistedByOperator.displayName

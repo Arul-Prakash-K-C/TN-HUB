@@ -73,7 +73,7 @@
     { value: 'local_government', label: currentLocale === 'ta' ? 'உள்ளாட்சி' : 'Local Government' },
     { value: 'health', label: currentLocale === 'ta' ? 'சுகாதாரம்' : 'Health' },
     { value: 'licences', label: currentLocale === 'ta' ? 'உரிமங்கள்' : 'Licences' }
-  ]);
+  ].filter(opt => opt.value === 'all' || catalogServices.some(s => s.category === opt.value)));
 </script>
 
 <svelte:head>
@@ -116,26 +116,15 @@
               {/each}
             </select>
           </div>
-          <div class="relative min-w-[160px]">
+          <div class="relative min-w-[180px]">
             <select
               bind:value={selectedDepartment}
               class="w-full appearance-none bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-3.5 pr-8 text-xs font-medium focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all cursor-pointer outline-none"
             >
               <option value="all">{t('services.filter.department')}</option>
-              {#each catalogDepartments as dept}
+              {#each catalogDepartments.filter(d => catalogServices.some(s => s.departmentId === d.id)) as dept}
                 <option value={dept.id}>{currentLocale === 'ta' ? dept.nameTA : dept.name}</option>
               {/each}
-            </select>
-          </div>
-          <div class="relative min-w-[160px]">
-            <select
-              bind:value={selectedMode}
-              class="w-full appearance-none bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-3.5 pr-8 text-xs font-medium focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all cursor-pointer outline-none"
-            >
-              <option value="all">{t('services.filter.mode')}</option>
-              <option value="NATIVE_WORKFLOW">{t('services.badge.native')}</option>
-              <option value="API_INTEGRATED">{t('services.badge.api')}</option>
-              <option value="EXTERNAL_REDIRECT">{t('services.badge.external')}</option>
             </select>
           </div>
         </div>
