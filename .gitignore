@@ -28,3 +28,6 @@ graphify-out/
 .agents/mcp_config.json
 
 
+
+# MCP config with secrets
+.agents/mcp_config.json
