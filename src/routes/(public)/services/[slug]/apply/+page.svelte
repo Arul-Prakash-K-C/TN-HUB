@@ -73,14 +73,6 @@
         stepError = 'Please enter your Phone Number.';
         return false;
       }
-      if (!formData.district || String(formData.district).trim() === '') {
-        stepError = 'Please enter your District.';
-        return false;
-      }
-      if (!formData.pincode || String(formData.pincode).trim() === '') {
-        stepError = 'Please enter your Pincode.';
-        return false;
-      }
     } else if (currentStep === 2) { // Service Details
       if (service?.slug === 'e-adangal-extract') {
         if (!formData.surveyNumber || String(formData.surveyNumber).trim() === '') {
@@ -124,6 +116,16 @@
         }
         if (!formData.residenceDurationYears || Number(formData.residenceDurationYears) <= 0) {
           stepError = 'Please enter a valid duration of residence in years.';
+          return false;
+        }
+      } else {
+        // Fallback for default address services
+        if (!formData.district || String(formData.district).trim() === '') {
+          stepError = 'Please enter your District.';
+          return false;
+        }
+        if (!formData.pincode || String(formData.pincode).trim() === '') {
+          stepError = 'Please enter your Pincode.';
           return false;
         }
       }
