@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { LayoutDashboard, Inbox, LogOut } from '@lucide/svelte';
+  import { LayoutDashboard, Inbox, LogOut, GraduationCap } from '@lucide/svelte';
   import { auth, isAuthenticated } from '$lib/stores/auth';
   import LogoutModal from '$lib/components/ui/LogoutModal.svelte';
   import { t } from '$lib/i18n';
@@ -60,6 +60,14 @@
     >
       <Inbox class="h-4 w-4 shrink-0" />
       <span>{t('operator.assistedApplications')}</span>
+    </a>
+
+    <a 
+      href="/operator/training" 
+      class="flex items-center gap-3 px-3.5 py-2.5 font-medium rounded-lg transition-all text-xs {isActive('/operator/training') ? 'bg-[#143A14] text-white font-bold border-l-4 border-[#9df79e]' : 'text-white/70 hover:text-white hover:bg-[#143A14]/50'}"
+    >
+      <GraduationCap class="h-4 w-4 shrink-0" />
+      <span>Training Portal</span>
     </a>
 
   </nav>

@@ -28,7 +28,7 @@ export function canAccessRoute(user: User | null, path: string): { allowed: bool
     '/contact',
     '/help',
     '/sitemap',
-    '/training',
+    '/tutorials',
     '/chatbot'
   ];
 

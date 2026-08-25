@@ -88,7 +88,7 @@
 </script>
 
 <svelte:head>
-  <title>{t('training.title')}</title>
+  <title>Operator Training Portal — Sympho Center</title>
 </svelte:head>
 
 <div class="bg-slate-50 min-h-screen pb-20">
@@ -97,8 +97,8 @@
     <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
       <div class="flex flex-col lg:flex-row items-start lg:items-center gap-8">
         <div class="flex-1">
-          <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">{t('training.portal')}</h1>
-          <p class="mt-3 text-base text-emerald-200/80 max-w-2xl leading-relaxed">{t('training.subtitle')}</p>
+          <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">Operator Kiosk Training</h1>
+          <p class="mt-3 text-base text-emerald-200/80 max-w-2xl leading-relaxed">Boost your e-Sevai Kiosk performance and navigate workflows effectively.</p>
           <p class="mt-2 text-sm text-slate-400">Self-paced digital literacy courses designed for Tamil Nadu citizens, e-Sevai operators, and government officers.</p>
         </div>
 

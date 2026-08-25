@@ -9,7 +9,7 @@
       { name: 'Services Offered', href: '/services' },
       { name: 'Application Tracking', href: '/applications' },
       { name: 'Dashboard', href: '/dashboard' },
-      { name: 'Sympozen Training', href: '/training' },
+      { name: 'Service Tutorials', href: '/tutorials' },
       { name: 'Contact Us', href: '/contact' },
       { name: 'Help & FAQs', href: '/help' },
       { name: 'Sitemap', href: '/sitemap' }
@@ -31,7 +31,7 @@
       { name: 'Grievances / Complaints', href: '/complaints' },
       { name: 'Policies & Guidelines', href: '/help#policies' },
       { name: 'Contact Support', href: '/contact' },
-      { name: 'Training Portal', href: '/training' }
+      { name: 'Service Tutorials', href: '/tutorials' }
     ]}
   ];
 </script>

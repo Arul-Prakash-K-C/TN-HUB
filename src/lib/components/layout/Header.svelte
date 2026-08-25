@@ -102,10 +102,10 @@
         <a href="/help" class="px-3 py-2 rounded-lg transition hover:bg-white/10 {currentPath === '/help' ? 'bg-white/20 text-white' : 'text-slate-300'}">{t('nav.help')}</a>
 
         <a href="/contact" class="px-3 py-2 rounded-lg transition hover:bg-white/10 {currentPath === '/contact' ? 'bg-white/20 text-white' : 'text-slate-300'}">{t('footer.contact')}</a>
-        <a href="/training" class="px-3 py-2 rounded-lg transition hover:bg-white/10 {currentPath === '/training' ? 'bg-white/20 text-white' : 'text-slate-300'}">
+        <a href="/tutorials" class="px-3 py-2 rounded-lg transition hover:bg-white/10 {currentPath === '/tutorials' ? 'bg-white/20 text-white' : 'text-slate-300'}">
           <span class="flex items-center gap-1.5">
             <GraduationCap class="h-4 w-4" />
-            {t('training.title').split(' — ')[0]}
+            {$locale === 'ta' ? 'பயிற்சிகள்' : 'Tutorials'}
           </span>
         </a>
       </nav>
@@ -221,8 +221,8 @@
       <a href="/contact" onclick={() => mobileMenuOpen = false} class="block rounded-xl px-4 py-3 text-white hover:bg-white/10">
         <span class="flex items-center gap-2"><Phone class="h-4 w-4" /> {t('footer.contact')}</span>
       </a>
-      <a href="/training" onclick={() => mobileMenuOpen = false} class="block rounded-xl px-4 py-3 text-white hover:bg-white/10">
-        <span class="flex items-center gap-2"><GraduationCap class="h-4 w-4" /> {t('training.title').split(' — ')[0]}</span>
+      <a href="/tutorials" onclick={() => mobileMenuOpen = false} class="block rounded-xl px-4 py-3 text-white hover:bg-white/10">
+        <span class="flex items-center gap-2"><GraduationCap class="h-4 w-4" /> {$locale === 'ta' ? 'பயிற்சிகள்' : 'Tutorials'}</span>
       </a>
       <a href="/sitemap" onclick={() => mobileMenuOpen = false} class="block rounded-xl px-4 py-3 text-white hover:bg-white/10">{t('sitemap.heading')}</a>
     </div>
