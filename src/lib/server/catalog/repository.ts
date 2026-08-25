@@ -309,3 +309,11 @@ export async function loadPublicServiceBySlug(slug: string): Promise<Service | n
   const service = toUiService(snapshot.docs[0].data() as CatalogService);
   return service.isActive ? service : null;
 }
+
+export async function loadPublicServiceById(id: string): Promise<Service | null> {
+  const snapshot = await getFirebaseAdminFirestore().collection('services').doc(id).get();
+  if (!snapshot.exists) return null;
+
+  const service = toUiService(snapshot.data() as CatalogService);
+  return service.isActive ? service : null;
+}
