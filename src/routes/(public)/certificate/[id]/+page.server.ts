@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { adminDb } from '$lib/server/firebase';
+import { getFirebaseAdminFirestore } from '$lib/server/firebase/admin';
 import type { Application } from '$lib/types';
 import { loadPublicServiceById } from '$lib/server/catalog/repository';
 
@@ -8,6 +8,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
   const { id } = params;
 
   try {
+    const adminDb = getFirebaseAdminFirestore();
     const doc = await adminDb.collection('applications').doc(id).get();
     if (!doc.exists) {
       throw error(404, 'Certificate not found');
