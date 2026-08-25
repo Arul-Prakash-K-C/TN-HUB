@@ -124,18 +124,4 @@
   </div>
 </section>
 
-<!-- Call to Action Banner -->
-<section class="bg-primary-100 py-16 text-primary-950 text-center">
-  <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-    <h2 class="text-2xl font-black tracking-tight sm:text-3xl">Experience the unified citizen portal today.</h2>
-    <div class="mt-8">
-      <a
-        href="/services"
-        class="inline-flex items-center justify-center gap-2.5 rounded-xl bg-primary-800 px-8 py-4 text-sm font-black text-primary-foreground shadow-lg transition hover:bg-primary-700 hover:shadow-xl hover:-translate-y-0.5"
-      >
-        Explore Services
-        <ArrowRight class="h-4 w-4" />
-      </a>
-    </div>
-  </div>
-</section>
+
