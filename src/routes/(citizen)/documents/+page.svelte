@@ -71,9 +71,9 @@
   <title>{t('documents.title')} — TN Hub</title>
 </svelte:head>
 
-<div class="bg-slate-50 min-h-screen pb-12 flex flex-col w-full">
+<div class="bg-slate-50 dark:bg-background min-h-screen pb-12 flex flex-col w-full">
   <!-- Document Vault Header (Green Banner matching Public Pages) -->
-  <div class="bg-[#316342] text-white px-6 py-8 sm:px-8 shadow-md">
+  <div class="public-banner px-6 py-8 sm:px-8 shadow-md">
     <div class="max-w-7xl mx-auto w-full">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -120,7 +120,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {#each citizenDocs as doc}
             <!-- Document Card -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 flex flex-col hover:border-[#316342]/30 hover:shadow-md transition-all">
+            <div class="bg-white dark:bg-surface border border-slate-200 dark:border-border rounded-2xl p-6 flex flex-col hover:border-[#316342]/30 dark:hover:border-primary/50 hover:shadow-md transition-all">
               <div class="flex justify-between items-start mb-4">
                 <div class="w-12 h-12 bg-[#316342]/5 rounded-xl flex items-center justify-center text-[#316342]">
                   <FileText class="h-6 w-6" />
@@ -130,21 +130,21 @@
                     <CheckCircle class="h-3.5 w-3.5" /> Verified
                   </span>
                 {:else}
-                  <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                  <span class="bg-slate-100 dark:bg-surface-container-highest text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
                     <AlertCircle class="h-3.5 w-3.5" /> {doc.verificationStatus}
                   </span>
                 {/if}
               </div>
               
-              <h3 class="text-base font-bold text-slate-900 mb-1 line-clamp-1">
+              <h3 class="text-base font-bold text-slate-900 dark:text-text mb-1 line-clamp-1">
                 {currentLocale === 'ta' ? doc.nameTA : doc.name}
               </h3>
-              <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-4 line-clamp-1">
+              <p class="text-[10px] font-bold text-slate-500 dark:text-text-muted uppercase tracking-wider mb-4 line-clamp-1">
                 Issued by: {doc.issuedBy || 'Government of TN'}
               </p>
               
-              <div class="bg-slate-50 p-3 rounded-xl mb-6">
-                <p class="text-[11px] font-bold text-slate-900 font-mono text-center">
+              <div class="bg-slate-50 dark:bg-surface-container p-3 rounded-xl mb-6">
+                <p class="text-[11px] font-bold text-slate-900 dark:text-text font-mono text-center">
                   {#if doc.documentNumber}
                     ID: {doc.documentNumber}
                   {:else}
@@ -153,8 +153,8 @@
                 </p>
               </div>
               
-              <div class="mt-auto flex justify-between items-center pt-4 border-t border-slate-100">
-                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              <div class="mt-auto flex justify-between items-center pt-4 border-t border-slate-100 dark:border-border">
+                <span class="text-[11px] font-bold text-slate-500 dark:text-text-muted uppercase tracking-wider">
                   {(doc.fileSize / 1024).toFixed(0)} KB • {doc.source}
                 </span>
                 <button onclick={() => downloadDocument(doc.id)} class="text-[#316342] hover:text-[#254b32] text-xs font-bold flex items-center gap-1 hover:underline">
@@ -167,15 +167,15 @@
       {:else}
         <!-- DigiLocker Integration -->
         <div class="mx-auto max-w-4xl">
-          <div class="rounded-3xl border border-purple-200 bg-gradient-to-br from-purple-50 via-white to-purple-50/30 p-8 shadow-sm">
+          <div class="rounded-3xl border border-purple-200 dark:border-purple-900/50 bg-gradient-to-br from-purple-50 dark:from-purple-900/20 via-white dark:via-surface to-purple-50/30 dark:to-purple-900/10 p-8 shadow-sm">
             <div class="flex items-start gap-4">
               <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-600 text-white shadow-md">
                 <Shield class="h-8 w-8" />
               </div>
   
               <div class="flex-1">
-                <h2 class="text-2xl font-black text-slate-900">{t('digilocker.title')}</h2>
-                <p class="mt-1 text-sm text-slate-500">{t('digilocker.subtitle')}</p>
+                <h2 class="text-2xl font-black text-slate-900 dark:text-text">{t('digilocker.title')}</h2>
+                <p class="mt-1 text-sm text-slate-500 dark:text-text-muted">{t('digilocker.subtitle')}</p>
   
                 <div class="mt-3 inline-flex items-center gap-2 rounded-lg bg-purple-100 px-3 py-1 text-xs text-purple-800 font-bold">
                   <AlertCircle class="h-3.5 w-3.5" />
@@ -184,10 +184,10 @@
               </div>
             </div>
   
-            <div class="mt-8 border-t border-purple-100 pt-6">
+            <div class="mt-8 border-t border-purple-100 dark:border-purple-900/50 pt-6">
               {#if !isDigiLockerConnected}
                 <div class="text-center py-8">
-                  <p class="text-sm text-slate-500 mb-6 font-medium">Link your MeitY DigiLocker account to instantly fetch verified identity and academic certificates without manual document upload.</p>
+                  <p class="text-sm text-slate-500 dark:text-text-muted mb-6 font-medium">Link your MeitY DigiLocker account to instantly fetch verified identity and academic certificates without manual document upload.</p>
                   <button
                     onclick={connectDigiLocker}
                     disabled={isConnecting}

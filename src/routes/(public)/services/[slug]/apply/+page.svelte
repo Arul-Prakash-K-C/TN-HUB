@@ -511,9 +511,9 @@
     </div>
   </div>
 {:else}
-  <div class="bg-surface-secondary min-h-screen">
+  <div class="bg-surface-secondary dark:bg-background min-h-screen">
     <!-- Header -->
-    <div class="bg-white border-b border-border">
+    <div class="bg-white dark:bg-surface border-b border-border">
       <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6">
         <a href="/services/{slug}" class="inline-flex items-center gap-1 text-sm text-text-muted hover:text-primary transition mb-2">
           <ArrowLeft class="h-4 w-4" /> {t('common.back')}
@@ -525,23 +525,23 @@
     </div>
 
     <!-- Stepper (Redesigned as clean progress pills, no hyphens, no scrollbar) -->
-    <div class="bg-white border-b border-slate-200 py-4 px-4 sm:px-6">
+    <div class="bg-white dark:bg-surface border-b border-border py-4 px-4 sm:px-6">
       <div class="mx-auto max-w-7xl">
         <div class="flex items-center justify-start gap-3 overflow-x-auto pb-1" style="scrollbar-width: none; -ms-overflow-style: none;">
           {#each steps as step, i}
             <div class="flex items-center gap-3 shrink-0">
               <div class="flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all text-xs font-bold
                 {i === currentStep 
-                  ? 'bg-emerald-50 border-emerald-200 text-emerald-800 shadow-xs' 
+                  ? 'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800/50 text-emerald-800 dark:text-emerald-300 shadow-xs' 
                   : i < currentStep 
-                    ? 'bg-emerald-50/40 border-emerald-100/50 text-slate-700' 
-                    : 'bg-slate-50 border-slate-100 text-slate-400'}">
+                    ? 'bg-emerald-50/40 dark:bg-emerald-900/20 border-emerald-100/50 dark:border-emerald-800/30 text-slate-700 dark:text-slate-300' 
+                    : 'bg-slate-50 dark:bg-surface-container-highest border-slate-100 dark:border-border text-slate-400 dark:text-text-muted'}">
                 <div class="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-black shrink-0
                   {i === currentStep 
                     ? 'bg-emerald-600 text-white' 
                     : i < currentStep 
                       ? 'bg-emerald-500 text-white' 
-                      : 'bg-slate-200 text-slate-500'}">
+                      : 'bg-slate-200 dark:bg-surface-container text-slate-500 dark:text-text-muted'}">
                   {#if i < currentStep}
                     ✓
                   {:else}
@@ -563,7 +563,7 @@
 
     <!-- Form content -->
     <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <div class="rounded-xl border border-border bg-white p-6 shadow-sm animate-fade-in">
+      <div class="rounded-xl border border-border bg-white dark:bg-surface p-6 shadow-sm animate-fade-in">
         <!-- Step 0: Eligibility -->
         {#if currentStep === 0}
           <h2 class="text-h3 text-text mb-4">{t('service.eligibility')}</h2>
@@ -586,19 +586,19 @@
           <div class="grid gap-4 sm:grid-cols-2">
             <div>
               <label for="fullName" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.fullName')} *</label>
-              <input id="fullName" type="text" bind:value={formData.fullName} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+              <input id="fullName" type="text" bind:value={formData.fullName} class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
             </div>
             <div>
               <label for="fatherName" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.fatherName')} *</label>
-              <input id="fatherName" type="text" bind:value={formData.fatherName} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+              <input id="fatherName" type="text" bind:value={formData.fatherName} class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
             </div>
             <div>
               <label for="dateOfBirth" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.dob')} *</label>
-              <input id="dateOfBirth" type="date" bind:value={formData.dateOfBirth} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+              <input id="dateOfBirth" type="date" bind:value={formData.dateOfBirth} class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
             </div>
             <div>
               <label for="gender" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.gender')} *</label>
-              <select id="gender" bind:value={formData.gender} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary">
+              <select id="gender" bind:value={formData.gender} class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary">
                 <option value="">Select</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -607,15 +607,15 @@
             </div>
             <div>
               <label for="phone" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.phone')} *</label>
-              <input id="phone" type="tel" inputmode="numeric" maxlength="10" bind:value={formData.phone} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+              <input id="phone" type="tel" inputmode="numeric" maxlength="10" bind:value={formData.phone} class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
             </div>
             <div>
               <label for="email" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.email')}</label>
-              <input id="email" type="email" bind:value={formData.email} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+              <input id="email" type="email" bind:value={formData.email} class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
             </div>
             <div>
               <label for="aadhaarNumber" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.aadhaar')}</label>
-              <input id="aadhaarNumber" type="text" pattern="[0-9]{12}" bind:value={formData.aadhaarNumber} maxlength="12" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="12-digit number" />
+              <input id="aadhaarNumber" type="text" pattern="[0-9]{12}" bind:value={formData.aadhaarNumber} maxlength="12" class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="12-digit number" />
             </div>
           </div>
 
@@ -626,7 +626,7 @@
             <div class="grid gap-4 sm:grid-cols-2">
               <div>
                 <label for="adangalDistrict" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.district')} *</label>
-                <select id="adangalDistrict" bind:value={formData.district} required class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary">
+                <select id="adangalDistrict" bind:value={formData.district} required class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary">
                   <option value="">Select District</option>
                   <option value="chennai">Chennai</option>
                   <option value="coimbatore">Coimbatore</option>
@@ -637,15 +637,15 @@
               </div>
               <div>
                 <label for="adangalTaluk" class="block text-sm font-medium text-text mb-1.5">Taluk</label>
-                <input id="adangalTaluk" type="text" bind:value={formData.taluk} placeholder="e.g. Mambalam" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                <input id="adangalTaluk" type="text" bind:value={formData.taluk} placeholder="e.g. Mambalam" class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
               </div>
               <div>
                 <label for="adangalVillage" class="block text-sm font-medium text-text mb-1.5">Village</label>
-                <input id="adangalVillage" type="text" bind:value={formData.village} placeholder="e.g. Kodambakkam" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                <input id="adangalVillage" type="text" bind:value={formData.village} placeholder="e.g. Kodambakkam" class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
               </div>
               <div>
                 <label for="adangalSurveyNumber" class="block text-sm font-medium text-text mb-1.5">Survey Number / Sub-division *</label>
-                <input id="adangalSurveyNumber" type="text" bind:value={formData.surveyNumber} required placeholder="e.g. 142/3A" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                <input id="adangalSurveyNumber" type="text" bind:value={formData.surveyNumber} required placeholder="e.g. 142/3A" class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
               </div>
             </div>
           {:else}
@@ -653,20 +653,20 @@
               {#if service.slug === 'income-certificate'}
                 <div>
                   <label for="annualIncome" class="block text-sm font-medium text-text mb-1.5">Annual Family Income (₹) *</label>
-                  <input id="annualIncome" type="number" bind:value={formData.annualIncome} required placeholder="e.g. 120000" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                  <input id="annualIncome" type="number" bind:value={formData.annualIncome} required placeholder="e.g. 120000" class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
                 <div>
                   <label for="occupation" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.occupation')} *</label>
-                  <input id="occupation" type="text" bind:value={formData.occupation} required placeholder="e.g. Farmer / Business" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                  <input id="occupation" type="text" bind:value={formData.occupation} required placeholder="e.g. Farmer / Business" class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
                 <div class="sm:col-span-2">
                   <label for="purpose" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.purpose')}</label>
-                  <input id="purpose" type="text" bind:value={formData.purpose} placeholder="e.g. Scholarship / Higher Education" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                  <input id="purpose" type="text" bind:value={formData.purpose} placeholder="e.g. Scholarship / Higher Education" class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
               {:else if service.slug === 'community-certificate'}
                 <div>
                   <label for="religion" class="block text-sm font-medium text-text mb-1.5">Religion *</label>
-                  <select id="religion" bind:value={formData.religion} required class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary">
+                  <select id="religion" bind:value={formData.religion} required class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary">
                     <option value="">Select Religion</option>
                     <option value="Hinduism">Hinduism</option>
                     <option value="Islam">Islam</option>
@@ -679,7 +679,7 @@
                 </div>
                 <div>
                   <label for="communityCategory" class="block text-sm font-medium text-text mb-1.5">Community Category *</label>
-                  <select id="communityCategory" bind:value={formData.communityCategory} required class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary">
+                  <select id="communityCategory" bind:value={formData.communityCategory} required class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary">
                     <option value="">Select Category</option>
                     <option value="BC">Backward Class (BC)</option>
                     <option value="MBC">Most Backward Class (MBC)</option>
@@ -691,7 +691,7 @@
                 </div>
                 <div class="sm:col-span-2">
                   <label for="subCaste" class="block text-sm font-medium text-text mb-1.5">Sub-Caste Name *</label>
-                  <select id="subCaste" bind:value={formData.subCaste} required class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary">
+                  <select id="subCaste" bind:value={formData.subCaste} required class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary">
                     <option value="">Select Sub-Caste</option>
                     <option value="Adidravidar">Adidravidar</option>
                     <option value="Kongu Vellalar">Kongu Vellalar</option>
@@ -705,48 +705,48 @@
               {:else if service.slug === 'nativity-certificate'}
                 <div>
                   <label for="placeOfBirth" class="block text-sm font-medium text-text mb-1.5">Place of Birth *</label>
-                  <input id="placeOfBirth" type="text" bind:value={formData.placeOfBirth} required placeholder="e.g. Madurai" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                  <input id="placeOfBirth" type="text" bind:value={formData.placeOfBirth} required placeholder="e.g. Madurai" class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
                 <div>
                   <label for="residenceDurationYears" class="block text-sm font-medium text-text mb-1.5">Duration of Residence in Tamil Nadu (in Years) *</label>
-                  <input id="residenceDurationYears" type="number" bind:value={formData.residenceDurationYears} required placeholder="e.g. 15" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                  <input id="residenceDurationYears" type="number" bind:value={formData.residenceDurationYears} required placeholder="e.g. 15" class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
                 <div class="sm:col-span-2">
                   <label for="purpose" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.purpose')}</label>
-                  <input id="purpose" type="text" bind:value={formData.purpose} placeholder="e.g. Government Job / Education" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                  <input id="purpose" type="text" bind:value={formData.purpose} placeholder="e.g. Government Job / Education" class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
               {:else}
                 <div>
                   <label for="doorNo" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.doorNo')}</label>
-                  <input id="doorNo" type="text" bind:value={formData.doorNo} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                  <input id="doorNo" type="text" bind:value={formData.doorNo} class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
                 <div>
                   <label for="street" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.street')}</label>
-                  <input id="street" type="text" bind:value={formData.street} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                  <input id="street" type="text" bind:value={formData.street} class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
                 <div>
                   <label for="area" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.area')}</label>
-                  <input id="area" type="text" bind:value={formData.area} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                  <input id="area" type="text" bind:value={formData.area} class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
                 <div>
                   <label for="district" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.district')} *</label>
-                  <input id="district" type="text" bind:value={formData.district} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                  <input id="district" type="text" bind:value={formData.district} class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
                 <div>
                   <label for="taluk" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.taluk')}</label>
-                  <input id="taluk" type="text" bind:value={formData.taluk} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                  <input id="taluk" type="text" bind:value={formData.taluk} class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
                 <div>
                   <label for="pincode" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.pincode')} *</label>
-                  <input id="pincode" type="text" bind:value={formData.pincode} maxlength="6" pattern="[1-9][0-9]{'{'}5{'}'}" placeholder="600040" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                  <input id="pincode" type="text" bind:value={formData.pincode} maxlength="6" pattern="[1-9][0-9]{'{'}5{'}'}" placeholder="600040" class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
                 <div>
                   <label for="occupation" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.occupation')}</label>
-                  <input id="occupation" type="text" bind:value={formData.occupation} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                  <input id="occupation" type="text" bind:value={formData.occupation} class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
                 <div>
                   <label for="purpose" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.purpose')}</label>
-                  <input id="purpose" type="text" bind:value={formData.purpose} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                  <input id="purpose" type="text" bind:value={formData.purpose} class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
               {/if}
             </div>
