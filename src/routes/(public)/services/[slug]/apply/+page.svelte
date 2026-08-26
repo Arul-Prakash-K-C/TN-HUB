@@ -198,10 +198,28 @@
     }
   }
 
-  async function saveDraft() {
+  let phoneVerified = $state(false);
+  let showOtpModal = $state(false);
+  let otpInput = $state('');
+
+  let showMessageModal = $state(false);
+  let messageModalTitle = $state('');
+  let messageModalText = $state('');
+  let messageModalIsError = $state(false);
+  let messageModalRedirect = $state('');
+  
+  function showMessage(title: string, text: string, isError = false, redirectUrl = '') {
+    messageModalTitle = title;
+    messageModalText = text;
+    messageModalIsError = isError;
+    messageModalRedirect = redirectUrl;
+    showMessageModal = true;
+  }
+
+  async function saveDraft(showPopup = true) {
     if (isSavingDraft || isSubmitting) return;
     isSavingDraft = true;
-    stepError = '';
+    if (showPopup) stepError = '';
 
     try {
       const draft = await ensureDraftExists();
@@ -209,9 +227,13 @@
       applicationId = draft.trackingId;
       activeDraftId = draft.id;
       activeTrackingId = draft.trackingId;
-      window.alert(`Draft saved successfully. Application ID: ${draft.trackingId}`);
+      if (showPopup) {
+        showMessage('Draft Saved', `Your application has been saved to draft successfully. (ID: ${draft.trackingId})`, false, '/applications');
+      }
     } catch (cause) {
-      stepError = cause instanceof Error ? cause.message : 'Unable to save the application draft.';
+      if (showPopup) {
+        stepError = cause instanceof Error ? cause.message : 'Unable to save the application draft.';
+      }
     } finally {
       isSavingDraft = false;
     }
@@ -253,12 +275,16 @@
         stepError = 'Please enter a valid 10-digit phone number.';
         return false;
       }
+      if (!phoneVerified) {
+        stepError = 'Please verify your phone number with OTP.';
+        return false;
+      }
       if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(formData.email).trim())) {
         stepError = 'Please enter a valid email address.';
         return false;
       }
-      if (formData.aadhaarNumber && !/^\d{12}$/.test(String(formData.aadhaarNumber))) {
-        stepError = 'Aadhaar Number must be exactly 12 digits.';
+      if (!formData.aadhaarNumber || !/^\d{12}$/.test(String(formData.aadhaarNumber))) {
+        stepError = 'Aadhaar Number is mandatory and must be exactly 12 digits.';
         return false;
       }
     } else if (currentStep === 2) { // Service Details
@@ -308,6 +334,22 @@
         }
       } else {
         // Fallback for default address services
+        if (!formData.doorNo || String(formData.doorNo).trim() === '') {
+          stepError = 'Please enter your Door No.';
+          return false;
+        }
+        if (!formData.street || String(formData.street).trim() === '') {
+          stepError = 'Please enter your Street.';
+          return false;
+        }
+        if (!formData.area || String(formData.area).trim() === '') {
+          stepError = 'Please enter your Area/Locality.';
+          return false;
+        }
+        if (!formData.taluk || String(formData.taluk).trim() === '') {
+          stepError = 'Please enter your Taluk.';
+          return false;
+        }
         if (!formData.district || String(formData.district).trim() === '') {
           stepError = 'Please enter your District.';
           return false;
@@ -335,8 +377,14 @@
     return true;
   }
 
-  function nextStep() {
+  async function nextStep() {
     if (!validateCurrentStep()) return;
+    
+    // Auto-save the draft before moving to next step
+    if (authenticated && currentStep > 0) {
+      await saveDraft(false);
+    }
+    
     if (currentStep < steps.length - 1) currentStep++;
   }
 
@@ -393,11 +441,11 @@
 
       submitted = true;
       submissionPending = false;
-      window.alert('Payment and application submission completed successfully.');
-      await goto('/applications');
+      showMessage('Application Submitted', 'Payment and application submission completed successfully.', false, '/applications');
       return;
     } catch (cause) {
       stepError = cause instanceof Error ? cause.message : 'Unable to submit the application.';
+      showMessage('Submission Failed', stepError, true, '');
     } finally {
       isSubmitting = false;
     }
@@ -542,14 +590,23 @@
             </div>
             <div>
               <label for="phone" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.phone')} *</label>
-              <input id="phone" type="tel" inputmode="numeric" maxlength="10" bind:value={formData.phone} class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+              <div class="flex gap-2">
+                <input id="phone" type="tel" inputmode="numeric" maxlength="10" bind:value={formData.phone} disabled={phoneVerified} class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-50 disabled:bg-surface-secondary" />
+                {#if phoneVerified}
+                  <div class="flex h-[42px] px-4 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50">
+                    <Check class="h-4 w-4 mr-1 shrink-0" /> <span class="text-xs font-bold uppercase">Verified</span>
+                  </div>
+                {:else}
+                  <button type="button" onclick={() => { if (formData.phone?.length === 10) { showOtpModal = true; stepError = ''; } else stepError = 'Enter a valid 10-digit number first.'; }} class="h-[42px] px-4 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary-light disabled:opacity-50 transition shrink-0">Verify</button>
+                {/if}
+              </div>
             </div>
             <div>
               <label for="email" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.email')}</label>
               <input id="email" type="email" bind:value={formData.email} class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
             </div>
             <div>
-              <label for="aadhaarNumber" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.aadhaar')}</label>
+              <label for="aadhaarNumber" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.aadhaar')} *</label>
               <input id="aadhaarNumber" type="text" pattern="[0-9]{12}" bind:value={formData.aadhaarNumber} maxlength="12" class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="12-digit number" />
             </div>
           </div>
@@ -652,15 +709,15 @@
                 </div>
               {:else}
                 <div>
-                  <label for="doorNo" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.doorNo')}</label>
+                  <label for="doorNo" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.doorNo')} *</label>
                   <input id="doorNo" type="text" bind:value={formData.doorNo} class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
                 <div>
-                  <label for="street" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.street')}</label>
+                  <label for="street" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.street')} *</label>
                   <input id="street" type="text" bind:value={formData.street} class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
                 <div>
-                  <label for="area" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.area')}</label>
+                  <label for="area" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.area')} *</label>
                   <input id="area" type="text" bind:value={formData.area} class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
                 <div>
@@ -668,7 +725,7 @@
                   <input id="district" type="text" bind:value={formData.district} class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
                 <div>
-                  <label for="taluk" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.taluk')}</label>
+                  <label for="taluk" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.taluk')} *</label>
                   <input id="taluk" type="text" bind:value={formData.taluk} class="w-full rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
                 <div>
@@ -921,6 +978,69 @@
             {#if requiresPayment}Confirm Pay & Submit{:else}Confirm & Submit{/if}
           </button>
         </div>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Mock OTP Modal -->
+  {#if showOtpModal}
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+      <div class="w-full max-w-sm rounded-2xl bg-white dark:bg-surface-container p-6 shadow-xl animate-scale-up">
+        <h3 class="text-h3 text-text mb-2">Verify Mobile Number</h3>
+        <p class="text-sm text-text-secondary mb-6">An OTP has been sent to +91 {formData.phone}. (Mock: enter any 4 digits)</p>
+        
+        <input type="text" bind:value={otpInput} placeholder="1234" maxlength="4" class="w-full text-center tracking-[0.5em] text-2xl font-bold rounded-lg border border-border bg-white dark:bg-surface-container-highest dark:text-text py-3 px-4 outline-none focus:border-primary focus:ring-1 focus:ring-primary mb-6" />
+
+        <div class="flex items-center justify-end gap-3">
+          <button
+            onclick={() => { showOtpModal = false; otpInput = ''; }}
+            class="rounded-lg px-4 py-2 text-sm font-medium text-text-muted hover:bg-surface-secondary transition"
+          >
+            Cancel
+          </button>
+          <button
+            onclick={() => { 
+              if (otpInput.length === 4) {
+                phoneVerified = true;
+                showOtpModal = false;
+                otpInput = '';
+              }
+            }}
+            disabled={otpInput.length < 4}
+            class="rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-white hover:bg-primary-light transition disabled:opacity-50"
+          >
+            Verify OTP
+          </button>
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Generic Message/Success Modal -->
+  {#if showMessageModal}
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+      <div class="w-full max-w-sm rounded-2xl bg-white dark:bg-surface-container p-6 shadow-xl animate-scale-up text-center">
+        <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full {messageModalIsError ? 'bg-rose-100 dark:bg-rose-900/30' : 'bg-emerald-100 dark:bg-emerald-900/30'}">
+          {#if messageModalIsError}
+            <AlertCircle class="h-6 w-6 text-rose-600 dark:text-rose-400" />
+          {:else}
+            <Check class="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+          {/if}
+        </div>
+        <h3 class="text-h3 text-text mb-2">{messageModalTitle}</h3>
+        <p class="text-sm text-text-secondary leading-relaxed mb-6">{messageModalText}</p>
+        
+        <button
+          onclick={() => {
+            showMessageModal = false;
+            if (messageModalRedirect) {
+              goto(messageModalRedirect);
+            }
+          }}
+          class="w-full rounded-lg {messageModalIsError ? 'bg-rose-600 hover:bg-rose-700' : 'bg-primary hover:bg-primary-light'} py-2.5 text-sm font-semibold text-white transition"
+        >
+          {messageModalRedirect ? 'Continue' : 'Close'}
+        </button>
       </div>
     </div>
   {/if}
