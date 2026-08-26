@@ -79,7 +79,7 @@
           <p class="public-banner-subtitle mt-1 max-w-2xl text-xs font-medium">Manage your government service applications, official certificates, and document vault.</p>
         </div>
         <div class="flex items-center gap-3">
-          <a href="/services" class="inline-flex items-center justify-center gap-2 rounded-xl bg-surface px-4 py-2.5 text-xs font-bold text-primary shadow-md transition-all hover:bg-surface-container">
+          <a href="/services" class="inline-flex items-center justify-center gap-2 rounded-xl bg-white dark:bg-primary-soft px-4 py-2.5 text-xs font-bold text-primary dark:text-primary-soft-text shadow-md transition-all hover:bg-surface-container dark:hover:bg-primary/20">
             <PlusCircle class="h-4 w-4" />
             Apply for New Service
           </a>

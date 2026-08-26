@@ -184,7 +184,7 @@
                     {deletingDraftId === app.id ? 'Deleting...' : 'Delete'}
                   </button>
                 {:else}
-                  <a href="/applications/{app.id}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary/12 px-5 py-2.5 text-sm font-bold text-primary transition-colors hover:bg-primary/20">
+                  <a href="/applications/{app.id}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-soft dark:bg-primary-soft px-5 py-2.5 text-sm font-bold text-primary dark:text-primary-soft-text transition-colors hover:bg-primary/20 dark:hover:bg-primary/20">
                     {t('applications.viewDetails')}
                     <ArrowRight class="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
                   </a>

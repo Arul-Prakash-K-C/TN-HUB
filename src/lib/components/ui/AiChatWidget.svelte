@@ -273,10 +273,10 @@
                   type="button"
                   disabled={option.disabled}
                   onclick={() => handleOption(option)}
-                  class="text-left px-4 py-3 rounded-xl border bg-white shadow-sm transition-all group flex flex-col justify-center
+                  class="text-left px-4 py-3 rounded-xl border bg-surface shadow-sm transition-all group flex flex-col justify-center
                     {option.disabled
                       ? 'cursor-not-allowed border-border bg-muted opacity-60'
-                      : 'border-border bg-surface hover:border-primary hover:bg-primary-soft/40 hover:shadow-md'}"
+                      : 'border-border hover:border-primary hover:bg-primary/10 hover:shadow-md'}"
                 >
                   <div class="flex w-full items-center justify-between gap-2">
                     <span class="text-[14px] font-semibold text-text">{resolveText(option.label)}</span>
