@@ -118,82 +118,17 @@
   });
 
   async function launchPaymentCheckout(draftId: string) {
-    if (!window.Razorpay || !env.PUBLIC_RAZORPAY_KEY_ID) {
-      throw new Error('Payment gateway is not configured.');
-    }
-
-    const orderResponse = await fetch('/api/create-order', {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ applicationId: draftId })
-    });
-    const orderBody = await orderResponse.json().catch(() => null) as {
-      order_id?: string;
-      amount?: number;
-      currency?: string;
-      message?: string;
-    } | null;
-    if (!orderResponse.ok || !orderBody?.order_id || !orderBody.amount || !orderBody.currency) {
-      throw new Error(orderBody?.message ?? 'Unable to create the payment order.');
-    }
-
-    await new Promise<void>((resolve, reject) => {
-      const razorpay = new window.Razorpay!({
-        key: env.PUBLIC_RAZORPAY_KEY_ID,
-        amount: orderBody.amount,
-        currency: orderBody.currency,
-        name: 'TN Hub',
-        description: `${service.name} application payment`,
-        order_id: orderBody.order_id,
-        prefill: {
-          name: formData.fullName || user?.name || '',
-          email: formData.email || user?.email || '',
-          contact: formData.phone ? `+91${String(formData.phone).trim()}` : ''
-        },
-        theme: {
-          color: '#062206'
-        },
-        modal: {
-          ondismiss: () => reject(new Error('Payment was cancelled before completion.'))
-        },
-        handler: async (response: {
-          razorpay_payment_id?: string;
-          razorpay_order_id?: string;
-          razorpay_signature?: string;
-        }) => {
-          try {
-            const verifyResponse = await fetch('/api/verify-payment', {
-              method: 'POST',
-              credentials: 'same-origin',
-              headers: { 'content-type': 'application/json' },
-              body: JSON.stringify({
-                applicationId: draftId,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature
-              })
-            });
-            const verifyBody = await verifyResponse.json().catch(() => null) as {
-              message?: string;
-              application?: { applicationNumber?: string };
-            } | null;
-            if (!verifyResponse.ok || !verifyBody?.application?.applicationNumber) {
-              throw new Error(verifyBody?.message ?? 'Payment verification failed.');
-            }
-            applicationId = verifyBody.application.applicationNumber;
-            resolve();
-          } catch (cause) {
-            reject(cause instanceof Error ? cause : new Error('Payment verification failed.'));
-          }
+    // Mock Payment Gateway for Prototype
+    // Bypassing real Razorpay SDK to skip mobile OTP authentication in testing.
+    return new Promise<void>((resolve, reject) => {
+      setTimeout(() => {
+        // 90% chance of success for the demo
+        if (Math.random() > 0.1) {
+          resolve();
+        } else {
+          reject(new Error('Payment failed in mock gateway. Please try again.'));
         }
-      });
-
-      razorpay.on('payment.failed', () => {
-        reject(new Error('Payment failed. Please try again.'));
-      });
-
-      razorpay.open();
+      }, 1500);
     });
   }
 
@@ -443,18 +378,18 @@
       applicationId = draft.trackingId;
       if (requiresPayment) {
         await launchPaymentCheckout(draft.id);
-      } else {
-        const submitResponse = await fetch(`/api/applications/${draft.id}/submit`, {
-          method: 'POST',
-          credentials: 'same-origin',
-          headers: { Accept: 'application/json' }
-        });
-        const submitBody = await submitResponse.json().catch(() => null) as { application?: { trackingId?: string }; message?: string } | null;
-        if (!submitResponse.ok || !submitBody?.application?.trackingId) {
-          throw new Error(submitBody?.message ?? 'Unable to submit the application.');
-        }
-        applicationId = submitBody.application.trackingId;
       }
+      
+      const submitResponse = await fetch(`/api/applications/${draft.id}/submit`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { Accept: 'application/json' }
+      });
+      const submitBody = await submitResponse.json().catch(() => null) as { application?: { trackingId?: string }; message?: string } | null;
+      if (!submitResponse.ok || !submitBody?.application?.trackingId) {
+        throw new Error(submitBody?.message ?? 'Unable to submit the application.');
+      }
+      applicationId = submitBody.application.trackingId;
 
       submitted = true;
       submissionPending = false;
