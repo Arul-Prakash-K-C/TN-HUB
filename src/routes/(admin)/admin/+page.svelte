@@ -88,32 +88,29 @@
 </svelte:head>
 
 {#if !authenticated || role !== 'admin'}
-  <div class="flex min-h-[60vh] flex-col items-center justify-center p-4 bg-slate-50">
-    <div class="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-xl mt-10">
+  <div class="flex min-h-[60vh] flex-col items-center justify-center p-4 bg-background">
+    <div class="w-full max-w-md rounded-3xl border border-border bg-surface p-8 text-center shadow-xl mt-10">
       <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-600">
         <Shield class="h-7 w-7" />
       </div>
-      <h2 class="text-xl font-bold text-slate-900">Access Denied</h2>
-      <p class="mt-2 text-xs text-slate-500">Only authorized System Administrators can access this dashboard. Please log in with an administrator account.</p>
-      <a href="/login?redirect=/admin" class="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-emerald-600 py-3.5 text-xs font-bold text-white shadow transition hover:bg-emerald-700">
+      <h2 class="text-xl font-bold text-text">Access Denied</h2>
+      <p class="mt-2 text-xs text-text-muted">Only authorized System Administrators can access this dashboard. Please log in with an administrator account.</p>
+      <a href="/login?redirect=/admin" class="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-primary py-3.5 text-xs font-bold text-white shadow transition hover:bg-primary-hover">
         Log In as Admin
       </a>
     </div>
   </div>
 {:else}
   <div class="bg-surface-secondary min-h-screen pb-12">
-    <div class="bg-primary text-white border-b border-border">
+    <div class="public-banner border-b border-border">
       <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <span class="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white">
-              System Administration
-            </span>
-            <h1 class="mt-2 text-h1 text-white">{t('admin.title')}</h1>
+            <h1 class="text-h1 text-white">{t('admin.title')}</h1>
             <p class="text-xs text-white/70">Platform usage analytics & service architecture overview</p>
           </div>
 
-          <button onclick={() => showInspectorModal = true} class="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-primary shadow hover:bg-slate-50 transition">
+          <button onclick={() => showInspectorModal = true} class="inline-flex items-center gap-2 rounded-xl bg-surface px-4 py-2.5 text-sm font-bold text-primary shadow hover:bg-surface-container transition">
             <Layers class="h-4 w-4" /> System Service Inspector
           </button>
         </div>
@@ -128,8 +125,8 @@
             <FileText class="h-4 w-4 text-blue-500" />
             Total Applications
           </div>
-          <div class="mt-2 text-3xl font-bold text-primary">{stats.totalApplications}</div>
-          <div class="mt-1 text-[10px] font-bold text-emerald-600">{stats.approvedApplications} approved</div>
+          <div class="mt-2 text-3xl font-bold text-[#316342]">{stats.totalApplications}</div>
+          <div class="mt-1 text-[10px] font-bold text-[#316342]">{stats.approvedApplications} approved</div>
         </div>
 
         <div class="rounded-2xl border border-border bg-white p-5 shadow-sm">
@@ -155,7 +152,7 @@
             <Activity class="h-4 w-4 text-emerald-500" />
             Total Services
           </div>
-          <div class="mt-2 text-3xl font-bold text-emerald-700">{totalServices}</div>
+          <div class="mt-2 text-3xl font-bold text-[#316342]">{totalServices}</div>
           <div class="mt-1 text-[10px] font-bold text-slate-500">{nativeServices} native • {apiServices} API • {externalServices} external</div>
         </div>
       </div>

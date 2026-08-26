@@ -33,7 +33,7 @@ function assertActive(user: AuthenticatedUser): void {
 /** Exchanges a Firebase ID token for an HttpOnly, verified server session. */
 export async function createSessionFromIdToken(idToken: string): Promise<{ sessionCookie: string; user: AuthenticatedUser }> {
   const auth = getFirebaseAdminAuth();
-  const token = await auth.verifyIdToken(idToken, true);
+  const token = await auth.verifyIdToken(idToken);
   const user = await toSessionUser(token);
   assertActive(user);
 
@@ -46,6 +46,14 @@ export async function createSessionFromIdToken(idToken: string): Promise<{ sessi
 
 /** Verifies a session cookie and returns only a safe application user shape. */
 export async function getVerifiedSessionUser(sessionCookie: string): Promise<AuthenticatedUser> {
+  const token = await getFirebaseAdminAuth().verifySessionCookie(sessionCookie, false);
+  const user = await toSessionUser(token);
+  assertActive(user);
+  return user;
+}
+
+/** Verifies a session cookie with strict revocation checking for high-privilege operations. */
+export async function verifySessionCookieWithRevocation(sessionCookie: string): Promise<AuthenticatedUser> {
   const token = await getFirebaseAdminAuth().verifySessionCookie(sessionCookie, true);
   const user = await toSessionUser(token);
   assertActive(user);

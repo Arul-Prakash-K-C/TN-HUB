@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { GraduationCap, Play, BookOpen, Award, CheckCircle2, Clock, Users, Monitor, FileText, Shield, Layers } from '@lucide/svelte';
+  import { Play, BookOpen, CheckCircle2, Clock, Users, Monitor, FileText, Shield, Layers } from '@lucide/svelte';
   import { t } from '$lib/i18n';
 
   const modules = [
@@ -79,11 +79,11 @@
   ];
 
   function getLevelColor(level: string) {
-    return 'bg-primary-500/10 text-primary-700 border-primary-200';
+    return 'bg-[#316342]/10 text-[#316342] border-[#316342]/20';
   }
 
   function getAccentColor(color: string) {
-    return 'from-primary-600 to-primary-800';
+    return 'from-[#316342] to-[#254b32]';
   }
 </script>
 
@@ -91,48 +91,48 @@
   <title>Operator Training Portal — TN Hub</title>
 </svelte:head>
 
-<div class="bg-slate-50 min-h-screen pb-20">
-  <!-- Hero Section -->
-  <div class="bg-gradient-to-br from-[#062206] via-[#0a3d0a] to-[#062206] text-white border-b border-primary-900">
-    <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-      <div class="flex flex-col lg:flex-row items-start lg:items-center gap-8">
-        <div class="flex-1">
-          <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">Operator Kiosk Training</h1>
-          <p class="mt-3 text-base text-primary-200/80 max-w-2xl leading-relaxed">Boost your e-Sevai Kiosk performance and navigate workflows effectively.</p>
-          <p class="mt-2 text-sm text-slate-400">Self-paced digital literacy courses designed for Tamil Nadu citizens, e-Sevai operators, and government officers.</p>
+<div class="bg-slate-50 min-h-screen pb-20 flex flex-col w-full">
+  <!-- Page Header (Green Banner matching Public Pages) -->
+  <div class="bg-[#316342] text-white px-6 py-8 sm:px-8 shadow-md">
+    <div class="mx-auto max-w-7xl flex flex-col lg:flex-row items-start lg:items-center gap-8">
+      <div class="flex-grow">
+        <div class="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-3 py-1 text-[11px] font-bold text-white">
+          <Monitor class="h-3.5 w-3.5" />
+          Operator Training
         </div>
+        <h1 class="text-3xl font-black mt-2">Operator Kiosk Training</h1>
+        <p class="mt-1 text-xs text-green-100 max-w-2xl leading-relaxed">Boost your e-Sevai Kiosk performance and navigate workflows effectively.</p>
+      </div>
 
-        <!-- Quick Stats -->
-        <div class="grid grid-cols-2 gap-2.5 w-full lg:w-auto lg:min-w-[260px]">
-          {#each stats as stat}
-            <div class="rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm px-3.5 py-3 text-center">
-              <div class="flex items-center justify-center mb-1.5">
-                <stat.icon class="h-4.5 w-4.5 text-primary-400" />
-              </div>
-              <div class="text-base font-extrabold text-white leading-none">{stat.value}</div>
-              <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-1">{stat.label}</div>
+      <!-- Quick Stats -->
+      <div class="grid grid-cols-2 gap-2.5 w-full sm:w-auto sm:min-w-[260px]">
+        {#each stats as stat}
+          <div class="rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm px-3.5 py-3 text-center">
+            <div class="flex items-center justify-center mb-1.5">
+              <stat.icon class="h-4.5 w-4.5 text-green-300" />
             </div>
-          {/each}
-        </div>
+            <div class="text-base font-extrabold text-white leading-none">{stat.value}</div>
+            <div class="text-[9px] font-bold text-green-200 uppercase tracking-wider mt-1">{stat.label}</div>
+          </div>
+        {/each}
       </div>
     </div>
   </div>
 
   <!-- Modules Grid -->
-  <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 flex-grow w-full">
     <div class="flex items-center justify-between mb-8">
       <div>
         <h2 class="text-xl font-bold text-slate-900">Training Modules</h2>
-        <p class="text-sm text-slate-500 mt-1">Complete all modules to earn your TN Hub digital proficiency certification.</p>
       </div>
       <div class="hidden sm:flex items-center gap-2">
-        <span class="flex items-center gap-1.5 rounded-full bg-primary-50 border border-primary-200 px-3 py-1 text-[10px] font-bold text-primary-700">
+        <span class="flex items-center gap-1.5 rounded-full bg-[#316342]/10 border border-[#316342]/20 px-3 py-1 text-[10px] font-bold text-[#316342]">
           <CheckCircle2 class="h-3 w-3" /> Beginner
         </span>
-        <span class="flex items-center gap-1.5 rounded-full bg-primary-50 border border-primary-200 px-3 py-1 text-[10px] font-bold text-primary-700">
+        <span class="flex items-center gap-1.5 rounded-full bg-[#316342]/10 border border-[#316342]/20 px-3 py-1 text-[10px] font-bold text-[#316342]">
           <CheckCircle2 class="h-3 w-3" /> Intermediate
         </span>
-        <span class="flex items-center gap-1.5 rounded-full bg-primary-50 border border-primary-200 px-3 py-1 text-[10px] font-bold text-primary-700">
+        <span class="flex items-center gap-1.5 rounded-full bg-[#316342]/10 border border-[#316342]/20 px-3 py-1 text-[10px] font-bold text-[#316342]">
           <CheckCircle2 class="h-3 w-3" /> Official
         </span>
       </div>
@@ -140,7 +140,7 @@
 
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {#each modules as mod}
-        <div class="group rounded-3xl border border-slate-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col">
+        <div class="group rounded-3xl border border-slate-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col hover:border-[#316342]/30">
           <!-- Module Header Bar -->
           <div class="bg-gradient-to-r {getAccentColor(mod.color)} px-6 py-4 text-white">
             <div class="flex items-center justify-between">
@@ -173,7 +173,7 @@
               <ul class="space-y-1.5">
                 {#each mod.topics.slice(0, 4) as topic}
                   <li class="flex items-start gap-2 text-xs text-slate-600">
-                    <CheckCircle2 class="h-3.5 w-3.5 text-primary-500 mt-0.5 shrink-0" />
+                    <CheckCircle2 class="h-3.5 w-3.5 text-[#316342] mt-0.5 shrink-0" />
                     <span>{topic}</span>
                   </li>
                 {/each}
@@ -188,7 +188,7 @@
           <div class="px-6 pb-6 pt-2">
             <button
               onclick={() => alert(`Starting: ${mod.title}\n\nThis is a prototype demonstration. Full training content will be available in the production release.`)}
-              class="flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-slate-800 group-hover:shadow-md transition-all"
+              class="flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-[#316342] hover:shadow-md transition-all duration-300"
             >
               <Play class="h-4 w-4 fill-current" />
               Start Training
@@ -199,21 +199,4 @@
     </div>
   </div>
 
-  <!-- Certification Notice -->
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="rounded-3xl bg-gradient-to-r from-primary-50 to-blue-50 border border-primary-200 p-8 flex flex-col md:flex-row items-center gap-6">
-      <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white shadow-sm border border-primary-200 shrink-0">
-        <Award class="h-8 w-8 text-primary-600" />
-      </div>
-      <div class="flex-1 text-center md:text-left">
-        <h3 class="text-lg font-bold text-slate-900">Digital Proficiency Certification</h3>
-        <p class="text-sm text-slate-500 mt-1 max-w-xl">Complete all 6 training modules to receive a TN Hub Digital Proficiency Certificate. This certification validates your ability to navigate and utilize Tamil Nadu government e-services effectively.</p>
-      </div>
-      <div class="shrink-0">
-        <span class="rounded-full bg-primary-600 px-6 py-2.5 text-xs font-bold text-white shadow-sm">
-          Coming Soon
-        </span>
-      </div>
-    </div>
-  </div>
 </div>

@@ -1,7 +1,6 @@
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { getFirebaseAdminFirestore } from '$lib/server/firebase/admin';
 import { createNotification } from '$lib/server/notifications/repository';
-import { Timestamp } from 'firebase-admin/firestore';
 
 export const GET: RequestHandler = async ({ locals }) => {
   if (!locals.user) {

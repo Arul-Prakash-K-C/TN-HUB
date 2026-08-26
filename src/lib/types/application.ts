@@ -70,8 +70,9 @@ export interface ApplicationFormData {
 
 export interface Application {
   id: string;
-  applicationNumber: string; // SYM-2026-XXXXXX
+  applicationNumber: string; // TNH-2026-XXXXXX
   serviceId: string;
+  serviceSlug?: string;
   serviceName: string;
   serviceNameTA: string;
   departmentId: string;

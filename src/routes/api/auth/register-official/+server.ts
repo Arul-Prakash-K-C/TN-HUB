@@ -29,6 +29,8 @@ export const POST: RequestHandler = async ({ request }) => {
       departmentId: departmentId || null,
       isActive: false, // Inactive until approved
       approved: false, // Explicit approved flag for admin panel
+      registrationStatus: 'APPLIED',
+      appliedAt: now,
       desiredRole,
       createdAt: now,
       updatedAt: now,

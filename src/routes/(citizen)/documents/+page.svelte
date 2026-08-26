@@ -72,17 +72,17 @@
 </svelte:head>
 
 <div class="bg-slate-50 min-h-screen pb-12 flex flex-col w-full">
-  <!-- Document Vault Header -->
-  <div class="border-b border-slate-200 bg-white px-6 py-6 sm:px-8">
+  <!-- Document Vault Header (Green Banner matching Public Pages) -->
+  <div class="bg-[#316342] text-white px-6 py-8 sm:px-8 shadow-md">
     <div class="max-w-7xl mx-auto w-full">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 class="text-2xl font-black text-slate-900 tracking-tight">{t('documents.title')}</h1>
-          <p class="text-xs font-medium text-slate-500 mt-0.5">{t('documents.subtitle')}</p>
+          <h1 class="text-2xl font-black tracking-tight text-white">{t('documents.title')}</h1>
+          <p class="text-xs font-medium text-green-100 mt-1 max-w-2xl">{t('documents.subtitle')}</p>
         </div>
         <button
           onclick={() => uploadInput?.click()}
-          class="bg-[#062206] hover:bg-[#143A14] text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-2 transition-all self-start sm:self-auto shadow-xs"
+          class="bg-white text-[#316342] hover:bg-green-50 font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-2 transition-all self-start sm:self-auto shadow-md"
         >
           <Upload class="h-4 w-4" />
           {t('documents.upload')}
@@ -91,22 +91,22 @@
       </div>
 
       <!-- Tabs -->
-      <div class="flex gap-6 mt-6 border-b border-slate-200">
+      <div class="flex gap-6 mt-6 border-b border-white/10">
         <button
           onclick={() => activeTab = 'vault'}
-          class="pb-2.5 text-xs font-bold flex items-center gap-2 transition-colors {activeTab === 'vault' ? 'text-[#062206] border-b-2 border-[#062206]' : 'text-slate-500 hover:text-slate-900 border-b-2 border-transparent'}"
+          class="pb-2.5 text-xs font-bold flex items-center gap-2 transition-colors {activeTab === 'vault' ? 'text-white border-b-2 border-white' : 'text-green-200 hover:text-white border-b-2 border-transparent'}"
         >
           <FileText class="h-4 w-4" />
           My Document Vault ({citizenDocs.length})
         </button>
         <button
           onclick={() => activeTab = 'digilocker'}
-          class="pb-2.5 text-xs font-bold flex items-center gap-2 transition-colors {activeTab === 'digilocker' ? 'text-[#062206] border-b-2 border-[#062206]' : 'text-slate-500 hover:text-slate-900 border-b-2 border-transparent'}"
+          class="pb-2.5 text-xs font-bold flex items-center gap-2 transition-colors {activeTab === 'digilocker' ? 'text-white border-b-2 border-white' : 'text-green-200 hover:text-white border-b-2 border-transparent'}"
         >
           <Shield class="h-4 w-4" />
           {t('digilocker.title')}
           {#if isDigiLockerConnected}
-            <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-200">Connected</span>
+            <span class="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold text-white border border-white/20">Connected</span>
           {/if}
         </button>
       </div>
@@ -120,13 +120,13 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {#each citizenDocs as doc}
             <!-- Document Card -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 flex flex-col hover:border-primary-400/50 hover:shadow-md transition-all">
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 flex flex-col hover:border-[#316342]/30 hover:shadow-md transition-all">
               <div class="flex justify-between items-start mb-4">
-                <div class="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-primary-600">
+                <div class="w-12 h-12 bg-[#316342]/5 rounded-xl flex items-center justify-center text-[#316342]">
                   <FileText class="h-6 w-6" />
                 </div>
                 {#if doc.verificationStatus === 'verified'}
-                  <span class="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                  <span class="bg-[#316342]/10 text-[#316342] px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
                     <CheckCircle class="h-3.5 w-3.5" /> Verified
                   </span>
                 {:else}
@@ -157,7 +157,7 @@
                 <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                   {(doc.fileSize / 1024).toFixed(0)} KB • {doc.source}
                 </span>
-                <button onclick={() => downloadDocument(doc.id)} class="text-primary-600 text-xs font-bold flex items-center gap-1 hover:underline">
+                <button onclick={() => downloadDocument(doc.id)} class="text-[#316342] hover:text-[#254b32] text-xs font-bold flex items-center gap-1 hover:underline">
                   <Download class="h-4 w-4" /> Download
                 </button>
               </div>

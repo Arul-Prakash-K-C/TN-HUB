@@ -39,10 +39,12 @@ export async function listComplaints(user: User): Promise<ComplaintRecord[]> {
   if (role === 'citizen' || role === 'operator') {
     snapshot = await db.collection('complaints')
       .where('citizenId', 'in', [user.uid, user.id || user.uid])
+      .limit(100)
       .get();
   } else if (role === 'department_user' && user.departmentId) {
     snapshot = await db.collection('complaints')
       .where('departmentId', '==', user.departmentId)
+      .limit(100)
       .get();
   } else {
     // Admin or default: fetch all

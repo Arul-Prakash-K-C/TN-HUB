@@ -264,15 +264,23 @@ function toUiService(service: CatalogService): Service {
   };
 }
 
+let publicCatalogCache: { data: { services: Service[]; departments: Department[] }; timestamp: number } | null = null;
+const PUBLIC_CATALOG_TTL_MS = 5 * 60 * 1000;
+
 /** Public DTOs intentionally contain no Firestore Timestamp instances. */
 export async function loadPublicCatalog(): Promise<{ services: Service[]; departments: Department[] }> {
+  const now = Date.now();
+  if (publicCatalogCache && (now - publicCatalogCache.timestamp) < PUBLIC_CATALOG_TTL_MS) {
+    return publicCatalogCache.data;
+  }
+
   const db = getFirebaseAdminFirestore();
   const [serviceSnapshots, departmentSnapshots] = await Promise.all([
     db.collection('services').get(),
     db.collection('departments').get()
   ]);
 
-  return {
+  const data = {
     services: serviceSnapshots.docs
       .map((snapshot) => toUiService(snapshot.data() as CatalogService))
       .filter((service) => service.isActive),
@@ -280,6 +288,9 @@ export async function loadPublicCatalog(): Promise<{ services: Service[]; depart
       .map((snapshot) => toUiDepartment(snapshot.data() as CatalogDepartment))
       .filter((department) => department.isActive)
   };
+
+  publicCatalogCache = { data, timestamp: now };
+  return data;
 }
 
 /** Administrative catalog view includes inactive records for platform management. */
@@ -292,8 +303,7 @@ export async function loadAdminCatalog(): Promise<{ services: Service[]; departm
 
   return {
     services: serviceSnapshots.docs
-      .map((snapshot) => toUiService(snapshot.data() as CatalogService))
-      .filter((service) => service.implementationMode === 'NATIVE_WORKFLOW'),
+      .map((snapshot) => toUiService(snapshot.data() as CatalogService)),
     departments: departmentSnapshots.docs.map((snapshot) => toUiDepartment(snapshot.data() as CatalogDepartment))
   };
 }

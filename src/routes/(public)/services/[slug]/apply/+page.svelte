@@ -1,10 +1,12 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
+  import { onMount } from 'svelte';
   import { untrack } from 'svelte';
+  import { env } from '$env/dynamic/public';
   import { tt, locale } from '$lib/i18n';
   import { currentUser, isAuthenticated } from '$lib/stores/auth';
-  import { ArrowLeft, ArrowRight, Save, Check, Upload, FileText, AlertCircle } from '@lucide/svelte';
+  import { ArrowLeft, ArrowRight, Check, Upload, FileText, AlertCircle, Trash2 } from '@lucide/svelte';
   import type { ApplicationFormData } from '$lib/types';
 
   let { data } = $props();
@@ -15,64 +17,26 @@
   const user = $derived($currentUser);
   const slug = $derived($page.params.slug || '');
   const service = $derived(data.catalogService);
+  const draftApplication = $derived(data.draftApplication ?? null);
 
   let currentStep = $state(0);
   let formData = $state<ApplicationFormData>({});
   let declarationAgreed = $state(false);
   let submitted = $state(false);
   let applicationId = $state('');
-  let uploadedDocs = $state<Record<string, { name: string; size: number; file?: File }>>({});
+  let uploadedDocs = $state<Record<string, { name: string; size: number; file?: File; id?: string }>>({});
   let stepError = $state('');
   let isSubmitting = $state(false);
+  let isSavingDraft = $state(false);
+  let isDeletingDraft = $state(false);
+  let submissionPending = $state(false);
+  let activeDraftId = $state('');
+  let activeTrackingId = $state('');
+  let isRazorpayReady = $state(false);
 
-  let phoneVerified = $state(false);
-  let emailVerified = $state(false);
-  let phoneOtpSent = $state(false);
-  let emailOtpSent = $state(false);
-  let phoneOtp = $state('');
-  let emailOtp = $state('');
-  let phoneOtpError = $state('');
-  let emailOtpError = $state('');
-
-  function sendPhoneOtp() {
-    if (!formData.phone || !/^\d{10}$/.test(String(formData.phone))) {
-      stepError = 'Please enter a valid 10-digit phone number.';
-      return;
-    }
-    stepError = '';
-    phoneOtpSent = true;
-    phoneOtp = '';
-    phoneOtpError = '';
-  }
-
-  function verifyPhoneOtp() {
-    if (phoneOtp === '123456') {
-      phoneVerified = true;
-      phoneOtpError = '';
-    } else {
-      phoneOtpError = 'Invalid OTP. Enter 123456 to verify.';
-    }
-  }
-
-  function sendEmailOtp() {
-    if (!formData.email || !String(formData.email).includes('@')) {
-      stepError = 'Please enter a valid email address.';
-      return;
-    }
-    stepError = '';
-    emailOtpSent = true;
-    emailOtp = '';
-    emailOtpError = '';
-  }
-
-  function verifyEmailOtp() {
-    if (emailOtp === '123456') {
-      emailVerified = true;
-      emailOtpError = '';
-    } else {
-      emailOtpError = 'Invalid OTP. Enter 123456 to verify.';
-    }
-  }
+  const requiresPayment = $derived(Boolean(env.PUBLIC_RAZORPAY_KEY_ID));
+  const payableAmount = $derived(Math.round(Number(service?.fee ?? 0) * 100));
+  const payableLabel = $derived((Math.max(payableAmount, 100) / 100).toFixed(2));
 
   const steps = $derived([
     t('apply.step.eligibility'),
@@ -85,7 +49,7 @@
 
   // Pre-fill from user profile only once
   $effect(() => {
-    if (user && user.role === 'citizen') {
+    if (user && user.role === 'citizen' && !draftApplication) {
       untrack(() => {
         if (!formData.fullName && !formData.phone) {
           const citizen = user as any;
@@ -115,6 +79,233 @@
     }
   });
 
+  onMount(() => {
+    if (requiresPayment && typeof window !== 'undefined' && !window.Razorpay) {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.async = true;
+      script.onload = () => { isRazorpayReady = true; };
+      script.onerror = () => { stepError = 'Unable to load the payment gateway right now.'; };
+      document.head.appendChild(script);
+    } else if (window.Razorpay) {
+      isRazorpayReady = true;
+    }
+
+    if (draftApplication) {
+      activeDraftId = draftApplication.id;
+      activeTrackingId = draftApplication.applicationNumber;
+      applicationId = draftApplication.applicationNumber;
+      formData = { ...draftApplication.formData };
+      declarationAgreed = true;
+
+      const nextUploadedDocs: Record<string, { name: string; size: number; file?: File; id?: string }> = {};
+      for (const doc of draftApplication.documents ?? []) {
+        nextUploadedDocs[doc.documentId] = {
+          id: doc.id,
+          name: doc.fileName || doc.name,
+          size: doc.fileSize
+        };
+      }
+      uploadedDocs = nextUploadedDocs;
+    }
+
+    const requestedStep = Number($page.url.searchParams.get('step') ?? '');
+    if (Number.isInteger(requestedStep) && requestedStep >= 0 && requestedStep < steps.length) {
+      currentStep = requestedStep;
+    } else if (draftApplication) {
+      currentStep = steps.length - 1;
+    }
+  });
+
+  async function launchPaymentCheckout(draftId: string) {
+    if (!window.Razorpay || !env.PUBLIC_RAZORPAY_KEY_ID) {
+      throw new Error('Payment gateway is not configured.');
+    }
+
+    const orderResponse = await fetch('/api/create-order', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ applicationId: draftId })
+    });
+    const orderBody = await orderResponse.json().catch(() => null) as {
+      order_id?: string;
+      amount?: number;
+      currency?: string;
+      message?: string;
+    } | null;
+    if (!orderResponse.ok || !orderBody?.order_id || !orderBody.amount || !orderBody.currency) {
+      throw new Error(orderBody?.message ?? 'Unable to create the payment order.');
+    }
+
+    await new Promise<void>((resolve, reject) => {
+      const razorpay = new window.Razorpay!({
+        key: env.PUBLIC_RAZORPAY_KEY_ID,
+        amount: orderBody.amount,
+        currency: orderBody.currency,
+        name: 'TN Hub',
+        description: `${service.name} application payment`,
+        order_id: orderBody.order_id,
+        prefill: {
+          name: formData.fullName || user?.name || '',
+          email: formData.email || user?.email || '',
+          contact: formData.phone ? `+91${String(formData.phone).trim()}` : ''
+        },
+        theme: {
+          color: '#062206'
+        },
+        modal: {
+          ondismiss: () => reject(new Error('Payment was cancelled before completion.'))
+        },
+        handler: async (response: {
+          razorpay_payment_id?: string;
+          razorpay_order_id?: string;
+          razorpay_signature?: string;
+        }) => {
+          try {
+            const verifyResponse = await fetch('/api/verify-payment', {
+              method: 'POST',
+              credentials: 'same-origin',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({
+                applicationId: draftId,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature
+              })
+            });
+            const verifyBody = await verifyResponse.json().catch(() => null) as {
+              message?: string;
+              application?: { applicationNumber?: string };
+            } | null;
+            if (!verifyResponse.ok || !verifyBody?.application?.applicationNumber) {
+              throw new Error(verifyBody?.message ?? 'Payment verification failed.');
+            }
+            applicationId = verifyBody.application.applicationNumber;
+            resolve();
+          } catch (cause) {
+            reject(cause instanceof Error ? cause : new Error('Payment verification failed.'));
+          }
+        }
+      });
+
+      razorpay.on('payment.failed', () => {
+        reject(new Error('Payment failed. Please try again.'));
+      });
+
+      razorpay.open();
+    });
+  }
+
+  async function ensureDraftExists(): Promise<{ id: string; trackingId: string }> {
+    if (activeDraftId && activeTrackingId) {
+      const updateResponse = await fetch(`/api/applications/${activeDraftId}`, {
+        method: 'PUT',
+        credentials: 'same-origin',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ formData })
+      });
+      const updateBody = await updateResponse.json().catch(() => null) as { message?: string } | null;
+      if (!updateResponse.ok) {
+        throw new Error(updateBody?.message ?? 'Unable to save the application draft.');
+      }
+      return { id: activeDraftId, trackingId: activeTrackingId };
+    }
+
+    const createResponse = await fetch('/api/applications', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        serviceId: service.id,
+        formData,
+        submit: false
+      })
+    });
+    const createBody = (await createResponse.json().catch(() => null)) as {
+      application?: { id?: string; trackingId?: string };
+      message?: string;
+    } | null;
+
+    if (!createResponse.ok || !createBody?.application?.id || !createBody.application.trackingId) {
+      throw new Error(createBody?.message ?? 'Unable to save the application draft.');
+    }
+
+    activeDraftId = createBody.application.id;
+    activeTrackingId = createBody.application.trackingId;
+    applicationId = createBody.application.trackingId;
+    return { id: activeDraftId, trackingId: activeTrackingId };
+  }
+
+  async function persistDraftUploads(draftId: string) {
+    for (const [documentType, upload] of Object.entries(uploadedDocs)) {
+      if (!upload.file) continue;
+      const documentData = new FormData();
+      documentData.set('file', upload.file);
+      documentData.set('documentType', documentType);
+      const uploadResponse = await fetch(`/api/applications/${draftId}/documents`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { Accept: 'application/json' },
+        body: documentData
+      });
+      if (!uploadResponse.ok) {
+        const uploadBody = await uploadResponse.json().catch(() => null) as { message?: string } | null;
+        throw new Error(uploadBody?.message ?? 'Unable to upload a required document.');
+      }
+      const uploadBody = await uploadResponse.json().catch(() => null) as { document?: { id?: string } } | null;
+      uploadedDocs[documentType] = {
+        ...upload,
+        id: uploadBody?.document?.id ?? upload.id,
+        file: undefined
+      };
+      uploadedDocs = { ...uploadedDocs };
+    }
+  }
+
+  async function saveDraft() {
+    if (isSavingDraft || isSubmitting) return;
+    isSavingDraft = true;
+    stepError = '';
+
+    try {
+      const draft = await ensureDraftExists();
+      await persistDraftUploads(draft.id);
+      applicationId = draft.trackingId;
+      activeDraftId = draft.id;
+      activeTrackingId = draft.trackingId;
+      window.alert(`Draft saved successfully. Application ID: ${draft.trackingId}`);
+    } catch (cause) {
+      stepError = cause instanceof Error ? cause.message : 'Unable to save the application draft.';
+    } finally {
+      isSavingDraft = false;
+    }
+  }
+
+  async function deleteDraft() {
+    if (!activeDraftId || isDeletingDraft) return;
+    const confirmed = window.confirm('Delete this draft application?');
+    if (!confirmed) return;
+
+    isDeletingDraft = true;
+    stepError = '';
+    try {
+      const response = await fetch(`/api/applications/${activeDraftId}`, {
+        method: 'DELETE',
+        credentials: 'same-origin'
+      });
+      const body = await response.json().catch(() => null) as { message?: string } | null;
+      if (!response.ok) {
+        throw new Error(body?.message ?? 'Unable to delete this draft.');
+      }
+      await goto('/applications');
+    } catch (cause) {
+      stepError = cause instanceof Error ? cause.message : 'Unable to delete this draft.';
+    } finally {
+      isDeletingDraft = false;
+    }
+  }
+
   function validateCurrentStep(): boolean {
     stepError = '';
 
@@ -123,16 +314,12 @@
         stepError = 'Please enter your Full Name.';
         return false;
       }
-      if (!formData.phone || String(formData.phone).trim() === '') {
-        stepError = 'Please enter your Phone Number.';
+      if (!formData.phone || !/^\d{10}$/.test(String(formData.phone).trim())) {
+        stepError = 'Please enter a valid 10-digit phone number.';
         return false;
       }
-      if (!phoneVerified) {
-        stepError = 'Please verify your phone number via OTP first.';
-        return false;
-      }
-      if (formData.email && String(formData.email).trim() !== '' && !emailVerified) {
-        stepError = 'Please verify your email address via OTP first.';
+      if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(formData.email).trim())) {
+        stepError = 'Please enter a valid email address.';
         return false;
       }
       if (formData.aadhaarNumber && !/^\d{12}$/.test(String(formData.aadhaarNumber))) {
@@ -194,6 +381,10 @@
           stepError = 'Please enter your Pincode.';
           return false;
         }
+        if (!/^[1-9][0-9]{5}$/.test(String(formData.pincode).trim())) {
+          stepError = t('apply.validation.pincodeInvalid');
+          return false;
+        }
       }
     } else if (currentStep === 3) { // Documents Upload
       if (service?.requiredDocuments && service.requiredDocuments.length > 0) {
@@ -223,7 +414,13 @@
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       const file = input.files[0];
+      if (file.size > 1024 * 1024) {
+        stepError = 'Each file must be 1 MB or smaller.';
+        input.value = '';
+        return;
+      }
       uploadedDocs[docId] = { name: file.name, size: file.size, file };
+      stepError = '';
     }
   }
 
@@ -240,54 +437,30 @@
     stepError = '';
 
     try {
-      const response = await fetch('/api/applications', {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          serviceId: service.id,
-          formData,
-          submit: false
-        })
-      });
-      const body = (await response.json().catch(() => null)) as {
-        application?: { id?: string; trackingId?: string };
-        message?: string;
-      } | null;
+      const draft = await ensureDraftExists();
+      await persistDraftUploads(draft.id);
 
-      if (!response.ok || !body?.application?.id) {
-        throw new Error(body?.message ?? 'Unable to save the application draft.');
-      }
-
-      for (const [documentType, upload] of Object.entries(uploadedDocs)) {
-        if (!upload.file) continue;
-        const documentData = new FormData();
-        documentData.set('file', upload.file);
-        documentData.set('documentType', documentType);
-        const uploadResponse = await fetch(`/api/applications/${body.application.id}/documents`, {
+      applicationId = draft.trackingId;
+      if (requiresPayment) {
+        await launchPaymentCheckout(draft.id);
+      } else {
+        const submitResponse = await fetch(`/api/applications/${draft.id}/submit`, {
           method: 'POST',
           credentials: 'same-origin',
-          headers: { 'Accept': 'application/json' },
-          body: documentData
+          headers: { Accept: 'application/json' }
         });
-        if (!uploadResponse.ok) {
-          const uploadBody = await uploadResponse.json().catch(() => null) as { message?: string } | null;
-          throw new Error(uploadBody?.message ?? 'Unable to upload a required document.');
+        const submitBody = await submitResponse.json().catch(() => null) as { application?: { trackingId?: string }; message?: string } | null;
+        if (!submitResponse.ok || !submitBody?.application?.trackingId) {
+          throw new Error(submitBody?.message ?? 'Unable to submit the application.');
         }
+        applicationId = submitBody.application.trackingId;
       }
 
-      const submitResponse = await fetch(`/api/applications/${body.application.id}/submit`, {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: { 'Accept': 'application/json' }
-      });
-      const submitBody = await submitResponse.json().catch(() => null) as { application?: { trackingId?: string }; message?: string } | null;
-      if (!submitResponse.ok || !submitBody?.application?.trackingId) {
-        throw new Error(submitBody?.message ?? 'Unable to submit the application.');
-      }
-
-      applicationId = submitBody.application.trackingId;
-      goto(`/applications`);
+      submitted = true;
+      submissionPending = false;
+      window.alert('Payment and application submission completed successfully.');
+      await goto('/applications');
+      return;
     } catch (cause) {
       stepError = cause instanceof Error ? cause.message : 'Unable to submit the application.';
     } finally {
@@ -320,6 +493,9 @@
       </div>
       <h1 class="text-h2 text-text">{t('apply.success.title')}</h1>
       <p class="mt-2 text-sm text-text-muted">{t('apply.success.message')}</p>
+      {#if submissionPending}
+        <p class="mt-2 text-xs font-semibold text-primary">Your request is queued and being finalized in the background.</p>
+      {/if}
       <div class="mt-6 rounded-lg bg-surface p-4">
         <div class="text-xs text-text-muted">{t('apply.success.id')}</div>
         <div class="mt-1 text-xl font-bold text-primary font-mono">{applicationId}</div>
@@ -431,49 +607,11 @@
             </div>
             <div>
               <label for="phone" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.phone')} *</label>
-              <div class="flex gap-2">
-                <input id="phone" type="tel" bind:value={formData.phone} disabled={phoneVerified || phoneOtpSent} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
-                {#if !phoneVerified && !phoneOtpSent}
-                  <button type="button" onclick={sendPhoneOtp} class="px-4 py-2 bg-[#062206] text-white text-xs font-bold rounded-lg hover:bg-[#143A14] transition whitespace-nowrap">Send OTP</button>
-                {/if}
-                {#if phoneVerified}
-                  <span class="inline-flex items-center gap-1 text-emerald-600 font-bold text-xs"><Check class="h-4 w-4 shrink-0" /> Verified</span>
-                {/if}
-              </div>
-              {#if phoneOtpSent && !phoneVerified}
-                <div class="mt-2 flex gap-2 items-center">
-                  <input type="text" bind:value={phoneOtp} placeholder="OTP (e.g. 123456)" class="w-full max-w-[140px] rounded-lg border border-border py-1.5 px-2 text-xs outline-none" />
-                  <button type="button" onclick={verifyPhoneOtp} class="px-3 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 transition">Confirm</button>
-                  <button type="button" onclick={() => phoneOtpSent = false} class="text-xs text-slate-500 hover:underline">Change</button>
-                </div>
-                {#if phoneOtpError}
-                  <p class="text-[10px] text-rose-600 font-bold mt-1">{phoneOtpError}</p>
-                {/if}
-                <p class="text-[10px] text-slate-400 font-bold mt-1">Mock OTP: Use <strong>123456</strong></p>
-              {/if}
+              <input id="phone" type="tel" inputmode="numeric" maxlength="10" bind:value={formData.phone} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
             </div>
             <div>
               <label for="email" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.email')}</label>
-              <div class="flex gap-2">
-                <input id="email" type="email" bind:value={formData.email} disabled={emailVerified || emailOtpSent} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
-                {#if formData.email && String(formData.email).trim() !== '' && !emailVerified && !emailOtpSent}
-                  <button type="button" onclick={sendEmailOtp} class="px-4 py-2 bg-[#062206] text-white text-xs font-bold rounded-lg hover:bg-[#143A14] transition whitespace-nowrap">Send OTP</button>
-                {/if}
-                {#if emailVerified}
-                  <span class="inline-flex items-center gap-1 text-emerald-600 font-bold text-xs"><Check class="h-4 w-4 shrink-0" /> Verified</span>
-                {/if}
-              </div>
-              {#if emailOtpSent && !emailVerified}
-                <div class="mt-2 flex gap-2 items-center">
-                  <input type="text" bind:value={emailOtp} placeholder="OTP (e.g. 123456)" class="w-full max-w-[140px] rounded-lg border border-border py-1.5 px-2 text-xs outline-none" />
-                  <button type="button" onclick={verifyEmailOtp} class="px-3 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 transition">Confirm</button>
-                  <button type="button" onclick={() => emailOtpSent = false} class="text-xs text-slate-500 hover:underline">Change</button>
-                </div>
-                {#if emailOtpError}
-                  <p class="text-[10px] text-rose-600 font-bold mt-1">{emailOtpError}</p>
-                {/if}
-                <p class="text-[10px] text-slate-400 font-bold mt-1">Mock OTP: Use <strong>123456</strong></p>
-              {/if}
+              <input id="email" type="email" bind:value={formData.email} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
             </div>
             <div>
               <label for="aadhaarNumber" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.aadhaar')}</label>
@@ -600,7 +738,7 @@
                 </div>
                 <div>
                   <label for="pincode" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.pincode')} *</label>
-                  <input id="pincode" type="text" bind:value={formData.pincode} class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                  <input id="pincode" type="text" bind:value={formData.pincode} maxlength="6" pattern="[1-9][0-9]{'{'}5{'}'}" placeholder="600040" class="w-full rounded-lg border border-border py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
                 <div>
                   <label for="occupation" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.occupation')}</label>
@@ -617,7 +755,7 @@
         <!-- Step 3: Documents -->
         {:else if currentStep === 3}
           <h2 class="text-h3 text-text mb-2">{t('apply.step.documents')}</h2>
-          <p class="text-sm text-text-muted mb-6">Upload the required documents or fetch from DigiLocker.</p>
+          <p class="text-sm text-text-muted mb-6">Upload the required documents or fetch from DigiLocker. Maximum file size: 1 MB per file.</p>
           <div class="space-y-4">
             {#each service.requiredDocuments as doc}
               <div class="rounded-lg border border-border p-4">
@@ -728,6 +866,16 @@
                 </div>
               {/each}
             </div>
+            <div class="rounded-lg bg-surface p-4">
+              <h3 class="text-sm font-semibold text-text mb-3">Payment</h3>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-text-muted">Service fee</span>
+                <span class="font-medium text-text">{requiresPayment ? `₹${payableLabel}` : 'Free'}</span>
+              </div>
+              {#if Number(service.fee ?? 0) === 0 && requiresPayment}
+                <p class="mt-2 text-xs text-text-muted">A minimum Razorpay test charge of ₹1.00 is used for checkout-enabled demo submission.</p>
+              {/if}
+            </div>
           </div>
 
         <!-- Step 5: Declaration -->
@@ -762,6 +910,28 @@
         </button>
 
         <div class="flex items-center gap-3">
+          {#if activeDraftId}
+            <button
+              type="button"
+              onclick={deleteDraft}
+              disabled={isDeletingDraft || isSubmitting}
+              class="inline-flex items-center gap-2 rounded-lg border border-rose-200 px-4 py-2.5 text-sm font-medium text-rose-700 transition hover:bg-rose-50 disabled:opacity-50"
+            >
+              <Trash2 class="h-4 w-4" />
+              {isDeletingDraft ? 'Deleting...' : 'Delete Draft'}
+            </button>
+          {/if}
+          {#if currentStep === steps.length - 1}
+            <button
+              type="button"
+              onclick={saveDraft}
+              disabled={isSavingDraft || isSubmitting}
+              class="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2.5 text-sm font-medium text-text transition hover:bg-white disabled:opacity-50"
+            >
+              <FileText class="h-4 w-4" />
+              {isSavingDraft ? 'Saving Draft...' : 'Save Draft'}
+            </button>
+          {/if}
           {#if currentStep < steps.length - 1}
             <button
               onclick={nextStep}
@@ -773,11 +943,17 @@
           {:else}
             <button
               onclick={triggerSubmitConfirm}
-              disabled={!declarationAgreed || isSubmitting}
+              disabled={!declarationAgreed || isSubmitting || (requiresPayment && !isRazorpayReady)}
               class="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-light disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Check class="h-4 w-4" />
-              {isSubmitting ? t('common.loading') : t('apply.confirm')}
+              {#if isSubmitting}
+                {t('common.loading')}
+              {:else if requiresPayment}
+                Pay & Submit
+              {:else}
+                {t('apply.confirm')}
+              {/if}
             </button>
           {/if}
         </div>
@@ -790,7 +966,11 @@
       <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl animate-scale-up">
         <h3 class="text-h3 text-text mb-3">Confirm Submission</h3>
         <p class="text-sm text-text-secondary leading-relaxed mb-6">
-          Are you sure you want to submit this application? This action cannot be undone. Please ensure all details are correct.
+          {#if requiresPayment}
+            Razorpay checkout will open and process ₹{payableLabel} before this application is submitted.
+          {:else}
+            Are you sure you want to submit this application? This action cannot be undone. Please ensure all details are correct.
+          {/if}
         </p>
         <div class="flex items-center justify-end gap-3">
           <button
@@ -803,7 +983,7 @@
             onclick={submitApplication}
             class="rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-white hover:bg-primary-light transition"
           >
-            Confirm & Submit
+            {#if requiresPayment}Confirm Pay & Submit{:else}Confirm & Submit{/if}
           </button>
         </div>
       </div>

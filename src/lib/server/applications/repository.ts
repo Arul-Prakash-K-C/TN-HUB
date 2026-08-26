@@ -44,7 +44,7 @@ function toIso(timestamp: Timestamp): string {
 }
 
 function trackingIdFor(year: number, sequence: number): string {
-  return `SYM-${year}-${String(sequence).padStart(8, '0')}`;
+  return `TNH-${year}-${String(sequence).padStart(8, '0')}`;
 }
 
 /**
@@ -222,6 +222,7 @@ function toApplication(
     id: requiredString(data.id ?? snapshot.id, 'id'),
     applicationNumber: requiredString(data.trackingId ?? data.applicationNumber, 'tracking ID'),
     serviceId: requiredString(data.serviceId, 'service ID'),
+    serviceSlug: optionalString(data.serviceSlug),
     serviceName: serviceName.en,
     serviceNameTA: serviceName.ta,
     departmentId: requiredString(data.departmentId, 'department ID'),
@@ -307,8 +308,8 @@ async function createApplicationForCitizen(
     throw new Error('This service is unavailable.');
   }
 
-  if (service.implementationMode !== 'NATIVE_WORKFLOW' || !service.workflowId) {
-    throw new Error('This service is not yet available for a native Sympho application.');
+  if (!service.workflowId) {
+    throw new Error('This service is unavailable.');
   }
 
   // Services are configured by administrators, but the application record
@@ -335,6 +336,7 @@ async function createApplicationForCitizen(
       id: applicationRef.id,
       trackingId,
       serviceId: service.id,
+      serviceSlug: service.slug,
       serviceName: service.name,
       citizenId: citizen.uid,
       citizenName: (input.formData.fullName as string) || citizen.displayName,
@@ -351,6 +353,11 @@ async function createApplicationForCitizen(
       documents: [],
       assignedOfficerId: null,
       submittedAt: input.submit ? now : null,
+      ...(input.submit ? {
+        submittedByUserId: assistedByOperator?.uid ?? citizen.uid,
+        submittedByRole: assistedByOperator?.role ?? citizen.role,
+        submissionMode: assistedByOperator ? 'assisted' : 'self_service'
+      } : {}),
       createdAt: now,
       updatedAt: now
     });
@@ -447,12 +454,16 @@ export async function createAssistedApplicationDraft(
 
     profile = {
       id: citizenId,
+      uid: citizenId,
       email: isEmail ? identifier : '',
       phone: !isEmail ? identifier : '',
       name: isEmail ? identifier.split('@')[0] : `Citizen (${identifier.substring(identifier.length - 4)})`,
+      displayName: isEmail ? identifier.split('@')[0] : `Citizen (${identifier.substring(identifier.length - 4)})`,
       role: 'citizen',
       isActive: true,
-      createdAt: Timestamp.now()
+      preferredLanguage: 'en',
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now()
     };
     await newCitizenRef.set(profile);
   }
@@ -489,25 +500,32 @@ export async function createAssistedApplicationDraft(
  * Lists only the applications visible to the verified user. Department and
  * operator queries are scoped in Firestore before the result is mapped.
  */
-export async function listApplicationsForUser(user: AuthenticatedUser): Promise<Application[]> {
+export async function listApplicationsForUser(user: AuthenticatedUser, maxResults = 100): Promise<Application[]> {
   const applications = getFirebaseAdminFirestore().collection('applications');
   let snapshot;
 
   if (user.role === 'citizen') {
-    snapshot = await applications.where('citizenId', '==', user.uid).get();
+    snapshot = await applications.where('citizenId', '==', user.uid).limit(maxResults).get();
   } else if (user.role === 'department_user') {
     if (!user.departmentId) return [];
-    snapshot = await applications.where('departmentId', '==', user.departmentId).get();
+    snapshot = await applications.where('departmentId', '==', user.departmentId).limit(maxResults).get();
   } else if (user.role === 'operator') {
     // Operators see only explicitly assisted applications, never a whole department queue.
-    snapshot = await applications.where('assistedByOperatorId', '==', user.uid).get();
+    snapshot = await applications.where('assistedByOperatorId', '==', user.uid).limit(maxResults).get();
   } else {
-    snapshot = await applications.limit(250).get();
+    snapshot = await applications.limit(maxResults).get();
   }
 
-  return snapshot.docs
+  const mapped = snapshot.docs
     .map((application) => toApplication(application))
+    .filter((application) => user.role !== 'department_user' || application.status !== 'DRAFT')
     .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
+
+  return Promise.all(mapped.map(async (application) => {
+    if (application.serviceSlug) return application;
+    const service = await getCatalogService(application.serviceId);
+    return service ? { ...application, serviceSlug: service.slug } : application;
+  }));
 }
 
 /** Reads a single application after applying the same server-side scope check. */
@@ -532,7 +550,11 @@ export async function getApplicationForUser(
     .map(toHistoryEntry)
     .sort((left, right) => left.timestamp.localeCompare(right.timestamp));
 
-  return toApplication(snapshot, { documents: documents.length > 0 ? documents : undefined, history });
+  const application = toApplication(snapshot, { documents: documents.length > 0 ? documents : undefined, history });
+  if (application.serviceSlug) return application;
+
+  const service = await getCatalogService(application.serviceId);
+  return service ? { ...application, serviceSlug: service.slug } : application;
 }
 
 /** Returns transitions that the verified user may take from the application's current state. */
@@ -637,6 +659,12 @@ export async function transitionApplication(
       currentStage: finalStatus,
       updatedAt: now
     };
+    if (currentStatus === 'DRAFT' && targetStatus === 'SUBMITTED') {
+      update.submittedAt = now;
+      update.submittedByUserId = user.uid;
+      update.submittedByRole = user.role;
+      update.submissionMode = user.role === 'operator' ? 'assisted' : 'self_service';
+    }
 
     if (user.role === 'department_user') {
       update.assignedOfficerId = user.uid;
@@ -746,17 +774,18 @@ export async function submitCitizenDraft(user: AuthenticatedUser, applicationId:
   const application = snapshot.data() as StoredApplication;
   if (!canReadApplication(user, application)) throw new Error('Application not found.');
   if (asApplicationStatus(application.status) !== 'DRAFT') {
+    if (['SUBMITTED', 'DOCUMENT_VERIFICATION', 'UNDER_REVIEW', 'APPROVED', 'ISSUED', 'COMPLETED'].includes(String(application.status))) {
+      const app = await getApplicationForUser(user, applicationId);
+      if (!app) throw new Error('Application not found.');
+      return app;
+    }
     throw new Error('Only draft applications can be submitted.');
   }
 
   const service = await getCatalogService(requiredString(application.serviceId, 'service ID'));
   if (!service) throw new Error('Application service is unavailable.');
-  const uploadedTypes = new Set(
-    (Array.isArray(application.documents) ? application.documents : [])
-      .filter((document): document is Record<string, unknown> => !!document && typeof document === 'object')
-      .map((document) => optionalString(document.documentType))
-      .filter((documentType): documentType is string => !!documentType)
-  );
+  const persistedDocuments = await loadApplicationDocuments(applicationId);
+  const uploadedTypes = new Set(persistedDocuments.map((document) => document.documentId));
   const missingRequiredDocument = service.requiredDocuments.find(
     (document) => document.mandatory && !uploadedTypes.has(document.id)
   );
@@ -887,4 +916,66 @@ export async function updateApplicationDraft(
   const updated = await getApplicationForUser(user, applicationId);
   if (!updated) throw new Error('Application not found.');
   return updated;
+}
+
+export async function findLatestDraftForCitizenByService(
+  user: AuthenticatedUser,
+  serviceId: string
+): Promise<Application | null> {
+  if (user.role !== 'citizen') return null;
+
+  const snapshot = await getFirebaseAdminFirestore()
+    .collection('applications')
+    .where('citizenId', '==', user.uid)
+    .where('serviceId', '==', serviceId)
+    .where('status', '==', 'DRAFT')
+    .limit(10)
+    .get();
+
+  const latest = snapshot.docs
+    .map((document) => toApplication(document))
+    .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt))[0];
+
+  if (!latest) return null;
+  if (latest.serviceSlug) return latest;
+
+  const service = await getCatalogService(latest.serviceId);
+  return service ? { ...latest, serviceSlug: service.slug } : latest;
+}
+
+export async function deleteApplicationDraft(user: AuthenticatedUser, applicationId: string): Promise<void> {
+  const db = getFirebaseAdminFirestore();
+  const applicationRef = db.collection('applications').doc(applicationId);
+  const snapshot = await applicationRef.get();
+  if (!snapshot.exists) throw new Error('Application not found.');
+
+  const application = snapshot.data() as StoredApplication;
+  const isOwner = optionalString(application.citizenId) === user.uid;
+  const isAssistingOperator = optionalString(application.assistedByOperatorId) === user.uid;
+  if (user.role !== 'admin' && !isOwner && !isAssistingOperator) {
+    throw new Error('Unauthorized to delete this draft.');
+  }
+
+  if (asApplicationStatus(application.status) !== 'DRAFT') {
+    throw new Error('Only drafts can be deleted.');
+  }
+
+  const now = Timestamp.now();
+  const documents = await db.collection('documents').where('applicationId', '==', applicationId).get();
+
+  await db.runTransaction(async (transaction) => {
+    documents.docs.forEach((document) => transaction.delete(document.ref));
+    const history = await transaction.get(applicationRef.collection('statusHistory'));
+    history.docs.forEach((entry) => transaction.delete(entry.ref));
+    transaction.delete(applicationRef);
+    writeAuditLogInTransaction(db, transaction, {
+      actor: user,
+      departmentId: optionalString(application.departmentId) ?? null,
+      action: 'APPLICATION_DRAFT_DELETED',
+      entityType: 'application',
+      entityId: requiredString(application.id ?? applicationId, 'id'),
+      timestamp: now,
+      metadata: { serviceId: optionalString(application.serviceId) ?? null }
+    });
+  });
 }

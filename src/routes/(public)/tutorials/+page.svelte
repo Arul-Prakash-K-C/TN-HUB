@@ -15,7 +15,7 @@
       youtubeId: 'F3zWvW0K_V0',
       url: 'https://www.youtube.com/watch?v=F3zWvW0K_V0',
       category: currentLocale === 'ta' ? 'வருவாய் துறை' : 'Revenue Department',
-      thumbnailGradient: 'from-emerald-600 to-teal-800'
+      thumbnailGradient: 'from-emerald-700 to-teal-900'
     },
     {
       id: 'community-cert',
@@ -25,7 +25,7 @@
       youtubeId: 'B7bZfQp0J_U',
       url: 'https://www.youtube.com/watch?v=B7bZfQp0J_U',
       category: currentLocale === 'ta' ? 'வருவாய் துறை' : 'Revenue Department',
-      thumbnailGradient: 'from-blue-600 to-indigo-800'
+      thumbnailGradient: 'from-[#316342] to-emerald-950'
     },
     {
       id: 'patta-chitta',
@@ -35,7 +35,7 @@
       youtubeId: 'mRk2R3R2a1E',
       url: 'https://www.youtube.com/watch?v=mRk2R3R2a1E',
       category: currentLocale === 'ta' ? 'நில அளவை துறை' : 'Survey & Land Records',
-      thumbnailGradient: 'from-purple-600 to-indigo-900'
+      thumbnailGradient: 'from-teal-700 to-emerald-900'
     },
     {
       id: 'eadangal',
@@ -45,7 +45,7 @@
       youtubeId: 'kYJjZ39l6_k',
       url: 'https://www.youtube.com/watch?v=kYJjZ39l6_k',
       category: currentLocale === 'ta' ? 'வேளாண்மை துறை' : 'Agriculture Department',
-      thumbnailGradient: 'from-amber-600 to-orange-800'
+      thumbnailGradient: 'from-[#143520] to-[#316342]'
     },
     {
       id: 'digilocker',
@@ -55,31 +55,39 @@
       youtubeId: 'Q8T2tP5vD_Q',
       url: 'https://www.youtube.com/watch?v=Q8T2tP5vD_Q',
       category: currentLocale === 'ta' ? 'டிஜிட்டல் சேவைகள்' : 'Digital Services',
-      thumbnailGradient: 'from-cyan-600 to-teal-900'
+      thumbnailGradient: 'from-[#4a7c59] to-[#143520]'
     }
   ]);
 
   let activeVideo = $state<string | null>(null);
+
+  function getTutorialThumbnailClass(id: string) {
+    const palette: Record<string, string> = {
+      'income-cert': 'tutorial-thumb-income',
+      'community-cert': 'tutorial-thumb-community',
+      'patta-chitta': 'tutorial-thumb-patta',
+      eadangal: 'tutorial-thumb-eadangal',
+      digilocker: 'tutorial-thumb-digilocker'
+    };
+
+    return palette[id] ?? 'tutorial-thumb-default';
+  }
 </script>
 
 <svelte:head>
   <title>{currentLocale === 'ta' ? 'சேவை வீடியோ பயிற்சிகள்' : 'Service Video Tutorials'} — TN Hub</title>
 </svelte:head>
 
-<div class="bg-slate-50 min-h-screen pb-20">
-  <!-- Hero Header -->
-  <div class="bg-gradient-to-br from-[#062206] via-[#0a3d0a] to-[#062206] text-white border-b border-[#143A14] px-6 py-16 sm:px-8">
-    <div class="mx-auto max-w-7xl">
+<div class="min-h-screen bg-background pb-20 text-text">
+  <!-- Hero Banner -->
+  <div class="public-banner">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
       <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
         <div>
-          <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 px-3 py-1 text-xs font-bold text-emerald-300">
-            <Video class="h-4 w-4 text-red-500" />
-            {currentLocale === 'ta' ? 'வீடியோ கையேடுகள்' : 'Video Guides'}
-          </span>
-          <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight mt-3">
+          <h1 class="text-3xl font-bold tracking-tight">
             {currentLocale === 'ta' ? 'சேவை விண்ணப்ப வீடியோ பயிற்சிகள்' : 'Service Application Video Tutorials'}
           </h1>
-          <p class="mt-3 text-base text-emerald-200/80 max-w-2xl leading-relaxed">
+          <p class="public-banner-subtitle mt-2 max-w-2xl text-sm leading-relaxed">
             {currentLocale === 'ta' 
               ? 'அரசு சேவைகளுக்கு ஆன்லைனில் எவ்வாறு எளிதாக விண்ணப்பிப்பது என்பதை விளக்கும் அதிகாரப்பூர்வ மற்றும் கல்வி சார்ந்த வீடியோக்கள்.'
               : 'Official and educational video tutorials showing you step-by-step how to apply for various government services on the TN Hub portal.'}
@@ -94,22 +102,22 @@
     {#if activeVideo}
       {@const activeTutor = tutorials.find(t => t.id === activeVideo)}
       {#if activeTutor}
-        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg space-y-4">
+        <div class="space-y-4 rounded-3xl border border-border bg-surface p-6 shadow-lg">
           <div class="flex justify-between items-center">
             <div>
-              <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md">{activeTutor.category}</span>
-              <h2 class="text-lg font-bold text-slate-900 mt-2">{activeTutor.title}</h2>
+              <span class="rounded-md bg-primary-soft px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary">{activeTutor.category}</span>
+              <h2 class="mt-2 text-lg font-bold text-text">{activeTutor.title}</h2>
             </div>
             <button 
               onclick={() => activeVideo = null}
-              class="text-xs font-bold text-slate-500 hover:text-slate-900 border border-slate-200 hover:border-slate-300 rounded-xl px-3.5 py-1.5 transition"
+              class="rounded-xl border border-border px-3.5 py-1.5 text-xs font-bold text-text-muted transition hover:border-border-strong hover:text-text"
             >
               {currentLocale === 'ta' ? 'மூடுக' : 'Close Player'}
             </button>
           </div>
           
           <!-- YouTube Responsive Embed -->
-          <div class="aspect-video w-full rounded-2xl overflow-hidden shadow-inner border border-slate-200 bg-slate-950">
+          <div class="aspect-video w-full overflow-hidden rounded-2xl border border-border bg-slate-950 shadow-inner">
             <iframe 
               class="w-full h-full"
               src="https://www.youtube.com/embed/{activeTutor.youtubeId}?autoplay=1" 
@@ -126,10 +134,10 @@
     <!-- Tutorials Grid -->
     <div class="space-y-6">
       <div>
-        <h2 class="text-xl font-bold text-slate-900">
+        <h2 class="text-xl font-bold text-text">
           {currentLocale === 'ta' ? 'அனைத்து பயிற்சி வீடியோக்கள்' : 'All Tutorial Videos'}
         </h2>
-        <p class="text-xs text-slate-500 mt-1">
+        <p class="mt-1 text-xs text-text-muted">
           {currentLocale === 'ta' 
             ? 'உங்களுக்கு தேவையான துறையைத் தேர்ந்தெடுத்து விண்ணப்பிக்கும் வீடியோ வழிகாட்டியைக் காணுங்கள்.' 
             : 'Select any service below to watch the application procedure video.'}
@@ -138,14 +146,14 @@
 
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {#each tutorials as tutor}
-          <div class="group rounded-3xl border border-slate-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col justify-between">
+          <div class="group flex flex-col justify-between overflow-hidden rounded-3xl border border-border bg-surface shadow-sm transition-all duration-300 hover:shadow-xl">
             <!-- Simulated Video Thumbnail -->
             <button 
               type="button"
               onclick={() => { activeVideo = tutor.id; window.scrollTo({ top: 300, behavior: 'smooth' }); }}
-              class="relative aspect-video w-full bg-gradient-to-br {tutor.thumbnailGradient} flex items-center justify-center text-white select-none transition-transform group-hover:scale-[1.02]"
+              class="tutorial-thumb {getTutorialThumbnailClass(tutor.id)} relative aspect-video w-full flex items-center justify-center text-white select-none transition-transform group-hover:scale-[1.02]"
             >
-              <div class="absolute inset-0 bg-slate-950/20 group-hover:bg-slate-950/40 transition"></div>
+              <div class="absolute inset-0 bg-slate-950/25 transition group-hover:bg-slate-950/45"></div>
               
               <!-- Play Button Overlay -->
               <div class="z-10 flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white shadow-lg group-hover:scale-110 transition duration-300">
@@ -161,15 +169,15 @@
             <!-- Video Text details -->
             <div class="p-6 flex-1 flex flex-col justify-between">
               <div class="space-y-2">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">{tutor.category}</span>
-                <h3 class="text-sm font-bold text-slate-900 group-hover:text-emerald-700 transition leading-snug">{tutor.title}</h3>
-                <p class="text-xs text-slate-500 leading-relaxed line-clamp-3">{tutor.desc}</p>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-text-faint">{tutor.category}</span>
+                <h3 class="text-sm font-bold leading-snug text-text transition group-hover:text-primary">{tutor.title}</h3>
+                <p class="line-clamp-3 text-xs leading-relaxed text-text-muted">{tutor.desc}</p>
               </div>
 
               <div class="flex gap-2 mt-6">
                 <button
                   onclick={() => { activeVideo = tutor.id; window.scrollTo({ top: 300, behavior: 'smooth' }); }}
-                  class="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-slate-950 px-4 py-2.5 text-xs font-bold text-white hover:bg-slate-800 transition"
+                  class="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-white transition hover:bg-primary-hover"
                 >
                   <Play class="h-3.5 w-3.5 fill-current" />
                   <span>{currentLocale === 'ta' ? 'இப்போதே காண்க' : 'Watch Now'}</span>
@@ -178,7 +186,7 @@
                   href={tutor.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="px-3 rounded-xl border border-slate-200 hover:bg-slate-50 flex items-center justify-center text-slate-500 hover:text-slate-900 transition"
+                  class="flex items-center justify-center rounded-xl border border-border px-3 text-text-muted transition hover:bg-muted hover:text-text"
                   title="Open on YouTube"
                 >
                   <ExternalLink class="h-4 w-4" />
@@ -191,25 +199,25 @@
     </div>
 
     <!-- FAQ & Assistance -->
-    <div class="rounded-3xl border border-slate-200 bg-white p-8 flex flex-col md:flex-row items-center gap-6">
-      <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-600 shrink-0">
+    <div class="flex flex-col items-center gap-6 rounded-3xl border border-border bg-surface p-8 md:flex-row">
+      <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-primary/20 bg-primary-soft text-primary">
         <HelpCircle class="h-8 w-8" />
       </div>
       <div class="flex-1 text-center md:text-left">
-        <h3 class="text-lg font-bold text-slate-900">
+        <h3 class="text-lg font-bold text-text">
           {currentLocale === 'ta' ? 'கூடுதல் உதவி வேண்டுமா?' : 'Need Additional Assistance?'}
         </h3>
-        <p class="text-sm text-slate-500 mt-1 max-w-xl">
+        <p class="mt-1 max-w-xl text-sm text-text-muted">
           {currentLocale === 'ta' 
             ? 'விண்ணப்ப முறைகள் பற்றி மேலும் விவரங்களுக்கு எங்களின் உதவி பக்கத்தைப் பார்வையிடலாம் அல்லது எங்களின் AI சேவையிடம் கேட்கலாம்.' 
             : 'If you need help with documentation or are facing errors, visit our Help Desk or ask Thozhan AI Chatbot for instant guidance.'}
         </p>
       </div>
       <div class="shrink-0 flex gap-2">
-        <a href="/help" class="rounded-xl border border-slate-200 hover:bg-slate-50 px-5 py-2.5 text-xs font-bold text-slate-700">
+        <a href="/help" class="rounded-xl border border-border px-5 py-2.5 text-xs font-bold text-text transition hover:bg-muted">
           {currentLocale === 'ta' ? 'உதவி பக்கம்' : 'Help Desk'}
         </a>
-        <a href="/chatbot" class="rounded-xl bg-emerald-600 hover:bg-emerald-700 px-5 py-2.5 text-xs font-bold text-white shadow-sm">
+        <a href="/chatbot" class="rounded-xl bg-primary px-5 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-primary-hover">
           {currentLocale === 'ta' ? 'அரட்டை' : 'Ask AI'}
         </a>
       </div>

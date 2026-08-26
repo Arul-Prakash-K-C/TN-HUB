@@ -2,6 +2,14 @@ import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { getFirebaseAdminFirestore } from '$lib/server/firebase/admin';
 import { Timestamp } from 'firebase-admin/firestore';
 
+type RegistrationRecord = {
+  uid: string;
+  desiredRole?: unknown;
+  registrationStatus?: unknown;
+  approved?: unknown;
+  [key: string]: unknown;
+};
+
 export const GET: RequestHandler = async ({ locals }) => {
   if (!locals.user || locals.user.role !== 'admin') {
     throw error(403, 'Forbidden: Admin access only.');
@@ -10,18 +18,19 @@ export const GET: RequestHandler = async ({ locals }) => {
   const db = getFirebaseAdminFirestore();
 
   try {
-    const snapshot = await db.collection('users')
-      .where('approved', '==', false)
-      .get();
-
-    const users: any[] = [];
-    snapshot.forEach(doc => {
-      users.push(doc.data());
-    });
+    const snapshot = await db.collection('users').get();
+    const users = snapshot.docs
+      .map((document) => ({ ...document.data(), uid: document.id }) as RegistrationRecord)
+      .filter((user) => Boolean(user.desiredRole || user.registrationStatus))
+      .map((user) => ({
+        ...user,
+        registrationStatus: user.registrationStatus
+          ?? (user.approved === true ? 'APPROVED' : 'APPLIED')
+      }));
 
     return json({ users });
   } catch (cause) {
-    const message = cause instanceof Error ? cause.message : 'Unable to list pending registrations.';
+    const message = cause instanceof Error ? cause.message : 'Unable to list registrations.';
     throw error(500, message);
   }
 };
@@ -48,26 +57,42 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
   const profileRef = db.collection('users').doc(uid);
 
   try {
-    if (approved) {
-      // Find desired role and details
-      const doc = await profileRef.get();
-      if (!doc.exists) {
-        throw error(404, 'User registration request not found.');
-      }
-      const data = doc.data() || {};
+    const document = await profileRef.get();
+    if (!document.exists) {
+      throw error(404, 'User registration request not found.');
+    }
 
+    const data = document.data() || {};
+    const now = Timestamp.now();
+
+    if (approved) {
       await profileRef.update({
         approved: true,
         isActive: true,
         role: data.role || data.desiredRole || 'operator',
-        updatedAt: Timestamp.now()
+        registrationStatus: 'APPROVED',
+        approvedAt: now,
+        reviewedAt: now,
+        reviewedByUserId: locals.user.uid,
+        updatedAt: now
       });
     } else {
-      // Rejected registration request: just delete the document or disable it permanently
-      await profileRef.delete();
+      await profileRef.update({
+        approved: false,
+        isActive: false,
+        registrationStatus: 'REJECTED',
+        rejectedAt: now,
+        reviewedAt: now,
+        reviewedByUserId: locals.user.uid,
+        updatedAt: now
+      });
     }
 
-    return json({ success: true, message: approved ? 'Registration approved!' : 'Registration request rejected.' });
+    return json({
+      success: true,
+      registrationStatus: approved ? 'APPROVED' : 'REJECTED',
+      message: approved ? 'Registration approved!' : 'Registration request rejected.'
+    });
   } catch (cause) {
     const message = cause instanceof Error ? cause.message : 'Unable to update registration.';
     throw error(500, message);

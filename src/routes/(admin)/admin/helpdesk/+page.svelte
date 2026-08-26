@@ -89,23 +89,20 @@
 </svelte:head>
 
 {#if !authenticated || role !== 'admin'}
-  <div class="flex min-h-[60vh] flex-col items-center justify-center p-4 bg-slate-50">
-    <div class="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-xl mt-10">
+  <div class="flex min-h-[60vh] flex-col items-center justify-center p-4 bg-background">
+    <div class="w-full max-w-md rounded-3xl border border-border bg-surface p-8 text-center shadow-xl mt-10">
       <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-600">
         <Shield class="h-7 w-7" />
       </div>
-      <h2 class="text-xl font-bold text-slate-900">Access Denied</h2>
-      <p class="mt-2 text-xs text-slate-500">Admin access only.</p>
+      <h2 class="text-xl font-bold text-text">Access Denied</h2>
+      <p class="mt-2 text-xs text-text-muted">Admin access only.</p>
     </div>
   </div>
 {:else}
   <div class="bg-surface-secondary min-h-screen pb-12">
-    <div class="bg-primary text-white border-b border-border">
+    <div class="public-banner border-b border-border">
       <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <span class="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white">
-          Support Center
-        </span>
-        <h1 class="mt-2 text-h1 text-white">Help Desk & User Inquiries</h1>
+        <h1 class="text-h1 text-white">Help Desk & User Inquiries</h1>
         <p class="text-xs text-white/70">Review and reply to user questions. Replies are sent as notifications.</p>
       </div>
     </div>
@@ -114,7 +111,7 @@
       <!-- Stats Row -->
       <div class="grid grid-cols-3 gap-4 mb-8">
         <div class="rounded-2xl border border-border bg-white p-5 shadow-sm text-center">
-          <div class="text-2xl font-bold text-primary">{questions.length}</div>
+          <div class="text-2xl font-bold text-[#316342]">{questions.length}</div>
           <div class="text-[10px] font-bold text-text-muted uppercase mt-1">Total Questions</div>
         </div>
         <div class="rounded-2xl border border-border bg-white p-5 shadow-sm text-center">
@@ -122,7 +119,7 @@
           <div class="text-[10px] font-bold text-text-muted uppercase mt-1">Pending Reply</div>
         </div>
         <div class="rounded-2xl border border-border bg-white p-5 shadow-sm text-center">
-          <div class="text-2xl font-bold text-emerald-600">{questions.filter(q => q.reply).length}</div>
+          <div class="text-2xl font-bold text-[#316342]">{questions.filter(q => q.reply).length}</div>
           <div class="text-[10px] font-bold text-text-muted uppercase mt-1">Replied</div>
         </div>
       </div>
@@ -132,7 +129,7 @@
         {#each [['all', 'All'], ['pending', 'Pending'], ['replied', 'Replied']] as [tab, label]}
           <button
             onclick={() => filterTab = tab as typeof filterTab}
-            class="px-4 py-2 rounded-xl text-xs font-bold transition {filterTab === tab ? 'bg-primary text-white shadow' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'}"
+            class="px-4 py-2 rounded-xl text-xs font-bold transition {filterTab === tab ? 'bg-[#316342] text-white shadow' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'}"
           >
             {label}
           </button>
@@ -148,12 +145,12 @@
 
       {#if loading}
         <div class="flex items-center justify-center py-20">
-          <Loader2 class="h-8 w-8 animate-spin text-emerald-600" />
+          <Loader2 class="h-8 w-8 animate-spin text-[#316342]" />
           <span class="ml-3 text-sm text-slate-500">Loading inquiries…</span>
         </div>
       {:else if filteredQuestions().length === 0}
         <div class="rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm">
-          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600">
+          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#316342]/10 text-[#316342]">
             <CheckCircle class="h-8 w-8" />
           </div>
           <h2 class="text-lg font-bold text-slate-900">No Questions</h2>
@@ -179,7 +176,7 @@
                       <span class="text-xs font-bold text-slate-900">{q.userName || 'User'}</span>
                       <span class="text-[10px] font-medium text-slate-400">{q.userRole || 'citizen'}</span>
                       {#if q.reply}
-                        <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-bold text-emerald-700 border border-emerald-200">
+                        <span class="inline-flex items-center gap-1 rounded-full bg-[#316342]/10 px-2 py-0.5 text-[9px] font-bold text-[#316342] border border-[#316342]/20">
                           <CheckCircle class="h-2.5 w-2.5" /> Replied
                         </span>
                       {:else}
@@ -211,20 +208,20 @@
                   </div>
 
                   {#if q.reply}
-                    <div class="text-xs bg-emerald-50 rounded-xl p-4 border border-emerald-200">
+                    <div class="text-xs bg-[#316342]/5 rounded-xl p-4 border border-[#316342]/20">
                       <div class="flex items-center gap-1.5 mb-1">
-                        <Reply class="h-3 w-3 text-emerald-600" />
-                        <strong class="text-emerald-900">Admin Reply:</strong>
+                        <Reply class="h-3 w-3 text-[#316342]" />
+                        <strong class="text-slate-900">Admin Reply:</strong>
                       </div>
-                      <p class="text-emerald-800 whitespace-pre-wrap">{q.reply}</p>
+                      <p class="text-slate-800 whitespace-pre-wrap">{q.reply}</p>
                       {#if q.repliedAt}
-                        <span class="text-[10px] text-emerald-500 mt-2 block">Replied on {formatDate(q.repliedAt)}</span>
+                        <span class="text-[10px] text-slate-500 mt-2 block">Replied on {formatDate(q.repliedAt)}</span>
                       {/if}
                     </div>
                   {:else}
                     <div>
                       <label for="reply-{q.id}" class="block text-xs font-bold text-slate-800 mb-1.5">
-                        <Reply class="h-3 w-3 inline text-primary mr-1" />
+                        <Reply class="h-3 w-3 inline text-[#316342] mr-1" />
                         Write a Reply
                       </label>
                       <textarea
@@ -232,13 +229,13 @@
                         bind:value={replyText}
                         placeholder="Type your response here…"
                         rows="3"
-                        class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs font-medium text-slate-900 outline-none transition focus:border-emerald-500"
+                        class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs font-medium text-slate-900 outline-none transition focus:border-[#316342]"
                       ></textarea>
                       <div class="flex justify-end mt-2">
                         <button
                           onclick={() => sendReply(q.id)}
                           disabled={!replyText.trim() || !!replyLoading}
-                          class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow hover:bg-emerald-700 transition disabled:opacity-50"
+                          class="inline-flex items-center gap-1.5 rounded-xl bg-[#316342] px-4 py-2 text-xs font-bold text-white shadow hover:bg-[#254b32] transition disabled:opacity-50"
                         >
                           {#if replyLoading === q.id}
                             <Loader2 class="h-3.5 w-3.5 animate-spin" />

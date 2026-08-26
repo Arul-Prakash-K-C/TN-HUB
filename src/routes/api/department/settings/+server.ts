@@ -19,7 +19,24 @@ const DEFAULT_SETTINGS: DepartmentSettings = {
   updatedAt: new Date().toISOString()
 };
 
-export const GET: RequestHandler = async ({ locals }) => {
+function getAuthorizedDepartmentId(user: NonNullable<App.Locals['user']>, requestedDepartmentId?: string | null): string {
+  const role = normalizeUserRole(user.role);
+
+  if (role === 'department_user') {
+    if (!user.departmentId) throw error(403, 'Department assignment is required.');
+    return user.departmentId;
+  }
+
+  if (role === 'admin') {
+    const departmentId = requestedDepartmentId?.trim();
+    if (!departmentId) throw error(400, 'Department ID is required for admin settings access.');
+    return departmentId;
+  }
+
+  throw error(403, 'Access denied.');
+}
+
+export const GET: RequestHandler = async ({ locals, url }) => {
   if (!locals.user) {
     throw error(401, 'Authentication required.');
   }
@@ -29,7 +46,7 @@ export const GET: RequestHandler = async ({ locals }) => {
     throw error(403, 'Access denied.');
   }
 
-  const deptId = locals.user.departmentId || 'dept-revenue';
+  const deptId = getAuthorizedDepartmentId(locals.user, url.searchParams.get('departmentId'));
   const db = getFirebaseAdminFirestore();
 
   try {
@@ -47,7 +64,7 @@ export const GET: RequestHandler = async ({ locals }) => {
   }
 };
 
-export const POST: RequestHandler = async ({ request, locals }) => {
+export const POST: RequestHandler = async ({ request, locals, url }) => {
   if (!locals.user) {
     throw error(401, 'Authentication required.');
   }
@@ -57,7 +74,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     throw error(403, 'Only department officers or administrators can update settings.');
   }
 
-  const deptId = locals.user.departmentId || 'dept-revenue';
+  const deptId = getAuthorizedDepartmentId(locals.user, url.searchParams.get('departmentId'));
 
   let body: { slaThresholdDays?: unknown; autoAssign?: unknown; emailNotifs?: unknown; smsNotifs?: unknown };
   try {

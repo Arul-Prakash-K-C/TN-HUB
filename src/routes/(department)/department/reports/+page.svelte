@@ -21,11 +21,31 @@
 
   const user = $derived($currentUser);
   const guard = $derived(canAccessRoute(user, '/department/reports'));
-  const applications = $derived(data.applications);
+  const applications = $derived(data.applications || []);
   const metrics = $derived({
     total: applications.length,
-    approved: applications.filter((application) => ['APPROVED', 'COMPLETED', 'CERTIFICATE_GENERATED'].includes(application.status)).length,
-    slaBreached: applications.filter((application) => application.isSlaBreached).length
+    approved: applications.filter((application: any) => ['APPROVED', 'COMPLETED', 'CERTIFICATE_GENERATED'].includes(application.status)).length,
+    slaBreached: applications.filter((application: any) => application.isSlaBreached).length
+  });
+
+  const completedApps = $derived(applications.filter((app: any) => ['COMPLETED', 'APPROVED', 'CERTIFICATE_GENERATED'].includes(app.status)));
+  const avgResolutionTime = $derived(() => {
+    if (completedApps.length === 0) return 'N/A';
+    const totalMs = completedApps.reduce((acc: number, app: any) => {
+      const start = new Date(app.createdAt).getTime();
+      const end = new Date(app.updatedAt || app.createdAt).getTime();
+      return acc + (end - start);
+    }, 0);
+    const avgDays = (totalMs / (1000 * 60 * 60 * 24)) / completedApps.length;
+    return `${avgDays.toFixed(1)} Days`;
+  });
+
+  const totalClosedOrBreached = $derived(applications.filter((app: any) => ['COMPLETED', 'APPROVED', 'CERTIFICATE_GENERATED'].includes(app.status) || app.isSlaBreached).length);
+  const slaCompliance = $derived(() => {
+    if (totalClosedOrBreached === 0) return '100.0%';
+    const onTime = applications.filter((app: any) => ['COMPLETED', 'APPROVED', 'CERTIFICATE_GENERATED'].includes(app.status) && !app.isSlaBreached).length;
+    const rate = (onTime / totalClosedOrBreached) * 100;
+    return `${rate.toFixed(1)}%`;
   });
 
   let timeRange = $state('30_DAYS');
@@ -33,11 +53,11 @@
   function downloadCSV() {
     const csvContent = "data:text/csv;charset=utf-8," 
       + "Metric,Value,Target SLA,Status\n"
-      + `Average Processing Time,2.4 Days,3.0 Days,COMPLIANT\n`
-      + `SLA Compliance Rate,94.2%,95.0%,NEAR TARGET\n`
+      + `Average Processing Time,${avgResolutionTime()},3.0 Days,${completedApps.length > 0 ? 'COMPLIANT' : 'N/A'}\n`
+      + `SLA Compliance Rate,${slaCompliance()},95.0%,${totalClosedOrBreached > 0 ? 'COMPLIANT' : 'N/A'}\n`
       + `Total Received,${metrics.total},N/A,ON TRACK\n`
       + `Certificates Issued,${metrics.approved},N/A,COMPLETED\n`
-      + `SLA Breaches,${metrics.slaBreached},0 Breaches,REQUIRES ACTION\n`;
+      + `SLA Breaches,${metrics.slaBreached},0 Breaches,${metrics.slaBreached > 0 ? 'REQUIRES ACTION' : 'COMPLIANT'}\n`;
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
@@ -64,34 +84,41 @@
     </div>
   </div>
 {:else}
-  <div class="bg-[#f7f9fb] min-h-screen pb-20 text-slate-900 font-sans">
-    <!-- Header -->
-    <header class="flex justify-between items-center h-16 px-6 bg-white border-b border-slate-200 sticky top-0 z-20 shadow-2xs">
-      <div class="flex items-center gap-3">
-        <h1 class="text-base font-bold text-slate-900 tracking-tight">{t('reports.title')}</h1>
-        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#E8F5E9] text-[#2E7D32]">
-          {t('reports.slaOnTime')}
-        </span>
-      </div>
+  <div class="bg-slate-50 min-h-screen pb-20 text-slate-900 font-sans">
+    <!-- Top Green Banner Header -->
+    <div class="bg-[#316342] text-white py-6 px-6 sm:px-8 shadow-md">
+      <div class="mx-auto max-w-7xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <span class="inline-flex rounded-full bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+            Performance Analytics
+          </span>
+          <div class="flex items-center gap-3 mt-2">
+            <h1 class="text-xl font-black text-white leading-none">{t('reports.title')}</h1>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#E8F5E9] text-[#2E7D32]">
+              {t('reports.slaOnTime')}
+            </span>
+          </div>
+        </div>
 
-      <div class="flex items-center gap-3">
-        <select 
-          bind:value={timeRange}
-          class="bg-slate-100 text-xs font-semibold text-slate-700 px-3 py-1.5 rounded-lg border-none focus:ring-2 focus:ring-[#9df79e]"
-        >
-          <option value="7_DAYS">Last 7 Days</option>
-          <option value="30_DAYS">Last 30 Days</option>
-          <option value="90_DAYS">Quarter to Date</option>
-        </select>
-        <button 
-          onclick={downloadCSV}
-          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#062206] text-[#9df79e] text-xs font-bold hover:bg-[#143A14] transition shadow-2xs"
-        >
-          <Download class="h-3.5 w-3.5" />
-          <span>Export CSV</span>
-        </button>
+        <div class="flex items-center gap-3">
+          <select 
+            bind:value={timeRange}
+            class="bg-white/10 text-white text-xs font-semibold px-3 py-1.5 rounded-lg border border-white/20 focus:ring-2 focus:ring-white/20 focus:outline-hidden"
+          >
+            <option value="7_DAYS" class="text-slate-900">Last 7 Days</option>
+            <option value="30_DAYS" class="text-slate-900">Last 30 Days</option>
+            <option value="90_DAYS" class="text-slate-900">Quarter to Date</option>
+          </select>
+          <button 
+            onclick={downloadCSV}
+            class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-[#316342] hover:bg-green-50 text-xs font-bold transition shadow-2xs"
+          >
+            <Download class="h-3.5 w-3.5" />
+            <span>Export CSV</span>
+          </button>
+        </div>
       </div>
-    </header>
+    </div>
 
     <!-- Content -->
     <div class="p-6 w-full max-w-7xl mx-auto space-y-6">
@@ -102,8 +129,8 @@
             <span class="text-[11px] font-bold uppercase tracking-wider">Avg Resolution Time</span>
             <Clock class="h-4 w-4 text-[#1565C0]" />
           </div>
-          <div class="text-2xl font-extrabold text-slate-900 mt-2">2.4 Days</div>
-          <div class="text-[10px] text-[#2E7D32] font-bold mt-1">✓ 0.6 days faster than 3.0 day SLA limit</div>
+          <div class="text-2xl font-extrabold text-slate-900 mt-2">{avgResolutionTime()}</div>
+          <div class="text-[10px] text-slate-500 font-bold mt-1">Target: 3.0 day SLA limit</div>
         </div>
 
         <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-2xs">
@@ -111,7 +138,7 @@
             <span class="text-[11px] font-bold uppercase tracking-wider">SLA Compliance</span>
             <TrendingUp class="h-4 w-4 text-[#2E7D32]" />
           </div>
-          <div class="text-2xl font-extrabold text-[#2E7D32] mt-2">94.2%</div>
+          <div class="text-2xl font-extrabold text-[#2E7D32] mt-2">{slaCompliance()}</div>
           <div class="text-[10px] text-slate-500 font-medium mt-1">Target: 95.0% compliance threshold</div>
         </div>
 

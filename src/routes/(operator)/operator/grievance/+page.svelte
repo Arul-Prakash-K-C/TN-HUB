@@ -73,17 +73,18 @@
   <title>Operator Grievances — TN Hub</title>
 </svelte:head>
 
-<div class="bg-slate-50 min-h-screen pb-12">
-  <div class="border-b border-slate-200 bg-white px-6 py-6 sm:px-8">
+<div class="bg-background text-text min-h-screen pb-12 flex flex-col w-full">
+  <!-- Page Header (Green Banner matching Public Pages) -->
+  <div class="public-banner px-6 py-8 sm:px-8">
     <div class="mx-auto max-w-6xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-black text-slate-900 tracking-tight">Kiosk Grievances & Issues</h1>
-        <p class="text-xs font-medium text-slate-500 mt-0.5">Report technical malfunctions, payment portal issues, or missing service catalogues.</p>
+        <h1 class="text-2xl font-black tracking-tight text-white">Kiosk Grievances & Issues</h1>
+        <p class="public-banner-subtitle mt-1 max-w-2xl text-xs font-medium">Report technical malfunctions, payment portal issues, or missing service catalogues.</p>
       </div>
 
       <button
         onclick={() => showNewModal = true}
-        class="inline-flex items-center gap-2 rounded-xl bg-[#062206] hover:bg-[#143A14] px-4 py-2.5 text-xs font-bold text-white shadow transition-all"
+        class="inline-flex items-center gap-2 rounded-xl bg-white text-[#316342] hover:bg-green-50 px-4 py-2.5 text-xs font-bold shadow-md transition-all animate-fade-in"
       >
         <PlusCircle class="h-4 w-4" />
         Raise Kiosk Complaint
@@ -91,11 +92,11 @@
     </div>
   </div>
 
-  <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8 flex-grow w-full">
     {#if isLoading}
       <div class="text-center py-12 text-xs font-bold text-slate-500">Loading kiosk grievances...</div>
     {:else if complaintList.length === 0}
-      <div class="rounded-2xl border border-slate-200 bg-white p-12 text-center shadow-sm">
+      <div class="rounded-2xl border border-slate-200 bg-white p-12 text-center shadow-sm flex flex-col items-center">
         <AlertCircle class="mx-auto h-12 w-12 text-slate-300 mb-4" />
         <h3 class="text-base font-bold text-slate-900">No grievances registered</h3>
         <p class="mt-1 text-xs text-slate-500">If you experience hardware or registry problems, use the button above to register an issue.</p>
@@ -103,13 +104,13 @@
     {:else}
       <div class="grid gap-4 md:grid-cols-2">
         {#each complaintList as comp}
-          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between">
+          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between hover:border-[#316342]/30 transition">
             <div>
               <div class="flex items-center gap-3">
                 <span class="rounded-lg bg-amber-50 border border-amber-200 px-2.5 py-1 font-mono text-[10px] font-bold text-amber-800">
                   {comp.complaintNumber}
                 </span>
-                <span class="rounded-full bg-emerald-50 border border-emerald-200 px-3 py-0.5 text-[10px] font-bold text-emerald-800 uppercase tracking-wider">
+                <span class="rounded-full bg-[#316342]/10 border border-[#316342]/20 px-3 py-0.5 text-[10px] font-bold text-[#316342] uppercase tracking-wider">
                   {comp.status}
                 </span>
               </div>
@@ -131,12 +132,12 @@
 
 <!-- Raise Kiosk Complaint Modal -->
 {#if showNewModal}
-  <div class="fixed inset-0 z-50 flex items-center justify-center bg-[#071A28]/60 p-4 backdrop-blur-sm animate-fade-in">
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-[#071A28]/60 p-4 backdrop-blur-sm">
     <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
       <h2 class="text-lg font-black text-slate-900 mb-4">Register Kiosk Issue</h2>
 
       {#if submittedSuccess}
-        <div class="rounded-xl bg-emerald-50 p-4 text-center text-xs font-bold text-emerald-700">
+        <div class="rounded-xl bg-emerald-50 p-4 text-center text-xs font-bold text-emerald-700 animate-pulse">
           Complaint submitted successfully! TNeGA support has been notified.
         </div>
       {:else}
@@ -148,7 +149,7 @@
         <form onsubmit={(e) => { e.preventDefault(); submitGrievance(); }} class="space-y-4">
           <div>
             <label for="complaint-category" class="block text-xs font-bold text-slate-900 mb-1">Issue Category</label>
-            <select id="complaint-category" bind:value={category} class="w-full rounded-xl border border-slate-200 p-2.5 text-xs outline-none">
+            <select id="complaint-category" bind:value={category} class="w-full rounded-xl border border-slate-200 p-2.5 text-xs outline-none focus:border-[#316342] focus:ring-2 focus:ring-[#316342]/10 transition bg-white">
               <option value="kiosk_hardware">Kiosk Biometric / Printer Hardware Malfunction</option>
               <option value="payment_gateway">Kiosk Wallet / Payment Gateway Failure</option>
               <option value="service_registry">Service Registry Configuration Error</option>
@@ -158,19 +159,19 @@
 
           <div>
             <label for="complaint-subject" class="block text-xs font-bold text-slate-900 mb-1">Subject *</label>
-            <input id="complaint-subject" type="text" bind:value={subject} required placeholder="e.g. Biometric scanner not responding" class="w-full rounded-xl border border-slate-200 p-2.5 text-xs outline-none" />
+            <input id="complaint-subject" type="text" bind:value={subject} required placeholder="e.g. Biometric scanner not responding" class="w-full rounded-xl border border-slate-200 p-2.5 text-xs outline-none focus:border-[#316342] focus:ring-2 focus:ring-[#316342]/10 transition" />
           </div>
 
           <div>
             <label for="complaint-description" class="block text-xs font-bold text-slate-900 mb-1">Detailed Description *</label>
-            <textarea id="complaint-description" bind:value={description} required rows="3" placeholder="Provide full details of the issue..." class="w-full rounded-xl border border-slate-200 p-2.5 text-xs outline-none"></textarea>
+            <textarea id="complaint-description" bind:value={description} required rows="3" placeholder="Provide full details of the issue..." class="w-full rounded-xl border border-slate-200 p-2.5 text-xs outline-none focus:border-[#316342] focus:ring-2 focus:ring-[#316342]/10 transition"></textarea>
           </div>
 
           <div class="flex justify-end gap-3 pt-4">
-            <button type="button" onclick={() => showNewModal = false} class="rounded-xl border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700">
+            <button type="button" onclick={() => showNewModal = false} class="rounded-xl border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
               Cancel
             </button>
-            <button type="submit" class="rounded-xl bg-[#062206] px-5 py-2 text-xs font-bold text-white hover:bg-[#143A14] transition">
+            <button type="submit" class="rounded-xl bg-[#316342] px-5 py-2 text-xs font-bold text-white hover:bg-[#254b32] transition">
               Submit Grievance
             </button>
           </div>

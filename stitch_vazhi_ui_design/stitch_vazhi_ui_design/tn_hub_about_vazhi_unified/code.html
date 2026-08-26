@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>About Tamil Nadu e-Governance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "danger": "#a63b3b",
+                "primary-fixed": "#b9efc5",
+                "background": "#f9f9f6",
+                "outline": "#717971",
+                "on-secondary-container": "#4b6a4f",
+                "error-container": "#ffdad6",
+                "outline-variant": "#c1c9bf",
+                "on-primary": "#ffffff",
+                "on-secondary": "#ffffff",
+                "on-tertiary": "#ffffff",
+                "on-surface-variant": "#414942",
+                "surface-container-lowest": "#ffffff",
+                "surface-tint": "#376847",
+                "surface-container": "#eeeeeb",
+                "on-tertiary-fixed-variant": "#6d363f",
+                "surface-bright": "#f9f9f6",
+                "inverse-on-surface": "#f1f1ee",
+                "surface-dark": "#1b1f1d",
+                "primary-fixed-dim": "#9dd3aa",
+                "on-error-container": "#93000a",
+                "primary": "#316342",
+                "tertiary": "#834751",
+                "secondary-fixed": "#c8ebca",
+                "secondary-container": "#c6e9c7",
+                "tertiary-fixed-dim": "#ffb2bc",
+                "surface-variant": "#e2e3e0",
+                "on-primary-fixed-variant": "#1e5031",
+                "on-error": "#ffffff",
+                "map-land": "#f2f2ec",
+                "surface": "#f9f9f6",
+                "on-primary-container": "#e1ffe5",
+                "on-surface": "#1a1c1b",
+                "surface-container-low": "#f4f4f1",
+                "success": "#3f7d55",
+                "map-water": "#dfe8e6",
+                "on-secondary-fixed": "#03210c",
+                "on-tertiary-container": "#fff5f5",
+                "inverse-surface": "#2f312f",
+                "warning": "#8a6220",
+                "on-secondary-fixed-variant": "#304d35",
+                "secondary": "#47664b",
+                "tertiary-fixed": "#ffd9dd",
+                "on-primary-fixed": "#00210e",
+                "on-tertiary-fixed": "#380b16",
+                "surface-container-high": "#e8e8e5",
+                "primary-container": "#4a7c59",
+                "inverse-primary": "#9dd3aa",
+                "on-background": "#1a1c1b",
+                "secondary-fixed-dim": "#adcfaf",
+                "error": "#ba1a1a",
+                "tertiary-container": "#9f5f69",
+                "surface-container-highest": "#e2e3e0",
+                "surface-dim": "#dadad7",
+                "accent": "#86a789"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "margin-desktop": "48px",
+                "sm": "8px",
+                "base": "4px",
+                "xl": "32px",
+                "xs": "4px",
+                "lg": "24px",
+                "margin-mobile": "16px",
+                "gutter": "16px",
+                "md": "16px"
+        },
+        "fontFamily": {
+                "sans": [
+                        "Hanken Grotesk", "sans-serif"
+                ],
+                "headline-lg-mobile": [
+                        "Hanken Grotesk"
+                ],
+                "headline-lg": [
+                        "Hanken Grotesk"
+                ],
+                "body-md": [
+                        "Hanken Grotesk"
+                ],
+                "label-sm": [
+                        "Hanken Grotesk"
+                ],
+                "label-md": [
+                        "Hanken Grotesk"
+                ],
+                "body-lg": [
+                        "Hanken Grotesk"
+                ],
+                "headline-md": [
+                        "Hanken Grotesk"
+                ],
+                "headline-sm": [
+                        "Hanken Grotesk"
+                ],
+                "headline-xl": [
+                        "Hanken Grotesk"
+                ]
+        },
+        "fontSize": {
+                "headline-lg-mobile": [
+                        "28px",
+                        {
+                                "lineHeight": "36px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-sm": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "label-md": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "letterSpacing": "0.01em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-md": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-sm": [
+                        "20px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-xl": [
+                        "40px",
+                        {
+                                "lineHeight": "48px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style data-purpose="custom-styles">
+    body {
+      background-color: theme('colors.background');
+      color: theme('colors.on-background');
+    }
+    .org-line {
+      position: relative;
+    }
+    .org-line::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      width: 1px;
+      height: 24px;
+      background-color: theme('colors.outline-variant');
+    }
+    .org-horizontal-line {
+      position: absolute;
+      top: -24px;
+      left: 50%;
+      width: 100%;
+      height: 1px;
+      background-color: theme('colors.outline-variant');
+      transform: translateX(-50%);
+    }
+    .org-node-connector {
+      position: relative;
+    }
+    .org-node-connector::before {
+      content: '';
+      position: absolute;
+      top: -24px;
+      left: 50%;
+      width: 1px;
+      height: 24px;
+      background-color: theme('colors.outline-variant');
+    }
+  </style>
+</head>
+<body class="font-sans antialiased min-h-screen flex flex-col bg-background text-on-background">
+<!-- BEGIN: Top Navigation Bar -->
+<header class="bg-surface dark:bg-surface-dark border-b border-outline-variant shadow-sm w-full top-0 z-50 sticky transition-all">
+<div class="flex justify-between items-center w-full px-margin-desktop h-20 max-w-7xl mx-auto z-50">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-lg">
+          TN
+        </div>
+<div>
+<h1 class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed-dim">TN Hub</h1>
+</div>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-label-md font-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200 px-2 py-1 rounded" href="#">முகப்பு / Home</a>
+<a class="text-label-md font-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200 px-2 py-1 rounded" href="#">சேவைகள் / Services</a>
+<a class="text-label-md font-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200 px-2 py-1 rounded" href="#">நிலை / Tracking</a>
+<a class="text-label-md font-label-md text-primary dark:text-primary-fixed-dim border-b-2 border-primary dark:border-primary-fixed-dim pb-1 px-2 py-1" href="#">உதவி / Help</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-1 text-sm text-on-surface-variant hover:text-primary dark:text-surface-variant dark:hover:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200 p-2 rounded">
+<span class="material-symbols-outlined text-[18px]">language</span>
+<span class="material-symbols-outlined text-[18px]">translate</span>
+</button>
+<a class="bg-primary-container text-on-primary-container hover:opacity-80 scale-95 transition-all px-5 py-2 rounded-full font-label-md text-label-md" href="#">
+          Login / உள்நுழை
+        </a>
+</div>
+</div>
+</header>
+<!-- END: Top Navigation Bar -->
+<!-- BEGIN: Page Header -->
+<section class="bg-primary-container text-on-primary-container py-16 px-6">
+<div class="max-w-7xl mx-auto">
+<h2 class="text-headline-xl font-headline-xl font-bold mb-4">About Tamil Nadu e-Governance</h2>
+<p class="text-body-lg font-body-lg text-primary-fixed-dim max-w-3xl leading-relaxed">
+        TN Hub operates as the modern citizen service orchestration layer interfacing with the robust digital infrastructure established by the Tamil Nadu e-Governance Agency (TNeGA).
+      </p>
+</div>
+</section>
+<!-- END: Page Header -->
+<!-- BEGIN: Main Content Area -->
+<main class="flex-grow max-w-7xl mx-auto w-full px-6 py-12 flex flex-col gap-12">
+<!-- BEGIN: Top Info Cards -->
+<div class="grid md:grid-cols-2 gap-8">
+<!-- TNeGA Card -->
+<div class="bg-surface border border-outline-variant rounded-lg p-8 shadow-sm flex flex-col">
+<div class="w-12 h-12 bg-secondary-container rounded-full flex items-center justify-center text-on-secondary-container mb-6">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface mb-4">Tamil Nadu e-Governance Agency (TNeGA)</h3>
+<p class="text-body-md font-body-md text-on-surface-variant mb-4 leading-relaxed">
+          Formed as the State Nodal Agency under the Information Technology Department, Government of Tamil Nadu, TNeGA is mandated to drive all e-Governance initiatives across the state.
+        </p>
+<p class="text-body-md font-body-md text-on-surface-variant mb-8 leading-relaxed">
+          TNeGA implements key projects with the core objective of making all government services accessible to the common man through efficient, transparent, and reliable digital delivery channels, reducing administrative costs and processing times.
+        </p>
+<div class="mt-auto pt-6 border-t border-outline-variant">
+<p class="text-label-sm font-label-sm text-outline">Formed vide G.O. (Ms.) No.8 IT (Admin.1) Dept</p>
+</div>
+</div>
+<!-- Vision Card -->
+<div class="bg-secondary-container border border-secondary rounded-lg p-8 shadow-sm flex flex-col">
+<div class="w-12 h-12 bg-surface rounded-full flex items-center justify-center text-on-surface mb-6 shadow-sm">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-secondary-container mb-4">Fulfilling the Vision</h3>
+<p class="text-body-md font-body-md text-on-secondary-container mb-6 leading-relaxed">
+          The guiding policy is to achieve integrated service delivery to citizens at the nearest location at an affordable cost. This is made possible by combining:
+        </p>
+<ul class="space-y-3 mb-8">
+<li class="flex items-start gap-3">
+<svg class="h-5 w-5 text-primary mt-0.5 shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="text-body-md font-body-md text-on-secondary-container font-medium">Simple and unified front-end delivery interfaces (TN Hub)</span>
+</li>
+<li class="flex items-start gap-3">
+<svg class="h-5 w-5 text-primary mt-0.5 shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="text-body-md font-body-md text-on-secondary-container font-medium">Robust backend computerization and database management</span>
+</li>
+<li class="flex items-start gap-3">
+<svg class="h-5 w-5 text-primary mt-0.5 shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="text-body-md font-body-md text-on-secondary-container font-medium">Secure, high-bandwidth state network connectivity</span>
+</li>
+<li class="flex items-start gap-3">
+<svg class="h-5 w-5 text-primary mt-0.5 shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="text-body-md font-body-md text-on-secondary-container font-medium">Comprehensive MIS and analytics dashboards for operational tracking</span>
+</li>
+</ul>
+<div class="mt-auto pt-6 border-t border-secondary-fixed">
+<p class="text-label-sm font-label-sm text-on-secondary-container opacity-80">Mandate: Affordability, Accessibility, and Reliability</p>
+</div>
+</div>
+</div>
+<!-- END: Top Info Cards -->
+<!-- BEGIN: Organizational Chart Section -->
+<div class="bg-surface border border-outline-variant rounded-lg p-10 shadow-sm relative overflow-hidden">
+<div class="text-center mb-12 relative z-10">
+<h2 class="text-headline-md font-headline-md text-on-surface mb-3">Agency Governing Committee</h2>
+<p class="text-body-md font-body-md text-on-surface-variant max-w-2xl mx-auto">
+          Under official guidelines, TNeGA consists of members guiding technology policies and administrative approvals.
+        </p>
+</div>
+<div class="flex flex-col items-center relative pt-8 pb-12">
+<!-- Chairman -->
+<div class="org-line mb-6">
+<div class="bg-surface-dark text-surface px-8 py-5 rounded-lg text-center shadow-md min-w-[320px]">
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-widest mb-1">Chairman</p>
+<h4 class="font-headline-sm text-headline-sm font-bold">The Principal Secretary to Government, IT<br/>Department</h4>
+</div>
+</div>
+<!-- Member Secretary -->
+<div class="org-line mb-10">
+<div class="bg-surface border-2 border-outline-variant px-8 py-4 rounded-full text-center shadow-sm min-w-[280px]">
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-widest mb-1">Member Secretary</p>
+<h4 class="font-headline-sm text-headline-sm font-bold text-on-surface">The Chief Executive Officer, TNeGA</h4>
+</div>
+</div>
+<!-- Committee Members Grid -->
+<div class="relative w-full max-w-4xl mx-auto mt-6">
+<div class="org-horizontal-line hidden md:block"></div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-12 gap-x-6">
+<!-- Member 1 -->
+<div class="org-node-connector flex items-start gap-4">
+<div class="w-8 h-8 rounded-full bg-secondary-container border border-secondary flex items-center justify-center shrink-0 mt-1">
+<div class="w-2.5 h-2.5 rounded-full bg-primary"></div>
+</div>
+<div>
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-widest mb-1">Member</p>
+<p class="text-label-md font-label-md font-bold text-on-surface leading-tight">The State Informatics Officer, National Informatics Centre (NIC)</p>
+</div>
+</div>
+<!-- Member 2 -->
+<div class="org-node-connector flex items-start gap-4">
+<div class="w-8 h-8 rounded-full bg-secondary-container border border-secondary flex items-center justify-center shrink-0 mt-1">
+<div class="w-2.5 h-2.5 rounded-full bg-primary"></div>
+</div>
+<div>
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-widest mb-1">Member</p>
+<p class="text-label-md font-label-md font-bold text-on-surface leading-tight">The Secretary to Government, Finance (Expenditure) Department</p>
+</div>
+</div>
+<!-- Member 3 -->
+<div class="org-node-connector flex items-start gap-4">
+<div class="w-8 h-8 rounded-full bg-secondary-container border border-secondary flex items-center justify-center shrink-0 mt-1">
+<div class="w-2.5 h-2.5 rounded-full bg-primary"></div>
+</div>
+<div>
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-widest mb-1">Member</p>
+<p class="text-label-md font-label-md font-bold text-on-surface leading-tight">The Managing Director, ELCOT</p>
+</div>
+</div>
+<!-- Member 4 -->
+<div class="org-node-connector flex items-start gap-4">
+<div class="w-8 h-8 rounded-full bg-secondary-container border border-secondary flex items-center justify-center shrink-0 mt-1">
+<div class="w-2.5 h-2.5 rounded-full bg-primary"></div>
+</div>
+<div>
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-widest mb-1">Member</p>
+<p class="text-label-md font-label-md font-bold text-on-surface leading-tight">The Managing Director, TACTV</p>
+</div>
+</div>
+<!-- Member 5 -->
+<div class="org-node-connector flex items-start gap-4">
+<div class="w-8 h-8 rounded-full bg-secondary-container border border-secondary flex items-center justify-center shrink-0 mt-1">
+<div class="w-2.5 h-2.5 rounded-full bg-primary"></div>
+</div>
+<div>
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-widest mb-1">Member</p>
+<p class="text-label-md font-label-md font-bold text-on-surface leading-tight">The Registrar of Co-operative Societies</p>
+</div>
+</div>
+<!-- Member 6 -->
+<div class="org-node-connector flex items-start gap-4">
+<div class="w-8 h-8 rounded-full bg-secondary-container border border-secondary flex items-center justify-center shrink-0 mt-1">
+<div class="w-2.5 h-2.5 rounded-full bg-primary"></div>
+</div>
+<div>
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-widest mb-1">Member</p>
+<p class="text-label-md font-label-md font-bold text-on-surface leading-tight">The Managing Director, TN Corporation for Development of Women</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- END: Organizational Chart Section -->
+<!-- BEGIN: Bottom Feature Cards -->
+<div class="grid md:grid-cols-3 gap-6">
+<!-- Feature 1 -->
+<div class="bg-surface border border-outline-variant rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+<div class="w-10 h-10 bg-surface-container-high border border-outline-variant rounded-lg flex items-center justify-center text-on-surface-variant mb-4">
+<svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface mb-3">National e-Governance Plan (NeGP)</h4>
+<p class="text-body-md font-body-md text-on-surface-variant leading-relaxed">
+          Tamil Nadu has progressively aligned its e-Governance strategies in consonance with NeGP since its formulation in May 2006. TN Hub extends this vision into a modern, unified citizen interface layer.
+        </p>
+</div>
+<!-- Feature 2 -->
+<div class="bg-surface border border-outline-variant rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+<div class="w-10 h-10 bg-surface-container-high border border-outline-variant rounded-lg flex items-center justify-center text-on-surface-variant mb-4">
+<svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface mb-3">Common Service Centres (CSCs / e-Sevai)</h4>
+<p class="text-body-md font-body-md text-on-surface-variant leading-relaxed">
+          CSCs and e-Sevai Centres across rural and urban districts act as essential last-mile delivery networks, ensuring citizens are supported by assisted service operators.
+        </p>
+</div>
+<!-- Feature 3 -->
+<div class="bg-surface border border-outline-variant rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+<div class="w-10 h-10 bg-surface-container-high border border-outline-variant rounded-lg flex items-center justify-center text-on-surface-variant mb-4">
+<svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface mb-3">State Infrastructure Backbone</h4>
+<p class="text-body-md font-body-md text-on-surface-variant leading-relaxed">
+          Secured via high-speed Tamil Nadu State Wide Area Network (TNSWAN), State Data Centre (SDC), and State Resident Data Hub (SRDH) to ensure authenticated, real-time service orchestration.
+        </p>
+</div>
+</div>
+<!-- END: Bottom Feature Cards -->
+</main>
+<!-- END: Main Content Area -->
+<!-- BEGIN: Floating Assistant Button -->
+<button class="fixed bottom-8 right-8 bg-primary-container text-on-primary-container px-5 py-3 rounded-full shadow-lg flex items-center gap-3 hover:bg-opacity-90 transition-all z-40 border border-primary">
+<div class="w-8 h-8 rounded bg-surface/20 flex items-center justify-center">
+<svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="text-left">
+<p class="text-sm font-bold flex items-center gap-2">Thozhan AI <span class="text-[10px] font-normal px-1.5 py-0.5 rounded border border-surface/30 uppercase tracking-wider bg-surface/10">TN Hub</span></p>
+<p class="text-xs text-on-primary-container">Guided service assistant</p>
+</div>
+</button>
+<!-- END: Floating Assistant Button -->
+<!-- BEGIN: Footer -->
+<footer class="bg-surface-container-highest dark:bg-surface-dark border-t border-outline-variant w-full mt-12">
+<div class="w-full py-xl px-margin-desktop flex flex-col md:flex-row justify-between items-start gap-lg max-w-7xl mx-auto">
+<div class="flex flex-col gap-sm">
+<h2 class="text-headline-sm font-headline-sm font-bold text-on-surface dark:text-on-surface-variant">TN Hub</h2>
+<p class="text-body-md font-body-md text-on-surface-variant dark:text-surface-variant">© 2024 Government of Tamil Nadu. All Rights Reserved.</p>
+</div>
+<div class="flex flex-wrap gap-4 md:gap-8">
+<a class="text-label-sm font-label-sm text-on-surface-variant dark:text-surface-variant hover:underline hover:text-primary dark:hover:text-primary-fixed-dim transition-all focus:outline-none focus:ring-2 focus:ring-primary rounded px-1" href="#">Privacy Policy</a>
+<a class="text-label-sm font-label-sm text-on-surface-variant dark:text-surface-variant hover:underline hover:text-primary dark:hover:text-primary-fixed-dim transition-all focus:outline-none focus:ring-2 focus:ring-primary rounded px-1" href="#">Terms of Service</a>
+<a class="text-label-sm font-label-sm text-on-surface-variant dark:text-surface-variant hover:underline hover:text-primary dark:hover:text-primary-fixed-dim transition-all focus:outline-none focus:ring-2 focus:ring-primary rounded px-1" href="#">Department Directory</a>
+<a class="text-label-sm font-label-sm text-on-surface-variant dark:text-surface-variant hover:underline hover:text-primary dark:hover:text-primary-fixed-dim transition-all focus:outline-none focus:ring-2 focus:ring-primary rounded px-1" href="#">Contact Us</a>
+<a class="text-label-sm font-label-sm text-on-surface-variant dark:text-surface-variant hover:underline hover:text-primary dark:hover:text-primary-fixed-dim transition-all focus:outline-none focus:ring-2 focus:ring-primary rounded px-1" href="#">Sitemap</a>
+</div>
+</div>
+</footer>
+<!-- END: Footer -->
+</body></html>

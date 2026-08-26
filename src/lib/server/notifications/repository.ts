@@ -245,13 +245,18 @@ export function documentReviewNotification(input: {
 
 /** Lists only the verified recipient's own notifications. */
 export async function listNotificationsForUser(user: AuthenticatedUser): Promise<Notification[]> {
-	const snapshot = await getFirebaseAdminFirestore().collection('notifications').where('recipientId', '==', user.uid).get();
+	const snapshot = await getFirebaseAdminFirestore().collection('notifications').where('recipientId', '==', user.uid).limit(100).get();
 	return snapshot.docs.map(toNotification).sort((left, right) => right.createdAt.localeCompare(left.createdAt));
 }
 
 export async function getUnreadNotificationCount(user: AuthenticatedUser): Promise<number> {
-	const notifications = await listNotificationsForUser(user);
-	return notifications.filter((notification) => !notification.isRead).length;
+	const snapshot = await getFirebaseAdminFirestore()
+		.collection('notifications')
+		.where('recipientId', '==', user.uid)
+		.where('isRead', '==', false)
+		.limit(100)
+		.get();
+	return snapshot.size;
 }
 
 export async function markNotificationRead(user: AuthenticatedUser, notificationId: string): Promise<void> {

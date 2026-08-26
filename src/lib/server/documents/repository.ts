@@ -5,7 +5,7 @@ import { getApplicationForUser } from '$lib/server/applications/repository';
 import { getFirebaseAdminFirestore, getFirebaseAdminStorage } from '$lib/server/firebase/admin';
 import { writeAuditLogInTransaction } from '$lib/server/audit/repository';
 
-const MAX_DOCUMENT_BYTES = 10 * 1024 * 1024;
+const MAX_DOCUMENT_BYTES = 1 * 1024 * 1024;
 const acceptedMimeTypes = new Set(['application/pdf', 'image/jpeg', 'image/png']);
 const documentCategories = new Set<DocumentCategory>(['identity', 'address', 'education', 'income', 'certificates', 'other']);
 
@@ -72,7 +72,7 @@ function toDocument(id: string, data: Record<string, unknown>): Document {
 
 function assertUpload(file: File): void {
 	if (file.size <= 0) throw new Error('Select a document to upload.');
-	if (file.size > MAX_DOCUMENT_BYTES) throw new Error('Documents must be 10 MB or smaller.');
+	if (file.size > MAX_DOCUMENT_BYTES) throw new Error('Documents must be 1 MB or smaller.');
 	if (!acceptedMimeTypes.has(file.type)) throw new Error('Only PDF, JPEG, and PNG documents are accepted.');
 }
 
@@ -91,7 +91,7 @@ async function removePrivateFile(storagePath: string): Promise<void> {
 /** Lists a citizen's own vault documents. Department document access stays application-scoped. */
 export async function listCitizenDocuments(user: AuthenticatedUser): Promise<Document[]> {
 	if (user.role !== 'citizen') return [];
-	const snapshot = await getFirebaseAdminFirestore().collection('documents').where('citizenId', '==', user.uid).get();
+	const snapshot = await getFirebaseAdminFirestore().collection('documents').where('citizenId', '==', user.uid).limit(100).get();
 	return snapshot.docs
 		.filter((document) => document.get('applicationId') == null)
 		.map((document) => toDocument(document.id, document.data() as Record<string, unknown>))
@@ -153,11 +153,14 @@ export async function uploadApplicationDocument(
 	applicationId: string,
 	input: UploadInput
 ): Promise<Document> {
-	if (user.role !== 'citizen') throw new Error('Only citizens can upload application documents.');
 	assertUpload(input.file);
 
 	const application = await getApplicationForUser(user, applicationId, false);
-	if (!application || application.citizenId !== user.uid) throw new Error('Application not found.');
+	if (!application) throw new Error('Application not found.');
+	const canUpload = user.role === 'citizen'
+		? application.citizenId === user.uid
+		: user.role === 'operator' || user.role === 'admin';
+	if (!canUpload) throw new Error('Application not found.');
 	if (['COMPLETED', 'REJECTED', 'CANCELLED'].includes(application.status)) {
 		throw new Error('Documents cannot be uploaded after this application is closed.');
 	}
@@ -176,7 +179,14 @@ export async function uploadApplicationDocument(
 		const now = Timestamp.now();
 		await db.runTransaction(async (transaction) => {
 			const applicationSnapshot = await transaction.get(applicationRef);
-			if (!applicationSnapshot.exists || applicationSnapshot.get('citizenId') !== user.uid) {
+			const citizenId = stringValue(applicationSnapshot.get('citizenId'));
+			const assistedByOperatorId = stringValue(applicationSnapshot.get('assistedByOperatorId'));
+			const allowed = applicationSnapshot.exists && (
+				(user.role === 'citizen' && citizenId === user.uid) ||
+				(user.role === 'operator' && assistedByOperatorId === user.uid) ||
+				user.role === 'admin'
+			);
+			if (!allowed) {
 				throw new Error('Application not found.');
 			}
 
@@ -199,7 +209,7 @@ export async function uploadApplicationDocument(
 			transaction.create(documentRef, {
 				...metadata,
 				applicationId,
-				citizenId: user.uid,
+				citizenId,
 				storagePath,
 				mimeType: input.file.type,
 				size: input.file.size,

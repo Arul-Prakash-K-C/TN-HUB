@@ -1,2 +1,3 @@
-// place files you want to import through the `$lib` alias in this folder.
-export * from './firebase/client';
+// Keep this entrypoint intentionally empty.
+// Re-exporting browser-only Firebase client helpers from `$lib`
+// makes it easier to pull them into SSR by accident.

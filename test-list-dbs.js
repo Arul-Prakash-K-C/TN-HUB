@@ -22,7 +22,8 @@ async function listDatabases() {
   const client = await auth.getClient();
   const token = await client.getAccessToken();
 
-  const url = `https://firestore.googleapis.com/v1/projects/sympho-center/databases`;
+  const projectId = credentials.project_id || credentials.projectId;
+  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases`;
   console.log(`Fetching ${url}...`);
 
   const response = await fetch(url, {

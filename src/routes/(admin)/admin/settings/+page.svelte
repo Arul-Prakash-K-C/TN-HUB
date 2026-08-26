@@ -18,24 +18,21 @@
 </svelte:head>
 
 {#if !authenticated || role !== 'admin'}
-  <div class="flex min-h-[60vh] flex-col items-center justify-center p-4 bg-slate-50">
-    <div class="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-xl">
-      <h2 class="text-xl font-bold text-slate-900">Access Denied</h2>
+  <div class="flex min-h-[60vh] flex-col items-center justify-center p-4 bg-background">
+    <div class="w-full max-w-md rounded-3xl border border-border bg-surface p-8 text-center shadow-xl">
+      <h2 class="text-xl font-bold text-text">Access Denied</h2>
     </div>
   </div>
 {:else}
   <div class="bg-surface-secondary min-h-screen pb-12">
-    <div class="bg-primary text-white border-b border-border">
-      <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-        <span class="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white">
-          Configuration
-        </span>
-        <h1 class="mt-2 text-h1 text-white">Admin Settings</h1>
+    <div class="public-banner border-b border-border">
+      <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <h1 class="text-h1 text-white">Admin Settings</h1>
         <p class="text-xs text-white/70">Manage platform preferences and configurations</p>
       </div>
     </div>
 
-    <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8 space-y-6">
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-6">
       <!-- Language Preference -->
       <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex items-center gap-3 mb-4">
@@ -50,13 +47,13 @@
         <div class="flex gap-3">
           <button
             onclick={() => locale.set('en')}
-            class="flex-1 rounded-xl border-2 py-3 text-xs font-bold transition {currentLocale === 'en' ? 'border-emerald-500 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'}"
+            class="flex-1 rounded-xl border-2 py-3 text-xs font-bold transition {currentLocale === 'en' ? 'border-[#316342] bg-[#316342]/10 text-[#316342]' : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'}"
           >
             🇬🇧 English
           </button>
           <button
             onclick={() => locale.set('ta')}
-            class="flex-1 rounded-xl border-2 py-3 text-xs font-bold transition {currentLocale === 'ta' ? 'border-emerald-500 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'}"
+            class="flex-1 rounded-xl border-2 py-3 text-xs font-bold transition {currentLocale === 'ta' ? 'border-[#316342] bg-[#316342]/10 text-[#316342]' : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'}"
           >
             🇮🇳 தமிழ்
           </button>
@@ -80,14 +77,14 @@
               <span class="text-xs font-bold text-slate-800">In-App Notifications</span>
               <p class="text-[10px] text-slate-500">Receive registration requests and system alerts</p>
             </div>
-            <input type="checkbox" bind:checked={notificationsEnabled} class="h-5 w-5 rounded accent-emerald-600" />
+            <input type="checkbox" bind:checked={notificationsEnabled} class="h-5 w-5 rounded accent-[#316342]" />
           </label>
           <label class="flex items-center justify-between rounded-xl bg-slate-50 border border-slate-100 p-4 cursor-pointer">
             <div>
               <span class="text-xs font-bold text-slate-800">Email Alerts</span>
               <p class="text-[10px] text-slate-500">Get email copies of critical platform events</p>
             </div>
-            <input type="checkbox" bind:checked={emailAlerts} class="h-5 w-5 rounded accent-emerald-600" />
+            <input type="checkbox" bind:checked={emailAlerts} class="h-5 w-5 rounded accent-[#316342]" />
           </label>
         </div>
       </div>
@@ -115,7 +112,7 @@
       <!-- Platform Info -->
       <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex items-center gap-3 mb-4">
-          <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+          <div class="w-10 h-10 rounded-xl bg-[#316342]/10 text-[#316342] flex items-center justify-center">
             <Palette class="h-5 w-5" />
           </div>
           <div>

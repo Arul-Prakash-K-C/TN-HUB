@@ -41,6 +41,17 @@ function createLocaleStore() {
 
 export const locale = createLocaleStore();
 
+const regexCache = new Map<string, RegExp>();
+
+function getParamRegex(paramName: string): RegExp {
+  let regex = regexCache.get(paramName);
+  if (!regex) {
+    regex = new RegExp(`\\{\\{${paramName}\\}\\}`, 'g');
+    regexCache.set(paramName, regex);
+  }
+  return regex;
+}
+
 // Translation function — looks up nested keys like "nav.services"
 export function t(key: string, params?: Record<string, string | number>): string {
   const currentLocale = get(locale);
@@ -51,7 +62,7 @@ export function t(key: string, params?: Record<string, string | number>): string
   // Replace template parameters {{param}}
   if (params) {
     Object.entries(params).forEach(([k, v]) => {
-      value = value.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), String(v));
+      value = value.replace(getParamRegex(k), String(v));
     });
   }
   
@@ -66,7 +77,7 @@ export const tt = derived(locale, ($locale) => {
     
     if (params) {
       Object.entries(params).forEach(([k, v]) => {
-        value = value.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), String(v));
+        value = value.replace(getParamRegex(k), String(v));
       });
     }
     

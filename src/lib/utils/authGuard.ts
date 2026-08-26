@@ -19,7 +19,7 @@ export function canAccessRoute(user: User | null, path: string): { allowed: bool
   // Public routes accessible by all. Session creation must stay reachable to
   // an unauthenticated Firebase user so the server can verify their ID token
   // and issue the HttpOnly session cookie.
-  const publicExactPaths = ['/api/auth/session'];
+  const publicExactPaths = ['/api/auth/session', '/api/thozhan', '/api/thozhan/'];
   const publicPrefixes = [
     '/',
     '/login',

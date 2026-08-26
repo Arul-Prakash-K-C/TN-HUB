@@ -87,18 +87,18 @@
   <title>{t('complaints.title')} — TN Hub</title>
 </svelte:head>
 
-<div class="bg-slate-50 min-h-screen pb-12">
-  <!-- Page Header (Compact & Clean like Dept Portal) -->
-  <div class="border-b border-slate-200 bg-white px-6 py-6 sm:px-8">
+<div class="bg-background text-text min-h-screen pb-12">
+  <!-- Page Header (Green Banner matching Public Pages) -->
+  <div class="public-banner px-6 py-8 sm:px-8">
     <div class="mx-auto flex max-w-7xl flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-black text-slate-900 tracking-tight">{t('complaints.title')}</h1>
-        <p class="text-xs font-medium text-slate-500 mt-0.5">{t('complaints.subtitle')}</p>
+        <h1 class="text-2xl font-black tracking-tight text-white">{t('complaints.title')}</h1>
+        <p class="public-banner-subtitle mt-1 max-w-2xl text-xs font-medium">{t('complaints.subtitle')}</p>
       </div>
 
       <button
         onclick={() => showNewModal = true}
-        class="inline-flex items-center gap-2 rounded-xl bg-[#062206] hover:bg-[#143A14] px-4 py-2.5 text-xs font-bold text-white shadow-xs transition-all"
+        class="inline-flex items-center gap-2 rounded-xl bg-surface px-4 py-2.5 text-xs font-bold text-primary shadow-md transition-all hover:bg-surface-container"
       >
         <PlusCircle class="h-4 w-4" />
         {t('complaints.new')}
@@ -108,30 +108,30 @@
 
   <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
     {#if complaintList.length === 0}
-      <div class="rounded-2xl border border-slate-200 bg-white p-12 text-center shadow-sm">
-        <AlertCircle class="mx-auto h-12 w-12 text-slate-300" />
-        <h3 class="mt-4 text-base font-bold text-slate-900">{t('complaints.empty')}</h3>
+      <div class="rounded-2xl border border-border bg-surface p-12 text-center shadow-sm">
+        <AlertCircle class="mx-auto h-12 w-12 text-text-faint" />
+        <h3 class="mt-4 text-base font-bold text-text">{t('complaints.empty')}</h3>
       </div>
     {:else}
       <div class="space-y-4 stagger-children">
         {#each complaintList as comp}
-          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div class="rounded-2xl border border-border bg-surface p-6 shadow-sm">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <div class="flex items-center gap-3">
-                  <span class="rounded-lg bg-amber-50 border border-amber-200 px-2.5 py-1 font-mono text-xs font-bold text-amber-800">
+                  <span class="rounded-lg border border-warning/30 bg-warning-soft px-2.5 py-1 font-mono text-xs font-bold text-warning">
                     {comp.complaintNumber}
                   </span>
-                  <span class="rounded-full bg-emerald-50 border border-emerald-200 px-3 py-0.5 text-xs font-bold text-emerald-800 uppercase tracking-wider">
+                  <span class="rounded-full border border-success/30 bg-success-soft px-3 py-0.5 text-xs font-bold text-success uppercase tracking-wider">
                     {t(`complaint.status.${comp.status}`)}
                   </span>
                 </div>
 
-                <h3 class="mt-2 text-lg font-bold text-slate-900">{comp.subject}</h3>
-                <p class="mt-1 text-xs text-slate-500">{comp.description}</p>
+                <h3 class="mt-2 text-lg font-bold text-text">{comp.subject}</h3>
+                <p class="mt-1 text-xs text-text-muted">{comp.description}</p>
               </div>
 
-              <div class="text-xs text-slate-500 border-t border-slate-200 pt-3 sm:border-t-0 sm:pt-0">
+              <div class="border-t border-border pt-3 text-xs text-text-muted sm:border-t-0 sm:pt-0">
                 Filed on {new Date(comp.createdAt).toLocaleDateString()}
               </div>
             </div>
@@ -144,24 +144,40 @@
 
 <!-- Raise Complaint Modal -->
 {#if showNewModal}
-  <div class="fixed inset-0 z-50 flex items-center justify-center bg-[#071A28]/60 p-4 backdrop-blur-sm animate-fade-in">
-    <div class="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl">
-      <h2 class="text-2xl font-bold text-slate-900 mb-4">{t('complaints.new')}</h2>
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-background/70 p-4 backdrop-blur-sm animate-fade-in">
+    <div class="w-full max-w-lg rounded-2xl border border-border bg-surface p-6 shadow-2xl">
+      <h2 class="mb-4 text-2xl font-bold text-text">{t('complaints.new')}</h2>
 
-      {#if submittedSuccess}
-        <div class="rounded-xl bg-emerald-50 p-4 text-center text-sm font-bold text-emerald-700">
+      {#if !user}
+        <div class="text-center py-6">
+          <AlertCircle class="mx-auto mb-3 h-12 w-12 text-primary/80" />
+          <h3 class="mb-2 text-base font-bold text-text">Authentication Required</h3>
+          <p class="mb-6 text-xs leading-relaxed text-text-muted">
+            Please log in with your citizen account to file and track grievances.
+          </p>
+          <div class="flex justify-center gap-3">
+            <button type="button" onclick={() => showNewModal = false} class="rounded-xl border border-border px-4 py-2.5 text-xs font-bold text-text-muted">
+              {t('common.cancel')}
+            </button>
+            <a href="/login?redirect=/complaints" class="rounded-xl bg-primary hover:bg-primary-hover px-5 py-2.5 text-xs font-bold text-white shadow transition">
+              Log In
+            </a>
+          </div>
+        </div>
+      {:else if submittedSuccess}
+        <div class="rounded-xl bg-success-soft p-4 text-center text-sm font-bold text-success">
           {t('complaints.success')}
         </div>
       {:else}
         {#if errorMessage}
-          <div class="mb-4 rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs font-bold text-rose-700">
+          <div class="mb-4 rounded-xl border border-danger/30 bg-danger-soft p-3 text-xs font-bold text-danger">
             {errorMessage}
           </div>
         {/if}
         <form onsubmit={(e) => { e.preventDefault(); submitGrievance(); }} class="space-y-4">
           <div>
-            <label for="complaint-category" class="block text-xs font-bold text-slate-900 mb-1">{t('complaints.field.category')}</label>
-            <select id="complaint-category" bind:value={category} class="w-full rounded-xl border border-slate-200 p-2.5 text-sm outline-none">
+            <label for="complaint-category" class="mb-1 block text-xs font-bold text-text">{t('complaints.field.category')}</label>
+            <select id="complaint-category" bind:value={category} class="w-full rounded-xl border border-border bg-muted p-2.5 text-sm text-text outline-none">
               <option value="service_delay">Service Delay / Timelines Breached</option>
               <option value="document_issue">Document Processing Issue</option>
               <option value="officer_misconduct">Officer Inquiry / Conduct</option>
@@ -170,25 +186,25 @@
           </div>
 
           <div>
-            <label for="complaint-subject" class="block text-xs font-bold text-slate-900 mb-1">{t('complaints.field.subject')} *</label>
-            <input id="complaint-subject" type="text" bind:value={subject} required placeholder="Brief title of grievance" class="w-full rounded-xl border border-slate-200 p-2.5 text-sm outline-none" />
+            <label for="complaint-subject" class="mb-1 block text-xs font-bold text-text">{t('complaints.field.subject')} *</label>
+            <input id="complaint-subject" type="text" bind:value={subject} required placeholder="Brief title of grievance" class="w-full rounded-xl border border-border bg-muted p-2.5 text-sm text-text outline-none" />
           </div>
 
           <div>
-            <label for="complaint-description" class="block text-xs font-bold text-slate-900 mb-1">{t('complaints.field.description')} *</label>
-            <textarea id="complaint-description" bind:value={description} required rows="3" placeholder="Provide full details..." class="w-full rounded-xl border border-slate-200 p-2.5 text-sm outline-none"></textarea>
+            <label for="complaint-description" class="mb-1 block text-xs font-bold text-text">{t('complaints.field.description')} *</label>
+            <textarea id="complaint-description" bind:value={description} required rows="3" placeholder="Provide full details..." class="w-full rounded-xl border border-border bg-muted p-2.5 text-sm text-text outline-none"></textarea>
           </div>
 
           <div>
-            <label for="complaint-location" class="block text-xs font-bold text-slate-900 mb-1">{t('complaints.field.location')}</label>
-            <input id="complaint-location" type="text" bind:value={location} placeholder="District / Taluk" class="w-full rounded-xl border border-slate-200 p-2.5 text-sm outline-none" />
+            <label for="complaint-location" class="mb-1 block text-xs font-bold text-text">{t('complaints.field.location')}</label>
+            <input id="complaint-location" type="text" bind:value={location} placeholder="District / Taluk" class="w-full rounded-xl border border-border bg-muted p-2.5 text-sm text-text outline-none" />
           </div>
 
           <div class="flex justify-end gap-3 pt-4">
-            <button type="button" onclick={() => showNewModal = false} class="rounded-xl border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700">
+            <button type="button" onclick={() => showNewModal = false} class="rounded-xl border border-border px-4 py-2 text-xs font-semibold text-text-muted">
               {t('common.cancel')}
             </button>
-            <button type="submit" class="rounded-xl bg-primary-500 px-5 py-2 text-xs font-semibold text-white hover:bg-primary-600 transition">
+            <button type="submit" class="rounded-xl bg-primary hover:bg-primary-hover px-5 py-2.5 text-xs font-bold text-white shadow transition">
               {t('complaints.submit')}
             </button>
           </div>

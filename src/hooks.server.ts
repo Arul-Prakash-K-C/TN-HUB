@@ -13,8 +13,18 @@ export const handle: Handle = async ({ event, resolve }) => {
   if (authCookie) {
     try {
       user = await getVerifiedSessionUser(authCookie);
-    } catch {
-      event.cookies.delete(SESSION_COOKIE_NAME, { path: '/' });
+    } catch (err: any) {
+      const message = err instanceof Error ? err.message : String(err);
+      const isAuthFailure =
+        message.includes('expired') ||
+        message.includes('revoked') ||
+        message.includes('invalid') ||
+        message.includes('disabled') ||
+        err?.code?.startsWith('auth/');
+
+      if (isAuthFailure) {
+        event.cookies.delete(SESSION_COOKIE_NAME, { path: '/' });
+      }
     }
   }
 

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { LayoutDashboard, Inbox, LogOut, GraduationCap, AlertCircle, User, Settings, HelpCircle } from '@lucide/svelte';
+  import { LayoutDashboard, Grid, LogOut, AlertCircle, User, Settings, HelpCircle, FileText, MessageSquare } from '@lucide/svelte';
   import { auth, isAuthenticated } from '$lib/stores/auth';
   import LogoutModal from '$lib/components/ui/LogoutModal.svelte';
   import { t } from '$lib/i18n';
@@ -27,18 +27,18 @@
 {#if isOpen}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="fixed inset-0 bg-[#071A28]/60 backdrop-blur-xs z-30 md:hidden transition-opacity" onclick={() => isOpen = false} aria-hidden="true"></div>
+  <div class="fixed inset-0 z-30 bg-background/70 backdrop-blur-xs transition-opacity md:hidden" onclick={() => isOpen = false} aria-hidden="true"></div>
 {/if}
 
-<aside class="flex flex-col py-6 px-4 gap-6 h-screen w-64 fixed left-0 top-0 z-40 bg-[#062206] text-white border-r border-[#143A14] transition-transform duration-300 ease-in-out md:translate-x-0 {isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}">
+<aside class="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col gap-6 border-r border-border bg-[var(--color-sidebar-bg)] px-4 py-6 text-text transition-transform duration-300 ease-in-out md:translate-x-0 {isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}">
   <!-- Brand Header -->
   <a href="/operator/dashboard" class="flex items-center gap-3 px-2 hover:opacity-90 transition">
-    <div class="w-10 h-10 rounded-full bg-[#82da85] text-[#062206] font-black text-sm flex items-center justify-center shrink-0 shadow-md">
+    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-black text-white shadow-md">
       TN
     </div>
     <div class="flex flex-col overflow-hidden">
-      <span class="font-extrabold text-sm tracking-tight text-white leading-tight">TN Hub</span>
-      <span class="text-[10px] font-bold text-[#9df79e] uppercase tracking-wider truncate">
+      <span class="text-sm font-extrabold leading-tight tracking-tight text-text">TN Hub</span>
+      <span class="truncate text-[10px] font-bold uppercase tracking-wider text-primary-soft">
         {t('operator.portal')}
       </span>
     </div>
@@ -48,66 +48,77 @@
   <nav class="flex flex-col gap-1 flex-grow">
     <a 
       href="/operator/dashboard" 
-      class="flex items-center gap-3 px-3.5 py-2.5 font-medium rounded-lg transition-all text-xs {isActive('/operator/dashboard') ? 'bg-[#143A14] text-white font-bold border-l-4 border-[#9df79e]' : 'text-white/70 hover:text-white hover:bg-[#143A14]/50'}"
+      class="flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-medium transition-all {isActive('/operator/dashboard') ? 'border-l-4 border-primary bg-primary text-white font-bold' : 'text-text-muted hover:bg-primary/20 hover:text-text'}"
     >
       <LayoutDashboard class="h-4 w-4 shrink-0" />
       <span>{t('operator.dashboard')}</span>
     </a>
 
     <a 
-      href="/operator/applications" 
-      class="flex items-center gap-3 px-3.5 py-2.5 font-medium rounded-lg transition-all text-xs {isActive('/operator/applications') ? 'bg-[#143A14] text-white font-bold border-l-4 border-[#9df79e]' : 'text-white/70 hover:text-white hover:bg-[#143A14]/50'}"
+      href="/operator/services" 
+      class="flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-medium transition-all {isActive('/operator/services') ? 'border-l-4 border-primary bg-primary text-white font-bold' : 'text-text-muted hover:bg-primary/20 hover:text-text'}"
     >
-      <Inbox class="h-4 w-4 shrink-0" />
-      <span>{t('operator.assistedApplications')}</span>
+      <Grid class="h-4 w-4 shrink-0" />
+      <span>{t('operator.serviceCatalog')}</span>
+    </a>
+
+    <a 
+      href="/operator/applications" 
+      class="flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-medium transition-all {isActive('/operator/applications') ? 'border-l-4 border-primary bg-primary text-white font-bold' : 'text-text-muted hover:bg-primary/20 hover:text-text'}"
+    >
+      <FileText class="h-4 w-4 shrink-0" />
+      <span>{t('operator.applications')}</span>
     </a>
 
     <a 
       href="/operator/grievance" 
-      class="flex items-center gap-3 px-3.5 py-2.5 font-medium rounded-lg transition-all text-xs {isActive('/operator/grievance') ? 'bg-[#143A14] text-white font-bold border-l-4 border-[#9df79e]' : 'text-white/70 hover:text-white hover:bg-[#143A14]/50'}"
+      class="flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-medium transition-all {isActive('/operator/grievance') ? 'border-l-4 border-primary bg-primary text-white font-bold' : 'text-text-muted hover:bg-primary/20 hover:text-text'}"
     >
       <AlertCircle class="h-4 w-4 shrink-0" />
       <span>Grievance Desk</span>
     </a>
 
     <a 
-      href="/operator/training" 
-      class="flex items-center gap-3 px-3.5 py-2.5 font-medium rounded-lg transition-all text-xs {isActive('/operator/training') ? 'bg-[#143A14] text-white font-bold border-l-4 border-[#9df79e]' : 'text-white/70 hover:text-white hover:bg-[#143A14]/50'}"
+      href="/operator/ai-chat" 
+      class="flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-medium transition-all {isActive('/operator/ai-chat') ? 'border-l-4 border-primary bg-primary text-white font-bold' : 'text-text-muted hover:bg-primary/20 hover:text-text'}"
     >
-      <GraduationCap class="h-4 w-4 shrink-0" />
-      <span>Training Portal</span>
+      <MessageSquare class="h-4 w-4 shrink-0" />
+      <span>Thozhan AI</span>
     </a>
+
   </nav>
 
   <!-- Bottom Links -->
-  <div class="flex flex-col gap-1 border-t border-[#143A14] pt-4">
+  <div class="flex flex-col gap-1 border-t border-border pt-4">
     <a 
       href="/operator/profile" 
-      class="flex items-center gap-3 px-3.5 py-2.5 font-medium rounded-lg transition-all text-xs {isActive('/operator/profile') ? 'bg-[#143A14] text-white font-bold border-l-4 border-[#9df79e]' : 'text-white/70 hover:text-white hover:bg-[#143A14]/50'}"
+      class="flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-medium transition-all {isActive('/operator/profile') ? 'border-l-4 border-primary bg-primary text-white font-bold' : 'text-text-muted hover:bg-primary/20 hover:text-text'}"
     >
       <User class="h-4 w-4 shrink-0" />
-      <span>Profile</span>
+      <span>{t('nav.profile')}</span>
     </a>
 
     <a 
-      href="/operator/settings" 
-      class="flex items-center gap-3 px-3.5 py-2.5 font-medium rounded-lg transition-all text-xs {isActive('/operator/settings') ? 'bg-[#143A14] text-white font-bold border-l-4 border-[#9df79e]' : 'text-white/70 hover:text-white hover:bg-[#143A14]/50'}"
+      href="/operator/contact" 
+      class="flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-medium transition-all {isActive('/operator/contact') ? 'border-l-4 border-primary bg-primary text-white font-bold' : 'text-text-muted hover:bg-primary/20 hover:text-text'}"
     >
-      <Settings class="h-4 w-4 shrink-0" />
-      <span>Settings</span>
+      <HelpCircle class="h-4 w-4 shrink-0" />
+      <span>Contact Support</span>
     </a>
 
     <a 
       href="/operator/help" 
-      class="flex items-center gap-3 px-3.5 py-2.5 font-medium rounded-lg transition-all text-xs {isActive('/operator/help') ? 'bg-[#143A14] text-white font-bold border-l-4 border-[#9df79e]' : 'text-white/70 hover:text-white hover:bg-[#143A14]/50'}"
+      class="flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-medium transition-all {isActive('/operator/help') ? 'border-l-4 border-primary bg-primary text-white font-bold' : 'text-text-muted hover:bg-primary/20 hover:text-text'}"
     >
       <HelpCircle class="h-4 w-4 shrink-0" />
       <span>Help Desk</span>
     </a>
 
+
+
     <button 
       onclick={() => showLogoutModal = true}
-      class="flex items-center gap-3 px-3.5 py-2.5 text-rose-300 font-bold text-xs rounded-lg hover:bg-rose-950/40 transition-all w-full text-left"
+      class="flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-left text-xs font-bold text-danger transition-all hover:bg-danger/10"
     >
       <LogOut class="h-4 w-4 shrink-0" />
       <span>{t('logout.confirmBtn')}</span>

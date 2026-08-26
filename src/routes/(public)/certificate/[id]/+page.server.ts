@@ -1,35 +1,34 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { getFirebaseAdminFirestore } from '$lib/server/firebase/admin';
-import type { Application } from '$lib/types';
+import { getApplicationForUser } from '$lib/server/applications/repository';
 import { loadPublicServiceById } from '$lib/server/catalog/repository';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
   const { id } = params;
+  if (!locals.user) {
+    throw error(401, 'Login is required to view this certificate.');
+  }
 
   try {
-    const adminDb = getFirebaseAdminFirestore();
-    const doc = await adminDb.collection('applications').doc(id).get();
-    if (!doc.exists) {
+    const application = await getApplicationForUser(locals.user, id);
+    if (!application) {
       throw error(404, 'Certificate not found');
     }
 
-    const data = doc.data();
-    if (!data || !['APPROVED', 'COMPLETED', 'CERTIFICATE_GENERATED'].includes(data.status)) {
+    if (!['APPROVED', 'COMPLETED', 'CERTIFICATE_GENERATED'].includes(application.status)) {
       throw error(404, 'Certificate not generated or application not approved');
     }
 
-    const service = await loadPublicServiceById(data.serviceId);
+    const service = await loadPublicServiceById(application.serviceId);
     if (!service) {
       throw error(404, 'Service details not found');
     }
 
     return {
-      application: { id: doc.id, ...data } as Application,
+      application,
       service
     };
   } catch (err) {
-    console.error('Error fetching certificate application:', err);
     throw error(404, 'Certificate not found');
   }
 };

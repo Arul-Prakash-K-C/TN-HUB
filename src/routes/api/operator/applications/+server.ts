@@ -16,7 +16,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		body = await request.json() as { citizenId?: unknown; serviceId?: unknown; formData?: unknown };
 	} catch {
-		throw error(400, 'Invalid assisted application request.');
+		throw error(400, 'Invalid service application request.');
 	}
 
 	let citizenId = typeof body.citizenId === 'string' && body.citizenId.trim() !== '' 

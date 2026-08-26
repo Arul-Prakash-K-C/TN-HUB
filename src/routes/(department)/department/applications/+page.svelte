@@ -80,50 +80,45 @@
 {#if !restored}
   <GlassLoader message="Verifying access..." />
 {:else if !guard.allowed}
-  <div class="flex min-h-[70vh] flex-col items-center justify-center p-6 bg-[#f7f9fb]">
-    <div class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-xl">
+  <div class="flex min-h-[70vh] flex-col items-center justify-center p-6 bg-background">
+    <div class="w-full max-w-md rounded-2xl border border-border bg-surface p-8 text-center shadow-xl">
       <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-rose-100 text-rose-600">
         <Shield class="h-7 w-7" />
       </div>
-      <h2 class="text-lg font-bold text-slate-900">Access Restricted</h2>
-      <p class="mt-2 text-xs text-slate-500">{guard.reason || 'Unauthorized access'}</p>
+      <h2 class="text-lg font-bold text-text">Access Restricted</h2>
+      <p class="mt-2 text-xs text-text-muted">{guard.reason || 'Unauthorized access'}</p>
     </div>
   </div>
 {:else}
-  <div class="bg-[#f7f9fb] min-h-screen pb-20 text-slate-900 font-sans">
-    <!-- Header -->
-    <header class="flex justify-between items-center h-16 px-6 bg-white border-b border-slate-200 sticky top-0 z-20 shadow-2xs">
-      <div class="flex items-center gap-3">
-        <h1 class="text-base font-bold text-slate-900 tracking-tight">Applications Work Queue</h1>
-        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#062206] text-[#9df79e]">
+  <div class="bg-background min-h-screen pb-20 text-text font-sans">
+    <!-- Top Green Banner Header -->
+    <div class="public-banner py-6 px-6 sm:px-8">
+      <div class="mx-auto max-w-7xl flex justify-between items-center">
+        <div>
+          <span class="inline-flex rounded-full bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+            Workflow Queue
+          </span>
+          <h1 class="text-xl font-black mt-2 text-white">Applications Work Queue</h1>
+        </div>
+        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/10 text-white border border-white/20">
           {filteredApps.length} Application{filteredApps.length === 1 ? '' : 's'}
         </span>
       </div>
-
-      <div class="flex items-center gap-3">
-        <button 
-          onclick={resetFilters}
-          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-xs font-semibold hover:bg-slate-50 transition"
-        >
-          <RotateCcw class="h-3.5 w-3.5" />
-          <span>Reset Filters</span>
-        </button>
-      </div>
-    </header>
+    </div>
 
     <!-- Main Container -->
     <div class="p-6 w-full max-w-7xl mx-auto space-y-6">
       <!-- Search and Filter Control Bar -->
-      <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs space-y-4">
+      <div class="bg-surface border border-border rounded-xl p-4 shadow-sm space-y-4">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
           <!-- Search input -->
           <div class="relative w-full sm:w-96">
-            <Search class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
+            <Search class="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-faint h-4 w-4" />
             <input
               type="text"
               bind:value={searchQuery}
               placeholder="Search Application ID, Service, Applicant..."
-              class="w-full pl-10 pr-4 py-2 bg-slate-100 border-none rounded-lg text-xs focus:ring-2 focus:ring-[#9df79e] text-slate-900 placeholder:text-slate-400"
+              class="w-full pl-10 pr-4 py-2 bg-muted border border-border rounded-lg text-xs text-text focus:ring-2 focus:ring-primary/20 placeholder:text-text-faint"
             />
           </div>
 
@@ -131,35 +126,35 @@
           <div class="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
             <button
               onclick={() => selectedStatus = 'ALL'}
-              class="px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap {selectedStatus === 'ALL' ? 'bg-[#062206] text-[#9df79e]' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}"
+              class="px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap {selectedStatus === 'ALL' ? 'bg-primary text-white' : 'bg-muted text-text-muted hover:bg-surface-container'}"
             >
               All ({allDeptApps.length})
             </button>
 
             <button
               onclick={() => selectedStatus = 'PENDING'}
-              class="px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap {selectedStatus === 'PENDING' ? 'bg-[#FFF3E0] text-[#E65100] border border-[#E65100]/30' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}"
+              class="px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap {selectedStatus === 'PENDING' ? 'bg-warning-soft text-warning border border-warning/30' : 'bg-muted text-text-muted hover:bg-surface-container'}"
             >
               Pending Review
             </button>
 
             <button
               onclick={() => selectedStatus = 'CORRECTION'}
-              class="px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap {selectedStatus === 'CORRECTION' ? 'bg-[#FCE4EC] text-[#C2185B] border border-[#C2185B]/30' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}"
+              class="px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap {selectedStatus === 'CORRECTION' ? 'bg-danger-soft text-danger border border-danger/30' : 'bg-muted text-text-muted hover:bg-surface-container'}"
             >
               Correction Req
             </button>
 
             <button
               onclick={() => selectedStatus = 'APPROVED'}
-              class="px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap {selectedStatus === 'APPROVED' ? 'bg-[#E8F5E9] text-[#2E7D32] border border-[#2E7D32]/30' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}"
+              class="px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap {selectedStatus === 'APPROVED' ? 'bg-success-soft text-success border border-success/30' : 'bg-muted text-text-muted hover:bg-surface-container'}"
             >
               Approved
             </button>
 
             <button
               onclick={() => selectedStatus = 'SLA_RISK'}
-              class="px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap {selectedStatus === 'SLA_RISK' ? 'bg-[#FFEBEE] text-[#C62828] border border-[#C62828]/30' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}"
+              class="px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap {selectedStatus === 'SLA_RISK' ? 'bg-danger-soft text-danger border border-danger/30' : 'bg-muted text-text-muted hover:bg-surface-container'}"
             >
               SLA Risk
             </button>
@@ -168,7 +163,7 @@
       </div>
 
       <!-- Work Queue Table or Empty State -->
-      <div class="bg-white border border-slate-200 rounded-xl shadow-2xs overflow-hidden">
+      <div class="bg-surface border border-border rounded-xl shadow-sm overflow-hidden">
         {#if filteredApps.length === 0}
           <!-- Stitch Empty State UI -->
           <div class="p-16 text-center max-w-md mx-auto">

@@ -12,7 +12,8 @@
     CheckCircle,
     XCircle,
     Loader2,
-    AlertTriangle
+    AlertTriangle,
+    Search
   } from '@lucide/svelte';
   import { onMount } from 'svelte';
 
@@ -26,6 +27,20 @@
   let error = $state('');
   let actionLoading = $state<string | null>(null);
   let confirmAction = $state<{ uid: string; name: string; action: 'approve' | 'reject' } | null>(null);
+  let statusFilter = $state<'ALL' | 'APPLIED' | 'APPROVED' | 'REJECTED'>('ALL');
+  let searchQuery = $state('');
+  const appliedCount = $derived(pendingUsers.filter((user) => getRegistrationStatus(user) === 'APPLIED').length);
+  const approvedCount = $derived(pendingUsers.filter((user) => getRegistrationStatus(user) === 'APPROVED').length);
+  const rejectedCount = $derived(pendingUsers.filter((user) => getRegistrationStatus(user) === 'REJECTED').length);
+  const filteredRegistrations = $derived.by(() => {
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+    return pendingUsers.filter((user) => {
+      if (statusFilter !== 'ALL' && getRegistrationStatus(user) !== statusFilter) return false;
+      if (!normalizedQuery) return true;
+      return [user.displayName, user.email, user.departmentId, user.role, user.desiredRole]
+        .some((value) => typeof value === 'string' && value.toLowerCase().includes(normalizedQuery));
+    });
+  });
 
   function getDeptName(deptId: string | null): string {
     if (!deptId) return 'N/A';
@@ -39,6 +54,25 @@
     return role;
   }
 
+  function getRegistrationStatus(user: any): 'APPLIED' | 'APPROVED' | 'REJECTED' {
+    if (user.registrationStatus === 'APPROVED' || user.registrationStatus === 'REJECTED') {
+      return user.registrationStatus;
+    }
+    return user.approved === true ? 'APPROVED' : 'APPLIED';
+  }
+
+  function getStatusBadge(status: 'APPLIED' | 'APPROVED' | 'REJECTED'): string {
+    if (status === 'APPROVED') return 'bg-emerald-50 text-emerald-800 border-emerald-200';
+    if (status === 'REJECTED') return 'bg-rose-50 text-rose-800 border-rose-200';
+    return 'bg-amber-50 text-amber-800 border-amber-200';
+  }
+
+  function getStatusLabel(status: 'APPLIED' | 'APPROVED' | 'REJECTED'): string {
+    if (status === 'APPROVED') return t('admin.registration.status.approved');
+    if (status === 'REJECTED') return t('admin.registration.status.rejected');
+    return t('admin.registration.status.applied');
+  }
+
   async function fetchPending() {
     loading = true;
     error = '';
@@ -48,7 +82,7 @@
       const data = await res.json();
       pendingUsers = data.users || [];
     } catch (e: any) {
-      error = e.message || 'Unable to load pending registrations.';
+      error = e.message || 'Unable to load registrations.';
     } finally {
       loading = false;
     }
@@ -63,8 +97,16 @@
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ uid, approved })
       });
-      if (!res.ok) throw new Error('Action failed.');
-      pendingUsers = pendingUsers.filter(u => u.uid !== uid);
+      const body = await res.json().catch(() => null);
+      if (!res.ok || !body?.registrationStatus) throw new Error(body?.message || 'Action failed.');
+      pendingUsers = pendingUsers.map((user) => user.uid === uid
+        ? {
+            ...user,
+            approved,
+            isActive: approved,
+            registrationStatus: body.registrationStatus
+          }
+        : user);
       confirmAction = null;
     } catch (e: any) {
       error = e.message || 'Unable to process action.';
@@ -81,24 +123,21 @@
 </svelte:head>
 
 {#if !authenticated || role !== 'admin'}
-  <div class="flex min-h-[60vh] flex-col items-center justify-center p-4 bg-slate-50">
-    <div class="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-xl mt-10">
+  <div class="flex min-h-[60vh] flex-col items-center justify-center p-4 bg-background">
+    <div class="w-full max-w-md rounded-3xl border border-border bg-surface p-8 text-center shadow-xl mt-10">
       <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-600">
         <Shield class="h-7 w-7" />
       </div>
-      <h2 class="text-xl font-bold text-slate-900">Access Denied</h2>
-      <p class="mt-2 text-xs text-slate-500">Admin access only.</p>
+      <h2 class="text-xl font-bold text-text">Access Denied</h2>
+      <p class="mt-2 text-xs text-text-muted">Admin access only.</p>
     </div>
   </div>
 {:else}
   <div class="bg-surface-secondary min-h-screen pb-12">
-    <div class="bg-primary text-white border-b border-border">
+    <div class="public-banner border-b border-border">
       <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <span class="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white">
-          User Management
-        </span>
-        <h1 class="mt-2 text-h1 text-white">Registration Approvals</h1>
-        <p class="text-xs text-white/70">Review and approve pending Operator & Officer registration requests</p>
+        <h1 class="text-h1 text-white">{t('admin.registration.title')}</h1>
+        <p class="text-xs text-white/70">{t('admin.registration.subtitle')}</p>
       </div>
     </div>
 
@@ -113,24 +152,55 @@
 
       {#if loading}
         <div class="flex items-center justify-center py-20">
-          <Loader2 class="h-8 w-8 animate-spin text-emerald-600" />
-          <span class="ml-3 text-sm text-slate-500">Loading pending registrations…</span>
+          <Loader2 class="h-8 w-8 animate-spin text-[#316342]" />
+          <span class="ml-3 text-sm text-slate-500">{t('admin.registration.loading')}</span>
         </div>
       {:else if pendingUsers.length === 0}
         <div class="rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm">
-          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600">
+          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#316342]/10 text-[#316342]">
             <CheckCircle class="h-8 w-8" />
           </div>
           <h2 class="text-lg font-bold text-slate-900">All Clear!</h2>
-          <p class="mt-2 text-xs text-slate-500">No pending registration requests at this time.</p>
+          <p class="mt-2 text-xs text-slate-500">{t('admin.registration.empty')}</p>
         </div>
       {:else}
         <div class="mb-4 text-sm font-bold text-slate-700">
-          {pendingUsers.length} pending request{pendingUsers.length !== 1 ? 's' : ''}
+          {t('admin.registration.summary', { total: pendingUsers.length, applied: appliedCount })}
         </div>
 
+        <div class="relative mb-4 max-w-md">
+          <Search class="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <input
+            bind:value={searchQuery}
+            placeholder={t('admin.registration.search')}
+            class="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-xs outline-none focus:border-[#316342]"
+          />
+        </div>
+
+        <div class="mb-6 flex flex-wrap gap-2">
+          {#each [
+            { status: 'ALL', label: t('common.all'), count: pendingUsers.length },
+            { status: 'APPLIED', label: t('admin.registration.status.applied'), count: appliedCount },
+            { status: 'APPROVED', label: t('admin.registration.status.approved'), count: approvedCount },
+            { status: 'REJECTED', label: t('admin.registration.status.rejected'), count: rejectedCount }
+          ] as filter}
+            <button
+              type="button"
+              onclick={() => statusFilter = filter.status as typeof statusFilter}
+              class="rounded-xl border px-4 py-2 text-xs font-bold transition {statusFilter === filter.status ? 'border-[#316342] bg-[#316342] text-white' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}"
+            >
+              {filter.label} ({filter.count})
+            </button>
+          {/each}
+        </div>
+
+        {#if filteredRegistrations.length === 0}
+          <div class="rounded-2xl border border-slate-200 bg-white p-10 text-center text-xs text-slate-500">
+            {t('admin.registration.filterEmpty')}
+          </div>
+        {:else}
         <div class="grid gap-4">
-          {#each pendingUsers as user (user.uid)}
+          {#each filteredRegistrations as user (user.uid)}
             <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div class="flex items-start gap-4">
@@ -154,36 +224,39 @@
                           {getDeptName(user.departmentId)}
                         </span>
                       {/if}
-                      <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-[10px] font-bold text-amber-800 border border-amber-200">
+                      <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold border {getStatusBadge(getRegistrationStatus(user))}">
                         <Clock class="h-3 w-3" />
-                        Pending Approval
+                        {getStatusLabel(getRegistrationStatus(user))}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div class="flex items-center gap-2 shrink-0">
-                  <button
-                    onclick={() => confirmAction = { uid: user.uid, name: user.displayName || user.email, action: 'approve' }}
-                    disabled={actionLoading === user.uid}
-                    class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow hover:bg-emerald-700 transition disabled:opacity-50"
-                  >
-                    <UserCheck class="h-3.5 w-3.5" />
-                    Approve
-                  </button>
-                  <button
-                    onclick={() => confirmAction = { uid: user.uid, name: user.displayName || user.email, action: 'reject' }}
-                    disabled={actionLoading === user.uid}
-                    class="inline-flex items-center gap-1.5 rounded-xl bg-white border border-rose-300 px-4 py-2 text-xs font-bold text-rose-700 hover:bg-rose-50 transition disabled:opacity-50"
-                  >
-                    <UserX class="h-3.5 w-3.5" />
-                    Reject
-                  </button>
-                </div>
+                {#if getRegistrationStatus(user) === 'APPLIED'}
+                  <div class="flex items-center gap-2 shrink-0">
+                    <button
+                      onclick={() => confirmAction = { uid: user.uid, name: user.displayName || user.email, action: 'approve' }}
+                      disabled={actionLoading === user.uid}
+                      class="inline-flex items-center gap-1.5 rounded-xl bg-[#316342] px-4 py-2 text-xs font-bold text-white shadow hover:bg-[#254b32] transition disabled:opacity-50"
+                    >
+                      <UserCheck class="h-3.5 w-3.5" />
+                      Approve
+                    </button>
+                    <button
+                      onclick={() => confirmAction = { uid: user.uid, name: user.displayName || user.email, action: 'reject' }}
+                      disabled={actionLoading === user.uid}
+                      class="inline-flex items-center gap-1.5 rounded-xl bg-white border border-rose-300 px-4 py-2 text-xs font-bold text-rose-700 hover:bg-rose-50 transition disabled:opacity-50"
+                    >
+                      <UserX class="h-3.5 w-3.5" />
+                      Reject
+                    </button>
+                  </div>
+                {/if}
               </div>
             </div>
           {/each}
         </div>
+        {/if}
       {/if}
     </div>
   </div>
@@ -194,7 +267,7 @@
   <div class="fixed inset-0 z-50 flex items-center justify-center bg-[#071A28]/60 p-4 backdrop-blur-sm">
     <div class="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl space-y-4">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center {confirmAction.action === 'approve' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'}">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center {confirmAction.action === 'approve' ? 'bg-[#316342]/10 text-[#316342]' : 'bg-rose-100 text-rose-600'}">
           {#if confirmAction.action === 'approve'}
             <CheckCircle class="h-5 w-5" />
           {:else}
@@ -208,7 +281,7 @@
           <p class="text-xs text-slate-500 mt-0.5">
             {confirmAction.action === 'approve'
               ? `This will activate ${confirmAction.name}'s account and grant them portal access.`
-              : `This will permanently remove ${confirmAction.name}'s registration request.`
+              : t('admin.registration.rejectAudit', { name: confirmAction.name })
             }
           </p>
         </div>
@@ -224,7 +297,7 @@
         <button
           onclick={() => confirmAction && handleAction(confirmAction.uid, confirmAction.action === 'approve')}
           disabled={!!actionLoading}
-          class="rounded-xl px-4 py-2 text-xs font-bold text-white shadow transition disabled:opacity-50 {confirmAction.action === 'approve' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-rose-600 hover:bg-rose-700'}"
+          class="rounded-xl px-4 py-2 text-xs font-bold text-white shadow transition disabled:opacity-50 {confirmAction.action === 'approve' ? 'bg-[#316342] hover:bg-[#254b32]' : 'bg-rose-600 hover:bg-rose-700'}"
         >
           {#if actionLoading}
             <Loader2 class="h-3.5 w-3.5 animate-spin inline mr-1" />

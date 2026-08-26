@@ -72,20 +72,20 @@
 </svelte:head>
 
 {#if !authenticated || role !== 'officer'}
-  <div class="flex min-h-[60vh] flex-col items-center justify-center p-4 bg-slate-50">
-    <div class="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-xl mt-10">
+  <div class="flex min-h-[60vh] flex-col items-center justify-center p-4 bg-background">
+    <div class="w-full max-w-md rounded-3xl border border-border bg-surface p-8 text-center shadow-xl mt-10">
       <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-600">
         <Shield class="h-7 w-7" />
       </div>
-      <h2 class="text-xl font-bold text-slate-900">Access Denied</h2>
-      <p class="mt-2 text-xs text-slate-500">Only authorized Revenue Department Officers can access this queue. Please log in with an officer account.</p>
-      <a href="/login?redirect=/officer" class="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-emerald-600 py-3.5 text-xs font-bold text-white shadow transition hover:bg-emerald-700">
+      <h2 class="text-xl font-bold text-text">Access Denied</h2>
+      <p class="mt-2 text-xs text-text-muted">Only authorized Revenue Department Officers can access this queue. Please log in with an officer account.</p>
+      <a href="/login?redirect=/officer" class="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-primary py-3.5 text-xs font-bold text-white shadow transition hover:bg-primary-hover">
         Log In as Officer
       </a>
     </div>
   </div>
 {:else}
-  <div class="bg-slate-50 min-h-screen pb-16">
+  <div class="bg-background min-h-screen pb-16 text-text">
     <!-- Officer Portal Dark Header (Deep Navy Theme) -->
     <div class="bg-primary-950 text-primary-foreground border-b border-primary-900">
       <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -118,7 +118,7 @@
       <div class="grid gap-8 lg:grid-cols-3">
         <!-- Queue Column -->
         <div class="space-y-3">
-          <h2 class="text-sm font-bold text-slate-900 mb-2">Applications Queue ({pendingApps.length})</h2>
+          <h2 class="text-sm font-bold text-text mb-2">Applications Queue ({pendingApps.length})</h2>
 
           {#each pendingApps as app}
             <button
@@ -153,14 +153,14 @@
         <!-- Detail/Action Column -->
         <div class="lg:col-span-2">
           {#if !selectedApp}
-            <div class="rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm">
+            <div class="rounded-3xl border border-border bg-surface p-12 text-center shadow-sm">
               <FileText class="mx-auto h-12 w-12 text-slate-300" />
-              <h3 class="mt-4 text-sm font-bold text-slate-800">No Application Selected</h3>
-              <p class="mt-1 text-xs text-slate-500">Choose an application from the queue to start reviewing.</p>
+              <h3 class="mt-4 text-sm font-bold text-text">No Application Selected</h3>
+              <p class="mt-1 text-xs text-text-muted">Choose an application from the queue to start reviewing.</p>
             </div>
           {:else}
-            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm space-y-6">
-              <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-4">
+            <div class="rounded-3xl border border-border bg-surface p-6 shadow-sm space-y-6">
+              <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-4">
                 <div>
                   <span class="font-mono text-xs font-bold text-slate-400">ID: {selectedApp.applicationNumber}</span>
                   <h3 class="text-base font-black text-slate-900 mt-1">
@@ -236,9 +236,9 @@
 
   <!-- Officer Action Decision Modal -->
   {#if actionModal}
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-[#071A28]/60 p-4 backdrop-blur-sm animate-fade-in">
-      <div class="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
-        <h3 class="text-base font-bold text-slate-900 mb-3">
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-background/70 p-4 backdrop-blur-sm animate-fade-in">
+      <div class="w-full max-w-md rounded-3xl bg-surface border border-border p-6 shadow-2xl">
+        <h3 class="text-base font-bold text-text mb-3">
           {actionModal === 'approve' ? 'Confirm Certificate Approval' : actionModal === 'reject' ? 'Confirm Application Rejection' : 'Request Clarification from Applicant'}
         </h3>
 

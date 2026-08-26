@@ -54,50 +54,56 @@
     </div>
   </div>
 {:else}
-  <div class="bg-[#f7f9fb] min-h-screen pb-20 text-slate-900 font-sans">
-    <!-- Header -->
-    <header class="flex justify-between items-center h-16 px-6 bg-white border-b border-slate-200 sticky top-0 z-20 shadow-2xs">
-      <div class="flex items-center gap-3">
-        <h1 class="text-base font-bold text-slate-900 tracking-tight">Department Notifications</h1>
-        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#FFEBEE] text-[#C62828]">
+  <div class="bg-slate-50 min-h-screen pb-20 text-slate-900 font-sans">
+    <!-- Top Green Banner Header -->
+    <div class="bg-[#316342] text-white py-6 px-6 sm:px-8 shadow-md">
+      <div class="mx-auto max-w-7xl flex justify-between items-center">
+        <div>
+          <span class="inline-flex rounded-full bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+            Support Alerts
+          </span>
+          <h1 class="text-xl font-black mt-2 text-white">Department Notifications</h1>
+        </div>
+        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/10 text-white border border-white/20">
           {notificationsList.filter(n => !n.isRead).length} Unread
         </span>
       </div>
-
-      <div class="flex items-center gap-3">
-        <button 
-          onclick={markAllRead}
-          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-xs font-semibold hover:bg-slate-50 transition shadow-2xs"
-        >
-          <Check class="h-3.5 w-3.5" />
-          <span>Mark All Read</span>
-        </button>
-      </div>
-    </header>
+    </div>
 
     <!-- Main Content Container -->
     <div class="p-6 w-full max-w-4xl mx-auto space-y-6">
       <!-- Filter Bar -->
-      <div class="flex items-center gap-2 border-b border-slate-200 pb-4">
-        <button
-          onclick={() => activeFilter = 'ALL'}
-          class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition {activeFilter === 'ALL' ? 'bg-[#062206] text-[#9df79e]' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}"
-        >
-          All Notifications ({notificationsList.length})
-        </button>
+      <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+          <button
+            onclick={() => activeFilter = 'ALL'}
+            class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap {activeFilter === 'ALL' ? 'bg-[#316342] text-white' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}"
+          >
+            All Notifications ({notificationsList.length})
+          </button>
 
-        <button
-          onclick={() => activeFilter = 'CRITICAL'}
-          class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition {activeFilter === 'CRITICAL' ? 'bg-[#FFEBEE] text-[#C62828] border border-[#C62828]/30' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}"
-        >
-          SLA Alerts
-        </button>
+          <button
+            onclick={() => activeFilter = 'CRITICAL'}
+            class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap {activeFilter === 'CRITICAL' ? 'bg-rose-100 text-rose-800 border border-[#C62828]/20' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}"
+          >
+            SLA Alerts
+          </button>
 
-        <button
-          onclick={() => activeFilter = 'UNREAD'}
-          class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition {activeFilter === 'UNREAD' ? 'bg-[#E3F2FD] text-[#1565C0] border border-[#1565C0]/30' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}"
+          <button
+            onclick={() => activeFilter = 'UNREAD'}
+            class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap {activeFilter === 'UNREAD' ? 'bg-blue-100 text-blue-800 border border-blue-200' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}"
+          >
+            Unread Only
+          </button>
+        </div>
+
+        <button 
+          onclick={markAllRead}
+          disabled={notificationsList.filter(n => !n.isRead).length === 0}
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-xs font-bold hover:bg-slate-50 transition shadow-2xs disabled:opacity-50"
         >
-          Unread Only
+          <Check class="h-3.5 w-3.5 text-[#316342]" />
+          <span>Mark All Read</span>
         </button>
       </div>
 

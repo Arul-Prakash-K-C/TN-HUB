@@ -14,9 +14,6 @@ export default defineConfig({
 			adapter: adapter()
 		})
 	],
-	optimizeDeps: {
-		exclude: ['@lucide/svelte']
-	},
 	ssr: {
 		// Firebase Admin and its deps must stay in Node.js-land.
 		// Bundling them through Vite's SSR transform causes the 60 s

@@ -1,7 +1,7 @@
 export function generateApplicationId(): string {
   const year = new Date().getFullYear();
   const num = Math.floor(100000 + Math.random() * 900000);
-  return `SYM-${year}-${num}`;
+  return `TNH-${year}-${num}`;
 }
 
 export function generateComplaintId(): string {

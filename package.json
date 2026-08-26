@@ -1,5 +1,5 @@
 {
-	"name": "sympozen",
+	"name": "tn-hub",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
@@ -29,6 +29,7 @@
 	"dependencies": {
 		"@lucide/svelte": "^1.33.0",
 		"firebase": "^12.18.0",
-		"firebase-admin": "^13.0.0"
+		"firebase-admin": "^13.0.0",
+		"razorpay": "^2.9.8"
 	}
 }
