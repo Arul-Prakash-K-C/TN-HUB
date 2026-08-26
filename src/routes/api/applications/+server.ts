@@ -9,7 +9,7 @@ function isFormData(value: unknown): value is CreateApplicationInput['formData']
   const entries = Object.entries(value as Record<string, unknown>);
   return entries.length <= 100 && entries.every(([key, entry]) =>
     key.length <= 100 &&
-    (typeof entry === 'string' || typeof entry === 'number' || typeof entry === 'boolean' || entry === null) &&
+    (typeof entry === 'string' || typeof entry === 'number' || typeof entry === 'boolean' || entry === null || typeof entry === 'undefined') &&
     (typeof entry !== 'string' || entry.length <= 5000) &&
     (typeof entry !== 'number' || Number.isFinite(entry))
   );

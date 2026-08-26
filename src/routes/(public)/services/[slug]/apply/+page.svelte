@@ -97,6 +97,14 @@
       applicationId = draftApplication.applicationNumber;
       formData = { ...draftApplication.formData };
       declarationAgreed = true;
+      if (formData.phone) phoneVerified = true;
+      
+      const requestedStep = Number(.url.searchParams.get('step'));
+      if (requestedStep) {
+        currentStep = requestedStep;
+      } else if (formData.lastStep) {
+        currentStep = Number(formData.lastStep);
+      }
 
       const nextUploadedDocs: Record<string, { name: string; size: number; file?: File; id?: string }> = {};
       for (const doc of draftApplication.documents ?? []) {
@@ -222,6 +230,7 @@
     if (showPopup) stepError = '';
 
     try {
+      formData.lastStep = currentStep;
       const draft = await ensureDraftExists();
       await persistDraftUploads(draft.id);
       applicationId = draft.trackingId;
@@ -382,6 +391,7 @@
     
     // Auto-save the draft before moving to next step
     if (authenticated && currentStep > 0) {
+      formData.lastStep = currentStep + 1;
       await saveDraft(false);
     }
     
@@ -420,6 +430,7 @@
     stepError = '';
 
     try {
+      formData.lastStep = currentStep;
       const draft = await ensureDraftExists();
       await persistDraftUploads(draft.id);
 
