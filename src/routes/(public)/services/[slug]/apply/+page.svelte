@@ -422,7 +422,7 @@
 {:else if submitted}
   <!-- Success state -->
   <div class="flex min-h-[70vh] items-center justify-center bg-surface-secondary px-4">
-    <div class="w-full max-w-md rounded-2xl border border-border bg-white p-8 text-center shadow-lg animate-fade-in">
+    <div class="w-full max-w-md rounded-2xl border border-border bg-white dark:bg-surface-container p-8 text-center shadow-lg animate-fade-in">
       <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-success-light">
         <Check class="h-8 w-8 text-success" />
       </div>
@@ -469,14 +469,14 @@
                 {i === currentStep 
                   ? 'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800/50 text-emerald-800 dark:text-emerald-300 shadow-xs' 
                   : i < currentStep 
-                    ? 'bg-emerald-50/40 dark:bg-emerald-900/20 border-emerald-100/50 dark:border-emerald-800/30 text-slate-700 dark:text-slate-300' 
-                    : 'bg-slate-50 dark:bg-surface-container-highest border-slate-100 dark:border-border text-slate-400 dark:text-text-muted'}">
+                    ? 'bg-emerald-50/40 dark:bg-emerald-900/20 border-emerald-100/50 dark:border-emerald-800/30 text-text dark:text-text' 
+                    : 'bg-surface-container dark:bg-surface-container-highest border-border dark:border-border text-text-muted dark:text-text-muted'}">
                 <div class="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-black shrink-0
                   {i === currentStep 
                     ? 'bg-emerald-600 text-white' 
                     : i < currentStep 
                       ? 'bg-emerald-500 text-white' 
-                      : 'bg-slate-200 dark:bg-surface-container text-slate-500 dark:text-text-muted'}">
+                      : 'bg-surface-container-highest dark:bg-surface-container text-text-muted dark:text-text-muted'}">
                   {#if i < currentStep}
                     ✓
                   {:else}
@@ -486,7 +486,7 @@
                 <span>{step}</span>
               </div>
               {#if i < steps.length - 1}
-                <svg class="h-3.5 w-3.5 text-slate-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <svg class="h-3.5 w-3.5 text-border shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
               {/if}
@@ -827,8 +827,8 @@
       </div>
 
       {#if stepError}
-        <div class="mt-4 rounded-xl border border-rose-300 bg-rose-50 p-3.5 text-xs font-bold text-rose-800 flex items-center gap-2.5 shadow-xs">
-          <AlertCircle class="h-4 w-4 text-rose-600 shrink-0" />
+        <div class="mt-4 rounded-xl border border-rose-300 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/30 p-3.5 text-xs font-bold text-rose-800 dark:text-rose-300 flex items-center gap-2.5 shadow-xs">
+          <AlertCircle class="h-4 w-4 text-rose-600 dark:text-rose-400 shrink-0" />
           <span>{stepError}</span>
         </div>
       {/if}
@@ -897,8 +897,8 @@
   </div>
 
   {#if showConfirmModal}
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm px-4">
-      <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl animate-scale-up">
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+      <div class="w-full max-w-md rounded-2xl bg-white dark:bg-surface-container p-6 shadow-xl animate-scale-up">
         <h3 class="text-h3 text-text mb-3">Confirm Submission</h3>
         <p class="text-sm text-text-secondary leading-relaxed mb-6">
           {#if requiresPayment}
