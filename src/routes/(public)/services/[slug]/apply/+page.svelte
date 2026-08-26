@@ -772,15 +772,15 @@
                   </span>
                 </div>
                 {#if uploadedDocs[doc.id]}
-                  <div class="flex items-center justify-between rounded-lg bg-emerald-50 border border-emerald-150 p-3 text-sm text-emerald-800">
+                  <div class="flex items-center justify-between rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 p-3 text-sm text-emerald-800 dark:text-emerald-300">
                     <div class="flex items-center gap-2">
-                      <Check class="h-4 w-4 text-emerald-600" />
+                      <Check class="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                       <span class="font-medium truncate">{uploadedDocs[doc.id].name}</span>
                     </div>
                     <button
                       type="button"
                       onclick={() => { delete uploadedDocs[doc.id]; uploadedDocs = { ...uploadedDocs }; }}
-                      class="text-xs font-bold text-rose-600 hover:text-rose-800 hover:underline px-2.5 py-1.5 rounded-lg hover:bg-rose-50 transition shrink-0"
+                      class="text-xs font-bold text-rose-600 dark:text-rose-400 hover:text-rose-800 dark:hover:text-rose-300 hover:underline px-2.5 py-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-900/30 transition shrink-0"
                     >
                       Remove
                     </button>
