@@ -99,7 +99,7 @@
       declarationAgreed = true;
       if (formData.phone) phoneVerified = true;
       
-      const requestedStep = Number(.url.searchParams.get('step'));
+      const requestedStep = Number($page.url.searchParams.get('step'));
       if (requestedStep) {
         currentStep = requestedStep;
       } else if (formData.lastStep) {
@@ -927,7 +927,7 @@
           {#if currentStep === steps.length - 1}
             <button
               type="button"
-              onclick={saveDraft}
+              onclick={() => saveDraft(true)}
               disabled={isSavingDraft || isSubmitting}
               class="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2.5 text-sm font-medium text-text transition hover:bg-surface-container disabled:opacity-50"
             >
