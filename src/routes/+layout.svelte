@@ -1,4 +1,5 @@
-<script lang="ts">
+<script>
+
   import '../app.css';
   import { auth } from '$lib/stores/auth';
   import { onMount } from 'svelte';
@@ -7,19 +8,17 @@
 
   import { t, locale } from '$lib/i18n';
 
-  let { data, children } = $props();
-  let AiChatWidgetComponent = $state<any>(null);
-
-  onMount(() => {
+let { data, children } = $props();
+let AiChatWidgetComponent = $state(null);
+onMount(() => {
     auth.setInitialUser(data.user);
     auth.restore();
     loadSavedTheme();
-
     // Lazy load AI Chat Widget after initial render
     import('$lib/components/ui/AiChatWidget.svelte').then((module) => {
-      AiChatWidgetComponent = module.default;
+        AiChatWidgetComponent = module.default;
     });
-  });
+});
 </script>
 
 <svelte:head>

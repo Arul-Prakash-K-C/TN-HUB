@@ -8,8 +8,8 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
 		"seed:demo": "node scripts/seed-demo.mjs",
 		"seed:demo-auth": "node scripts/seed-demo-auth.mjs",
 		"deploy:firebase-rules": "node scripts/deploy-firebase-rules.mjs",
@@ -29,7 +29,6 @@
 	"dependencies": {
 		"@lucide/svelte": "^1.33.0",
 		"firebase": "^12.18.0",
-		"firebase-admin": "^13.0.0",
-		"razorpay": "^2.9.8"
+		"firebase-admin": "^13.0.0"
 	}
 }

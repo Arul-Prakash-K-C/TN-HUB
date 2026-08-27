@@ -1,127 +1,137 @@
-<script lang="ts">
+<script>
+
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { auth, userRole } from '$lib/stores/auth';
+  import { get } from 'svelte/store';
+  import { auth, currentUser, isAuthenticated, userRole } from '$lib/stores/auth';
   import { getPortalRedirectForRole } from '$lib/utils/authGuard';
   import { departments } from '$lib/data/departments';
   import { demoCredentials } from '$lib/data/users';
   import { tt, locale } from '$lib/i18n';
   import { User, Building2, Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, UserPlus, Monitor } from '@lucide/svelte';
 
-  const t = $derived($tt);
-  const currentLocale = $derived($locale);
-
-  let activeTab = $state<'citizen' | 'operator' | 'department' | 'admin'>('citizen');
-  let authMode = $state<'login' | 'register'>('login');
-  let email = $state('');
-  let password = $state('');
-  let displayName = $state('');
-  let confirmPassword = $state('');
-  let showPassword = $state(false);
-  let error = $state('');
-  let loading = $state(false);
-  let desiredDeptId = $state('dept-revenue');
-  let registrationSuccess = $state(false);
-
   import { getFirebaseAuth } from '$lib/firebase/client';
 
-  const demoRoleByTab = {
+const t = $derived($tt);
+const currentLocale = $derived($locale);
+let activeTab = $state('citizen');
+let authMode = $state('login');
+let email = $state('');
+let password = $state('');
+let displayName = $state('');
+let confirmPassword = $state('');
+let showPassword = $state(false);
+let error = $state('');
+let loading = $state(false);
+let desiredDeptId = $state('dept-revenue');
+let registrationSuccess = $state(false);
+const demoRoleByTab = {
     citizen: 'citizen',
     operator: 'operator',
     department: 'department_user',
     admin: 'tnhub_admin'
-  } as const;
-
-  const demoAccount = $derived(
-    demoCredentials.find((credential) => credential.role === demoRoleByTab[activeTab]) ?? null
-  );
-
-  function selectTab(tab: 'citizen' | 'operator' | 'department' | 'admin') {
+};
+const demoAccount = $derived(demoCredentials.find((credential) => credential.role === demoRoleByTab[activeTab]) ?? null);
+const authenticated = $derived($isAuthenticated);
+function getLoginRedirectTarget() {
+    const redirectParam = $page.url.searchParams.get('redirect');
+    const role = get(currentUser)?.role ?? get(userRole);
+    return redirectParam || getPortalRedirectForRole(role);
+}
+$effect(() => {
+    if (authenticated && !loading) {
+        goto(getLoginRedirectTarget(), { replaceState: true });
+    }
+});
+function selectTab(tab) {
     activeTab = tab;
-    if (tab === 'admin') authMode = 'login';
+    if (tab === 'admin')
+        authMode = 'login';
     error = '';
     registrationSuccess = false;
     email = '';
     password = '';
-  }
-
-  function applyDemoCredentials() {
-    if (!demoAccount) return;
+}
+function applyDemoCredentials() {
+    if (!demoAccount)
+        return;
     authMode = 'login';
     registrationSuccess = false;
     error = '';
     email = demoAccount.email;
     password = demoAccount.password;
-  }
-
-  async function handleAuthentication() {
-    if (!email || !password) { error = 'Please enter email and password'; return; }
+}
+async function handleAuthentication() {
+    if (!email || !password) {
+        error = 'Please enter email and password';
+        return;
+    }
     if (authMode === 'register' && (!displayName.trim() || password !== confirmPassword)) {
-      error = 'Please fill all fields and match passwords.';
-      return;
+        error = 'Please fill all fields and match passwords.';
+        return;
     }
     loading = true;
     error = '';
     registrationSuccess = false;
-    
     try {
-      if (authMode === 'register') {
-        if (activeTab === 'citizen') {
-          const success = await auth.registerCitizen(email, password, displayName);
-          if (success) {
-            const redirectParam = $page.url.searchParams.get('redirect');
-            goto(redirectParam || getPortalRedirectForRole($userRole));
-          } else {
-            error = 'Registration failed. Email might already be registered.';
-          }
-        } else {
-          // Official registration flow (Operator/Officer)
-          const [{ createUserWithEmailAndPassword, updateProfile }, firebaseAuth] = await Promise.all([
-            import('firebase/auth'),
-            getFirebaseAuth()
-          ]);
-          const credential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
-          if (displayName.trim()) {
-            await updateProfile(credential.user, { displayName: displayName.trim() });
-          }
-          
-          const registerRes = await fetch('/api/auth/register-official', {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({
-              uid: credential.user.uid,
-              email: credential.user.email,
-              name: displayName.trim(),
-              desiredRole: activeTab === 'operator' ? 'operator' : 'department_user',
-              departmentId: activeTab === 'department' ? desiredDeptId : null
-            })
-          });
-          
-          if (!registerRes.ok) {
-            const body = await registerRes.json();
-            throw new Error(body.message || 'Registration failed at admin registry.');
-          }
-          
-          registrationSuccess = true;
-          displayName = '';
-          confirmPassword = '';
-          authMode = 'login';
+        if (authMode === 'register') {
+            if (activeTab === 'citizen') {
+                const success = await auth.registerCitizen(email, password, displayName);
+                if (success) {
+                    await goto(getLoginRedirectTarget(), { replaceState: true });
+                }
+                else {
+                    error = 'Registration failed. Email might already be registered.';
+                }
+            }
+            else {
+                // Official registration flow (Operator/Officer)
+                const [{ createUserWithEmailAndPassword, updateProfile }, firebaseAuth] = await Promise.all([
+                    import('firebase/auth'),
+                    getFirebaseAuth()
+                ]);
+                const credential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+                if (displayName.trim()) {
+                    await updateProfile(credential.user, { displayName: displayName.trim() });
+                }
+                const registerRes = await fetch('/api/auth/register-official', {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/json' },
+                    body: JSON.stringify({
+                        uid: credential.user.uid,
+                        email: credential.user.email,
+                        name: displayName.trim(),
+                        desiredRole: activeTab === 'operator' ? 'operator' : 'department_user',
+                        departmentId: activeTab === 'department' ? desiredDeptId : null
+                    })
+                });
+                if (!registerRes.ok) {
+                    const body = await registerRes.json();
+                    throw new Error(body.message || 'Registration failed at admin registry.');
+                }
+                registrationSuccess = true;
+                displayName = '';
+                confirmPassword = '';
+                authMode = 'login';
+            }
         }
-      } else {
-        const success = await auth.login(email, password);
-        if (success) {
-          const redirectParam = $page.url.searchParams.get('redirect');
-          goto(redirectParam || getPortalRedirectForRole($userRole));
-        } else {
-          error = 'Invalid email, password, or your account is pending approval.';
+        else {
+            const success = await auth.login(email, password);
+            if (success) {
+                await goto(getLoginRedirectTarget(), { replaceState: true });
+            }
+            else {
+                error = 'Invalid email, password, or your account is pending approval.';
+            }
         }
-      }
-    } catch (cause: any) {
-      error = cause instanceof Error ? cause.message : 'Authentication failed.';
-    } finally {
-      loading = false;
     }
-  }
+    catch (cause) {
+        error = cause instanceof Error ? cause.message : 'Authentication failed.';
+    }
+    finally {
+        loading = false;
+    }
+}
 </script>
 
 <svelte:head>
@@ -189,7 +199,7 @@
 
         {#if registrationSuccess}
           <div class="mb-4 rounded-2xl border border-success/30 bg-success-soft px-4 py-3 text-xs font-bold text-success">
-            Official account registration request submitted! Your account is currently pending administrator verification. You can log in once approved.
+            Official account registration request submitted Your account is currently pending administrator verification. You can log in once approved.
           </div>
         {/if}
 
@@ -229,7 +239,7 @@
               {:else if activeTab === 'department'}
                 <strong>{t('auth.tabDepartment')} Official Workspace:</strong> {t('auth.officerWorkspace')}
               {:else}
-                <strong>{currentLocale === 'ta' ? 'நிர்வாக கன்சோல்' : 'Administration Console'}:</strong> {currentLocale === 'ta' ? 'அமைப்புகளை நிர்வகிக்கவும் மற்றும் தணிக்கை பதிவுகளை சரிபார்க்கவும்.' : 'Manage platform configurations and review audit logs.'}
+                <strong>{currentLocale === 'ta' ? 'நிர்வாக கன்சோல்' : 'Administration Console'}:</strong> {currentLocale === 'ta' ? 'நிர்வாக பணிகள் மற்றும் பதிவு ஒப்புதல்களை கண்காணிக்கவும்.' : 'Manage admin operations, registration approvals, and user support.'}
               {/if}
             </div>
           </div>

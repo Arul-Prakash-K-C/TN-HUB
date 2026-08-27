@@ -1,4 +1,5 @@
-<script lang="ts">
+<script>
+
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { auth, currentUser, isAuthenticated, userRole } from '$lib/stores/auth';
@@ -20,75 +21,66 @@
   import { getPortalRedirectForRole } from '$lib/utils/authGuard';
   import { applyThemeMode, getPreferredThemeMode } from '$lib/utils/theme';
 
-  let mobileMenuOpen = $state(false);
-  let profileMenuOpen = $state(false);
-  let loginGuardModal = $state<{ open: boolean; target: string; title: string }>({ open: false, target: '', title: '' });
-
-  const t = $derived($tt);
-  const user = $derived($currentUser);
-  const authenticated = $derived($isAuthenticated);
-  const role = $derived($userRole);
-  const currentPath = $derived($page.url.pathname);
-  let themeMode = $state<'light' | 'dark'>('dark');
-  let unreadCount = $state(0);
-
-  $effect(() => {
+let mobileMenuOpen = $state(false);
+let profileMenuOpen = $state(false);
+let loginGuardModal = $state({ open: false, target: '', title: '' });
+const t = $derived($tt);
+const user = $derived($currentUser);
+const authenticated = $derived($isAuthenticated);
+const role = $derived($userRole);
+const currentPath = $derived($page.url.pathname);
+let themeMode = $state('dark');
+let unreadCount = $state(0);
+$effect(() => {
     themeMode = getPreferredThemeMode();
-  });
-
-  $effect(() => {
+});
+$effect(() => {
     const activeUser = user;
     if (!activeUser) {
-      unreadCount = 0;
-      return;
+        unreadCount = 0;
+        return;
     }
-
     let cancelled = false;
     void fetch('/api/notifications/unread-count', { credentials: 'same-origin' })
-      .then((response) => response.ok ? response.json() as Promise<{ count?: unknown }> : null)
-      .then((body) => {
-        if (!cancelled) unreadCount = typeof body?.count === 'number' ? body.count : 0;
-      })
-      .catch(() => {
-        if (!cancelled) unreadCount = 0;
-      });
-
+        .then((response) => response.ok ? response.json() : null)
+        .then((body) => {
+        if (!cancelled)
+            unreadCount = typeof body?.count === 'number' ? body.count : 0;
+    })
+        .catch(() => {
+        if (!cancelled)
+            unreadCount = 0;
+    });
     return () => { cancelled = true; };
-  });
-
-  function toggleLanguage() {
+});
+function toggleLanguage() {
     locale.toggle();
-  }
-
-  function handleLanguageToggle(event: MouseEvent) {
+}
+function handleLanguageToggle(event) {
     event.preventDefault();
     event.stopPropagation();
     toggleLanguage();
-  }
-
-  function handleThemeToggle(event: MouseEvent) {
+}
+function handleThemeToggle(event) {
     event.preventDefault();
     event.stopPropagation();
     themeMode = themeMode === 'dark' ? 'light' : 'dark';
     applyThemeMode(themeMode);
-  }
-
-  async function handleLogout() {
+}
+async function handleLogout() {
     await auth.logout();
     profileMenuOpen = false;
     goto('/');
-  }
-
-  function getDashboardUrl(): string {
+}
+function getDashboardUrl() {
     return getPortalRedirectForRole(role);
-  }
-
-  function handleProtectedNav(targetPath: string, title: string, e: MouseEvent) {
+}
+function handleProtectedNav(targetPath, title, e) {
     if (!authenticated) {
-      e.preventDefault();
-      loginGuardModal = { open: true, target: targetPath, title };
+        e.preventDefault();
+        loginGuardModal = { open: true, target: targetPath, title };
     }
-  }
+}
 </script>
 
 <!-- STICKY HEADER -->

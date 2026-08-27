@@ -1,86 +1,81 @@
-<script lang="ts">
+<script>
+
   import { tt, locale } from '$lib/i18n';
   import { currentUser } from '$lib/stores/auth';
-  import type { ComplaintRecord } from '$lib/server/complaints/repository';
   import { AlertCircle, PlusCircle, Clock, CheckCircle, FileText, Send, ArrowRight } from '@lucide/svelte';
 
-  const t = $derived($tt);
-  const currentLocale = $derived($locale);
-  const user = $derived($currentUser);
-
-  let showNewModal = $state(false);
-  let category = $state('service_delay');
-  let subject = $state('');
-  let description = $state('');
-  let location = $state('');
-  let complaintList = $state<ComplaintRecord[]>([]);
-  let isLoading = $state(true);
-  let isSubmitting = $state(false);
-  let submittedSuccess = $state(false);
-  let errorMessage = $state('');
-
-  $effect(() => {
+const t = $derived($tt);
+const currentLocale = $derived($locale);
+const user = $derived($currentUser);
+let showNewModal = $state(false);
+let category = $state('service_delay');
+let subject = $state('');
+let description = $state('');
+let location = $state('');
+let complaintList = $state([]);
+let isLoading = $state(true);
+let isSubmitting = $state(false);
+let submittedSuccess = $state(false);
+let errorMessage = $state('');
+$effect(() => {
     const activeUser = user;
     if (!activeUser) {
-      complaintList = [];
-      isLoading = false;
-      return;
+        complaintList = [];
+        isLoading = false;
+        return;
     }
-
     let cancelled = false;
     isLoading = true;
     fetch('/api/complaints', { credentials: 'same-origin' })
-      .then(res => res.ok ? res.json() : Promise.reject(new Error('Failed to load complaints')))
-      .then((data: { complaints: ComplaintRecord[] }) => {
+        .then(res => res.ok ? res.json() : Promise.reject(new Error('Failed to load complaints')))
+        .then((data) => {
         if (!cancelled) {
-          complaintList = data.complaints || [];
-          isLoading = false;
+            complaintList = data.complaints || [];
+            isLoading = false;
         }
-      })
-      .catch(() => {
+    })
+        .catch(() => {
         if (!cancelled) {
-          complaintList = [];
-          isLoading = false;
+            complaintList = [];
+            isLoading = false;
         }
-      });
-
+    });
     return () => { cancelled = true; };
-  });
-
-  async function submitGrievance() {
-    if (!subject || !description || isSubmitting) return;
-
+});
+async function submitGrievance() {
+    if (!subject || !description || isSubmitting)
+        return;
     isSubmitting = true;
     errorMessage = '';
     try {
-      const res = await fetch('/api/complaints', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'same-origin',
-        body: JSON.stringify({ category, subject, description, location })
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.message || 'Failed to submit grievance');
-      }
-
-      const data = await res.json() as { complaint: ComplaintRecord };
-      complaintList = [data.complaint, ...complaintList];
-      submittedSuccess = true;
-      setTimeout(() => {
-        showNewModal = false;
-        submittedSuccess = false;
-        subject = '';
-        description = '';
-        location = '';
-      }, 1500);
-    } catch (err) {
-      errorMessage = err instanceof Error ? err.message : 'Error submitting grievance';
-    } finally {
-      isSubmitting = false;
+        const res = await fetch('/api/complaints', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({ category, subject, description, location })
+        });
+        if (!res.ok) {
+            const body = await res.json().catch(() => ({}));
+            throw new Error(body.message || 'Failed to submit grievance');
+        }
+        const data = await res.json();
+        complaintList = [data.complaint, ...complaintList];
+        submittedSuccess = true;
+        setTimeout(() => {
+            showNewModal = false;
+            submittedSuccess = false;
+            subject = '';
+            description = '';
+            location = '';
+        }, 1500);
     }
-  }
+    catch (err) {
+        errorMessage = err instanceof Error ? err.message : 'Error submitting grievance';
+    }
+    finally {
+        isSubmitting = false;
+    }
+}
 </script>
 
 <svelte:head>
@@ -98,7 +93,7 @@
 
       <button
         onclick={() => showNewModal = true}
-        class="inline-flex items-center gap-2 rounded-xl bg-surface px-4 py-2.5 text-xs font-bold text-primary shadow-md transition-all hover:bg-surface-container"
+        class="adaptive-action-button inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition-all"
       >
         <PlusCircle class="h-4 w-4" />
         {t('complaints.new')}

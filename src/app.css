@@ -68,6 +68,13 @@
 
   --color-sidebar-bg: #143520;
   --color-sidebar-item-active: #223027;
+  --color-sidebar-text: #f4fbf6;
+  --color-sidebar-text-muted: #b8d0bf;
+  --color-sidebar-text-faint: #8cac97;
+  --color-sidebar-hover: rgba(255, 255, 255, 0.1);
+  --color-sidebar-card: #f4f2ec;
+  --color-sidebar-card-text: #102217;
+  --color-sidebar-card-muted: #3c5b47;
   --color-secondary-fixed: #86a789;
   --color-on-tertiary: #ffffff;
   --color-status-new-bg: #eaf1eb;
@@ -139,6 +146,13 @@
   --color-accent-soft: #1f2a22;
   --color-sidebar-bg: #141716;
   --color-sidebar-item-active: #223027;
+  --color-sidebar-text: #f5faf6;
+  --color-sidebar-text-muted: #c2d2c7;
+  --color-sidebar-text-faint: #90a796;
+  --color-sidebar-hover: rgba(255, 255, 255, 0.08);
+  --color-sidebar-card: #202821;
+  --color-sidebar-card-text: #f5faf6;
+  --color-sidebar-card-muted: #b8c9bd;
   --color-secondary-fixed: #86a789;
   --color-status-new-bg: #1f2a22;
   --color-status-new-text: #86a789;
@@ -179,6 +193,177 @@ body {
   background-color: var(--color-background);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  max-width: 100%;
+}
+
+main,
+.min-w-0,
+.flex-1 {
+  min-width: 0;
+}
+
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+.operator-application-editor {
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+.operator-application-editor .bg-slate-50,
+.operator-application-editor .bg-slate-50\/20,
+.operator-application-editor .bg-slate-50\/50,
+.operator-application-editor .bg-primary-50,
+.operator-application-editor .bg-primary-50\/40,
+.operator-application-editor .bg-primary-50\/50,
+.operator-application-editor .bg-white {
+  background-color: var(--color-surface);
+}
+
+.operator-application-editor .border-slate-100,
+.operator-application-editor .border-slate-200,
+.operator-application-editor .border-slate-250,
+.operator-application-editor .border-slate-300 {
+  border-color: var(--color-border);
+}
+
+.operator-application-editor .border-primary-100,
+.operator-application-editor .border-primary-150,
+.operator-application-editor .border-primary-200 {
+  border-color: color-mix(in srgb, var(--color-primary) 24%, transparent);
+}
+
+.operator-application-editor .text-slate-300,
+.operator-application-editor .text-slate-400 {
+  color: var(--color-text-faint);
+}
+
+.operator-application-editor .text-slate-500,
+.operator-application-editor .text-slate-600,
+.operator-application-editor .text-slate-700,
+.operator-application-editor .text-slate-800,
+.operator-application-editor .text-slate-900,
+.operator-application-editor .text-slate-950 {
+  color: var(--color-text);
+}
+
+.operator-application-editor .text-primary-600,
+.operator-application-editor .text-primary-700,
+.operator-application-editor .text-primary-800 {
+  color: var(--color-primary-soft-text);
+}
+
+.operator-application-editor label.text-slate-500,
+.operator-application-editor dt.text-slate-500,
+.operator-application-editor p.text-slate-500,
+.operator-application-editor li.text-slate-600 {
+  color: var(--color-text-muted);
+}
+
+.operator-application-editor input:not([type='checkbox']):not([type='file']),
+.operator-application-editor select,
+.operator-application-editor textarea {
+  background-color: var(--color-surface-container-low);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.operator-application-editor input::placeholder,
+.operator-application-editor textarea::placeholder {
+  color: var(--color-text-faint);
+}
+
+.department-review-page .bg-rose-50,
+.department-review-page .bg-rose-100 {
+  background-color: var(--color-danger-soft);
+}
+
+.department-review-page .text-rose-600,
+.department-review-page .text-rose-700,
+.department-review-page .text-rose-800 {
+  color: var(--color-danger);
+}
+
+.department-review-page .border-rose-200,
+.department-review-page .border-rose-300 {
+  border-color: color-mix(in srgb, var(--color-danger) 28%, transparent);
+}
+
+.department-review-page .bg-emerald-50 {
+  background-color: var(--color-success-soft);
+}
+
+.department-review-page .text-emerald-700 {
+  color: var(--color-success);
+}
+
+.department-review-page .hover\:border-emerald-300:hover {
+  border-color: color-mix(in srgb, var(--color-success) 35%, transparent);
+}
+
+.adaptive-action-button {
+  background: color-mix(in srgb, var(--color-surface) 92%, var(--color-primary));
+  border: 1px solid color-mix(in srgb, var(--color-primary) 28%, var(--color-border));
+  color: var(--color-primary-soft-text);
+  box-shadow: var(--shadow-vazhi-1);
+}
+
+.adaptive-action-button:hover {
+  background: color-mix(in srgb, var(--color-primary-soft) 70%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--color-primary) 42%, var(--color-border));
+  color: var(--color-primary);
+  box-shadow: var(--shadow-vazhi-2);
+}
+
+.dark .adaptive-action-button,
+[data-theme='dark'] .adaptive-action-button {
+  background: color-mix(in srgb, var(--color-primary) 26%, var(--color-surface));
+  color: #f5faf6;
+}
+
+.dark .adaptive-action-button:hover,
+[data-theme='dark'] .adaptive-action-button:hover {
+  background: color-mix(in srgb, var(--color-primary) 42%, var(--color-surface));
+  color: #ffffff;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+@media (max-width: 640px) {
+  .text-h1 {
+    font-size: clamp(1.65rem, 1.25rem + 2vw, 2.25rem);
+    line-height: 1.12;
+  }
+
+  .rounded-3xl {
+    border-radius: var(--radius-xl);
+  }
+
+  .p-12 {
+    padding: 2rem;
+  }
+
+  .px-8 {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
 }
 
 .tamil-text {
@@ -243,13 +428,13 @@ body {
 }
 
 .public-banner {
-  background-color: #5f8f69;
+  background: linear-gradient(135deg, #5f8f69 0%, #4a7c59 100%);
   color: #ffffff;
 }
 
 .dark .public-banner,
 [data-theme='dark'] .public-banner {
-  background-color: #223529;
+  background: linear-gradient(135deg, #15231a 0%, #223529 100%);
   color: #ffffff;
 }
 

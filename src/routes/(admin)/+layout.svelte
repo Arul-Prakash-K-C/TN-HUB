@@ -1,4 +1,5 @@
-<script lang="ts">
+<script>
+
   import AdminSidebar from '$lib/components/layout/AdminSidebar.svelte';
   import MobileHeader from '$lib/components/layout/MobileHeader.svelte';
   import Footer from '$lib/components/layout/Footer.svelte';
@@ -6,11 +7,10 @@
   import { isRestored, userRole } from '$lib/stores/auth';
   import { t } from '$lib/i18n';
 
-  let { data, children } = $props();
-  let isMobileMenuOpen = $state(false);
-  const restored = $derived($isRestored || data.user !== undefined);
-  const role = $derived($userRole ?? data.user?.role ?? null);
-
+let { data, children } = $props();
+let isMobileMenuOpen = $state(false);
+const restored = $derived($isRestored || data.user !== undefined);
+const role = $derived($userRole ?? data.user?.role ?? null);
 </script>
 
 {#if !restored}
@@ -18,10 +18,10 @@
     <GlassLoader message={t('auth.restoringSession')} />
   </main>
 {:else if role === 'admin'}
-  <div class="flex h-screen overflow-hidden">
+  <div class="flex h-dvh overflow-hidden">
     <AdminSidebar bind:isOpen={isMobileMenuOpen} />
 
-    <main id="main-content" class="flex-1 flex flex-col md:ml-64 h-screen overflow-y-auto">
+    <main id="main-content" class="flex-1 flex flex-col md:ml-64 h-dvh overflow-y-auto">
       <MobileHeader bind:isOpen={isMobileMenuOpen} portal="admin" />
       <div class="flex-1 flex flex-col">
         {@render children()}

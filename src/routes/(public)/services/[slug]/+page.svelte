@@ -1,23 +1,22 @@
-<script lang="ts">
+<script>
+
   import { tt, locale } from '$lib/i18n';
   import { isAuthenticated } from '$lib/stores/auth';
   import { ArrowLeft, Clock, FileText, IndianRupee, CheckCircle, ExternalLink, Zap, ChevronDown, ChevronUp, AlertTriangle } from '@lucide/svelte';
 
-  let { data } = $props();
-
-  const t = $derived($tt);
-  const currentLocale = $derived($locale);
-  const authenticated = $derived($isAuthenticated);
-  const service = $derived(data.catalogService);
-  const departmentName = $derived.by(() => {
+let { data } = $props();
+const t = $derived($tt);
+const currentLocale = $derived($locale);
+const authenticated = $derived($isAuthenticated);
+const service = $derived(data.catalogService);
+const departmentName = $derived.by(() => {
     const department = data.catalog.departments.find((entry) => entry.id === service?.departmentId);
     return department ? (currentLocale === 'ta' ? department.nameTA : department.name) : service?.departmentId ?? '';
-  });
-  let openFaqIndex = $state<number | null>(null);
-
-  function toggleFaq(index: number) {
+});
+let openFaqIndex = $state(null);
+function toggleFaq(index) {
     openFaqIndex = openFaqIndex === index ? null : index;
-  }
+}
 </script>
 
 <svelte:head>

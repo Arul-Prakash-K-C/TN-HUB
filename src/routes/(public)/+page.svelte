@@ -1,28 +1,27 @@
-<script lang="ts">
+<script>
+
   import { goto } from '$app/navigation';
   import { tt } from '$lib/i18n';
   import { isAuthenticated, userRole } from '$lib/stores/auth';
   import { getPortalRedirectForRole } from '$lib/utils/authGuard';
   import { Search, FileText, CheckCircle2, Bot, ArrowRight, ArrowDown } from '@lucide/svelte';
 
-  const t = $derived($tt);
-  const authenticated = $derived($isAuthenticated);
-  const role = $derived($userRole);
-
-  $effect(() => {
+const t = $derived($tt);
+const authenticated = $derived($isAuthenticated);
+const role = $derived($userRole);
+$effect(() => {
     if (authenticated) {
-      goto(getPortalRedirectForRole(role));
+        goto(getPortalRedirectForRole(role));
     }
-  });
-
-  const conceptSteps = [
+});
+const conceptSteps = [
     { label: 'DISCOVER', desc: 'Find the exact service you need across all departments.' },
     { label: 'CHECK ELIGIBILITY', desc: 'Instantly verify if you meet the requirements.' },
     { label: 'APPLY', desc: 'Fill out one unified, simple form.' },
     { label: 'UPLOAD DOCUMENTS', desc: 'Pull directly from DigiLocker or upload securely.' },
     { label: 'TRACK', desc: 'Monitor your application status in real-time.' },
     { label: 'GET RESULT', desc: 'Download your approved certificate or result instantly.' }
-  ];
+];
 </script>
 
 <svelte:head>

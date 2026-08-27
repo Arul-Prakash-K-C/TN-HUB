@@ -1,39 +1,40 @@
-<script lang="ts">
+<script>
+
   import { Map, Link2, Building2 } from '@lucide/svelte';
   import { t } from '$lib/i18n';
 
-  const sitemapGroups = [
+const sitemapGroups = [
     { title: 'Main Navigation', links: [
-      { name: 'Home', href: '/' },
-      { name: 'About Us', href: '/about' },
-      { name: 'Services Offered', href: '/services' },
-      { name: 'Application Tracking', href: '/applications' },
-      { name: 'Dashboard', href: '/dashboard' },
-      { name: 'Service Tutorials', href: '/tutorials' },
-      { name: 'Contact Us', href: '/contact' },
-      { name: 'Help & FAQs', href: '/help' },
-      { name: 'Sitemap', href: '/sitemap' }
-    ]},
+            { name: 'Home', href: '/' },
+            { name: 'About Us', href: '/about' },
+            { name: 'Services Offered', href: '/services' },
+            { name: 'Application Tracking', href: '/applications' },
+            { name: 'Dashboard', href: '/dashboard' },
+            { name: 'Service Tutorials', href: '/tutorials' },
+            { name: 'Contact Us', href: '/contact' },
+            { name: 'Help & FAQs', href: '/help' },
+            { name: 'Sitemap', href: '/sitemap' }
+        ] },
     { title: 'Department Services', isDeptList: true, departments: [
-      { name: 'Revenue Department', href: '/services?department=revenue', count: '15+ services' },
-      { name: 'Civil Supplies', href: '/services?department=civil_supplies', count: '8+ services' },
-      { name: 'Transport Department', href: '/services?department=transport', count: '10+ services' },
-      { name: 'Health & Family Welfare', href: '/services?department=health', count: '12+ services' },
-      { name: 'Education Department', href: '/services?department=education', count: '6+ services' },
-      { name: 'Social Welfare', href: '/services?department=social_welfare', count: '9+ services' },
-      { name: 'Labour Department', href: '/services?department=labour', count: '5+ services' },
-      { name: 'Agriculture Department', href: '/services?department=agriculture', count: '7+ services' },
-      { name: 'Local Government', href: '/services?department=local_government', count: '8+ services' },
-      { name: 'Drugs Control', href: '/services?department=drugs_control', count: '4+ services' }
-    ]},
+            { name: 'Revenue Department', href: '/services?department=revenue', count: '15+ services' },
+            { name: 'Civil Supplies', href: '/services?department=civil_supplies', count: '8+ services' },
+            { name: 'Transport Department', href: '/services?department=transport', count: '10+ services' },
+            { name: 'Health & Family Welfare', href: '/services?department=health', count: '12+ services' },
+            { name: 'Education Department', href: '/services?department=education', count: '6+ services' },
+            { name: 'Social Welfare', href: '/services?department=social_welfare', count: '9+ services' },
+            { name: 'Labour Department', href: '/services?department=labour', count: '5+ services' },
+            { name: 'Agriculture Department', href: '/services?department=agriculture', count: '7+ services' },
+            { name: 'Local Government', href: '/services?department=local_government', count: '8+ services' },
+            { name: 'Drugs Control', href: '/services?department=drugs_control', count: '4+ services' }
+        ] },
     { title: 'Help & Support', links: [
-      { name: 'Frequently Asked Questions', href: '/help' },
-      { name: 'Grievances / Complaints', href: '/complaints' },
-      { name: 'Policies & Guidelines', href: '/help#policies' },
-      { name: 'Contact Support', href: '/contact' },
-      { name: 'Service Tutorials', href: '/tutorials' }
-    ]}
-  ];
+            { name: 'Frequently Asked Questions', href: '/help' },
+            { name: 'Grievances / Complaints', href: '/complaints' },
+            { name: 'Policies & Guidelines', href: '/help#policies' },
+            { name: 'Contact Support', href: '/contact' },
+            { name: 'Service Tutorials', href: '/tutorials' }
+        ] }
+];
 </script>
 
 <svelte:head>

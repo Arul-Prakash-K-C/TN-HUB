@@ -1,36 +1,35 @@
-<script lang="ts">
+<script>
+
   import { tt, locale } from '$lib/i18n';
   import { currentUser, isAuthenticated } from '$lib/stores/auth';
   import { User, Mail, Phone, MapPin, Globe, ShieldCheck, Check } from '@lucide/svelte';
   import { applyThemeMode } from '$lib/utils/theme';
 
-  const t = $derived($tt);
-  const currentLocale = $derived($locale);
-  const user = $derived($currentUser);
-  const authenticated = $derived($isAuthenticated);
-
-  let savedNotice = $state(false);
-  let profilePhone = $state('');
-  let isDark = $state(true);
-
-  $effect(() => {
+const t = $derived($tt);
+const currentLocale = $derived($locale);
+const user = $derived($currentUser);
+const authenticated = $derived($isAuthenticated);
+let savedNotice = $state(false);
+let profilePhone = $state('');
+let isDark = $state(true);
+$effect(() => {
     profilePhone = user?.phone ?? '';
     if (typeof window !== 'undefined') {
-      isDark = localStorage.getItem('theme-mode') !== 'light';
+        isDark = localStorage.getItem('theme-mode') !== 'light';
     }
-  });
-
-  async function saveProfile() {
+});
+async function saveProfile() {
     const response = await fetch('/api/profile', {
-      method: 'PATCH',
-      credentials: 'same-origin',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ phone: profilePhone, preferredLanguage: currentLocale })
+        method: 'PATCH',
+        credentials: 'same-origin',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ phone: profilePhone, preferredLanguage: currentLocale })
     });
-    if (!response.ok) return;
+    if (!response.ok)
+        return;
     savedNotice = true;
     setTimeout(() => savedNotice = false, 2000);
-  }
+}
 </script>
 
 <svelte:head>
@@ -66,7 +65,7 @@
 
         {#if savedNotice}
           <div class="rounded-xl border border-success/30 bg-success-soft p-3 text-center text-xs font-bold text-success">
-            {t('common.save')}d successfully!
+            {t('common.save')}d successfully
           </div>
         {/if}
 

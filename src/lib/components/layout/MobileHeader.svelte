@@ -1,35 +1,33 @@
-<script lang="ts">
+<script>
+
   import { Menu, Bell } from '@lucide/svelte';
   import { auth, isAuthenticated, currentUser } from '$lib/stores/auth';
   import { t } from '$lib/i18n';
 
-  const authenticated = $derived($isAuthenticated);
-  const user = $derived($currentUser);
-  
-  let { isOpen = $bindable(false), portal = 'citizen' } = $props<{ isOpen?: boolean, portal?: 'citizen' | 'department' | 'operator' | 'admin' }>();
-  
-  const isDept = $derived(portal === 'department');
-  let unreadCount = $state(0);
-
-  $effect(() => {
+const authenticated = $derived($isAuthenticated);
+const user = $derived($currentUser);
+let { isOpen = $bindable(false), portal = 'citizen' } = $props();
+const isDept = $derived(portal === 'department');
+let unreadCount = $state(0);
+$effect(() => {
     const activeUser = user;
     if (!activeUser) {
-      unreadCount = 0;
-      return;
+        unreadCount = 0;
+        return;
     }
-
     let cancelled = false;
     void fetch('/api/notifications/unread-count', { credentials: 'same-origin' })
-      .then((response) => response.ok ? response.json() as Promise<{ count?: unknown }> : null)
-      .then((body) => {
-        if (!cancelled) unreadCount = typeof body?.count === 'number' ? body.count : 0;
-      })
-      .catch(() => {
-        if (!cancelled) unreadCount = 0;
-      });
-
+        .then((response) => response.ok ? response.json() : null)
+        .then((body) => {
+        if (!cancelled)
+            unreadCount = typeof body?.count === 'number' ? body.count : 0;
+    })
+        .catch(() => {
+        if (!cancelled)
+            unreadCount = 0;
+    });
     return () => { cancelled = true; };
-  });
+});
 </script>
 
 <header class="sticky top-0 z-30 flex w-full items-center justify-between border-b px-4 py-3.5 text-white shadow-xs md:hidden {portal === 'operator' || portal === 'admin' || isDept ? 'border-border bg-[var(--color-sidebar-bg)]' : 'border-border bg-[var(--color-sidebar-bg)]'}">

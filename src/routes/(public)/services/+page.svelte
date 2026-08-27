@@ -1,71 +1,60 @@
-<script lang="ts">
+<script>
+
   import { page } from '$app/stores';
   import { locale, tt } from '$lib/i18n';
   import { Search } from '@lucide/svelte';
 
-  let { data } = $props();
-
-  const t = $derived($tt);
-  const currentLocale = $derived($locale);
-  const catalogServices = $derived(data.catalog.services);
-  const catalogDepartments = $derived(data.catalog.departments);
-
-  let searchQuery = $state('');
-  let selectedCategory = $state<string>('all');
-  let selectedDepartment = $state<string>('all');
-  let selectedMode = $state<string>('all');
-
-  // Read category and department from URL query params
-  $effect(() => {
+let { data } = $props();
+const t = $derived($tt);
+const currentLocale = $derived($locale);
+const catalogServices = $derived(data.catalog.services);
+const catalogDepartments = $derived(data.catalog.departments);
+let searchQuery = $state('');
+let selectedCategory = $state('all');
+let selectedDepartment = $state('all');
+let selectedMode = $state('all');
+// Read category and department from URL query params
+$effect(() => {
     const cat = $page.url.searchParams.get('category');
     if (cat) {
-      selectedCategory = cat;
-    } else {
-      selectedCategory = 'all';
+        selectedCategory = cat;
     }
-    
+    else {
+        selectedCategory = 'all';
+    }
     const dept = $page.url.searchParams.get('department');
     if (dept) {
-      selectedDepartment = dept;
-    } else {
-      selectedDepartment = 'all';
+        selectedDepartment = dept;
     }
-  });
-
-  const filteredServices = $derived.by(() => {
+    else {
+        selectedDepartment = 'all';
+    }
+});
+const filteredServices = $derived.by(() => {
     let result = catalogServices.filter(s => s.isActive);
-
     if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(s =>
-        s.name.toLowerCase().includes(q) ||
-        s.nameTA.includes(searchQuery) ||
-        s.shortDescription.toLowerCase().includes(q) ||
-        s.category.includes(q)
-      );
+        const q = searchQuery.toLowerCase();
+        result = result.filter(s => s.name.toLowerCase().includes(q) ||
+            s.nameTA.includes(searchQuery) ||
+            s.shortDescription.toLowerCase().includes(q) ||
+            s.category.includes(q));
     }
-
     if (selectedCategory !== 'all') {
-      result = result.filter(s => s.category === selectedCategory);
+        result = result.filter(s => s.category === selectedCategory);
     }
-
     if (selectedDepartment !== 'all') {
-      result = result.filter(s => s.departmentId === selectedDepartment);
+        result = result.filter(s => s.departmentId === selectedDepartment);
     }
-
     if (selectedMode !== 'all') {
-      result = result.filter(s => s.implementationMode === selectedMode);
+        result = result.filter(s => s.implementationMode === selectedMode);
     }
-
     return result;
-  });
-
-  function getCatalogDepartmentName(departmentId: string, language: 'en' | 'ta'): string {
+});
+function getCatalogDepartmentName(departmentId, language) {
     const department = catalogDepartments.find((entry) => entry.id === departmentId);
     return department ? (language === 'ta' ? department.nameTA : department.name) : departmentId;
-  }
-
-  const categoryOptions = $derived([
+}
+const categoryOptions = $derived([
     { value: 'all', label: t('services.filter.all') },
     { value: 'revenue', label: currentLocale === 'ta' ? 'வருவாய்' : 'Revenue' },
     { value: 'civil_supplies', label: currentLocale === 'ta' ? 'குடிமைப் பொருள் வழங்கல்' : 'Civil Supplies' },
@@ -73,7 +62,7 @@
     { value: 'local_government', label: currentLocale === 'ta' ? 'உள்ளாட்சி' : 'Local Government' },
     { value: 'health', label: currentLocale === 'ta' ? 'சுகாதாரம்' : 'Health' },
     { value: 'licences', label: currentLocale === 'ta' ? 'உரிமங்கள்' : 'Licences' }
-  ].filter(opt => opt.value === 'all' || catalogServices.some(s => s.category === opt.value)));
+].filter(opt => opt.value === 'all' || catalogServices.some(s => s.category === opt.value)));
 </script>
 
 <svelte:head>

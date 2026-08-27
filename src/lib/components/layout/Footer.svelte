@@ -1,8 +1,9 @@
-<script lang="ts">
+<script>
+
   import { tt, locale } from '$lib/i18n';
   import { getDepartmentName } from '$lib/data/departments';
 
-  const t = $derived($tt);
+const t = $derived($tt);
 </script>
 
 <footer class="border-t border-border bg-[var(--color-sidebar-bg)] text-white/88">

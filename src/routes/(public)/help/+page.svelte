@@ -1,123 +1,143 @@
-<script lang="ts">
+<script>
+
   import { HelpCircle, ChevronDown, ChevronUp, Send, CheckCircle2, FileText, ShieldCheck, Scale, AlertTriangle } from '@lucide/svelte';
   import { t } from '$lib/i18n';
   import { onMount } from 'svelte';
 
-  let openFaq = $state<number | null>(null);
-  let activeTab = $state<'faq' | 'policies'>('faq');
-
-  // Auto-switch to policies tab if hash is #policies
-  onMount(() => {
+let openFaq = $state(null);
+let activeTab = $state('faq');
+// Auto-switch to policies tab if hash is #policies
+onMount(() => {
     if (typeof window !== 'undefined' && window.location.hash === '#policies') {
-      activeTab = 'policies';
+        activeTab = 'policies';
     }
-  });
-
-  // Question submission
-  let questionName = $state('');
-  let questionEmail = $state('');
-  let questionText = $state('');
-  let questionSubmitted = $state(false);
-  let submitting = $state(false);
-
-  function handleQuestionSubmit() {
-    if (!questionText.trim() || !questionName.trim()) return;
+});
+// Question submission
+let questionName = $state('');
+let questionEmail = $state('');
+let questionText = $state('');
+let questionSubmitted = $state(false);
+let submitting = $state(false);
+let questionError = $state('');
+async function handleQuestionSubmit() {
+    if (!questionText.trim() || !questionName.trim() || submitting) return;
+    
     submitting = true;
-    // Simulate submission to help desk
-    setTimeout(() => {
-      submitting = false;
-      questionSubmitted = true;
-      questionName = '';
-      questionEmail = '';
-      questionText = '';
-    }, 1200);
-  }
-
-  const faqs = [
-    {
-      q: 'What is TN Hub?',
-      a: 'TN Hub is Tamil Nadu\'s unified citizen service portal integrating government services, DigiLocker document vaults, grievance redressal, and e-Adangal land extracts into one seamless digital platform.'
-    },
-    {
-      q: 'How do I track my submitted application?',
-      a: 'Click "Track Application" in the main navigation menu or visit your Citizen Dashboard. You will need to log in to view real-time officer workflow steps and status updates.'
-    },
-    {
-      q: 'Where do I fetch my e-Adangal extract?',
-      a: 'Navigate to "Services > e-Adangal Extract" from the main header. Enter your district, taluk, village, and survey number to view and download your signed crop extract.'
-    },
-    {
-      q: 'Is there any fee for submitting applications?',
-      a: 'Most revenue and certificate services (Income, Community, Nativity) on TN Hub are completely free of government fees. Some services like Transport or Licences may have nominal fees displayed on the service detail page.'
-    },
-    {
-      q: 'How do I create an account on TN Hub?',
-      a: 'Click the "Login" button on the top right corner, then select "Create Account". You can register using your email address, mobile number, or link an existing Google account. Aadhaar-based verification may be used for enhanced services.'
-    },
-    {
-      q: 'What documents are needed for an Income Certificate?',
-      a: 'You typically need proof of identity (Aadhaar/Voter ID), proof of residence, and income proof (salary slips, bank statements, or self-declaration). Check the full document checklist on the Income Certificate service page.'
-    },
-    {
-      q: 'How long does it take to process applications?',
-      a: 'Processing times vary by service. Most certificates (Income, Community, Nativity) are processed within 3-7 working days. Complex services like land records or licences may take 15-30 working days. Each service page displays its estimated SLA.'
-    },
-    {
-      q: 'Can I apply on behalf of a family member?',
-      a: 'Yes. You can visit an e-Sevai Common Service Center where an authorized operator will assist you. Alternatively, you can use the citizen portal with proper authorization documents for your family member.'
-    },
-    {
-      q: 'What is DigiLocker integration?',
-      a: 'DigiLocker is a Government of India initiative that provides a digital document wallet. When connected to TN Hub, you can directly fetch verified certificates without re-uploading physical documents.'
-    },
-    {
-      q: 'How do I file a grievance or complaint?',
-      a: 'Log in to your account and navigate to "Grievances / Complaints" from the Help dropdown menu. Fill in the complaint form with details, attach relevant documents, and submit. You\'ll receive a tracking number to monitor resolution progress.'
-    },
-    {
-      q: 'What if my application is rejected?',
-      a: 'If your application is rejected, you will receive a notification with the specific reason. You can address the issue (e.g., upload missing documents, correct information) and resubmit. If you disagree with the decision, you can file a grievance.'
-    },
-    {
-      q: 'Is TN Hub available in Tamil?',
-      a: 'Yes. TN Hub fully supports both Tamil (தமிழ்) and English. You can switch languages at any time using the language toggle button in the header. All forms, notifications, and service information are available in both languages.'
-    },
-    {
-      q: 'Which departments are connected to TN Hub?',
-      a: 'TN Hub connects services from Revenue, Civil Supplies, Transport, Health, Education, Social Welfare, Labour, Agriculture, Local Government, and more. The full list is available on the Services page filtered by department.'
-    },
-    {
-      q: 'How secure is my personal data on TN Hub?',
-      a: 'TN Hub uses Firebase Authentication with encrypted sessions, server-side role-based authorization, and Firestore security rules. Your personal data is only accessible to you and authorized government officers processing your application.'
-    },
-    {
-      q: 'Can I download approved certificates digitally?',
-      a: 'Yes. Once your application is approved and the certificate is issued, you can download the digitally signed certificate from your Citizen Dashboard under "Completed Applications". The certificate is also available through DigiLocker if connected.'
+    questionError = '';
+    try {
+        const response = await fetch('/api/contact', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                name: questionName.trim(), 
+                email: questionEmail.trim(), 
+                message: questionText.trim(), 
+                source: 'help_desk' 
+            })
+        });
+        const body = await response.json().catch(() => null);
+        
+        if (response.ok) {
+            questionSubmitted = true;
+            questionName = '';
+            questionEmail = '';
+            questionText = '';
+        }
+        else {
+            throw new Error(body?.error ?? 'Unable to submit your question.');
+        }
+    } catch (error) {
+        console.error('Error submitting help request:', error);
+        questionError = error instanceof Error ? error.message : 'Unable to submit your question.';
+    } finally {
+        submitting = false;
     }
-  ];
-
-  const policies = [
+}
+const faqs = [
     {
-      title: 'Privacy Policy',
-      icon: ShieldCheck,
-      desc: 'Your personal data is collected solely for government service delivery. We follow IT Act 2000, DPDP Act 2023, and Government of Tamil Nadu data governance guidelines. Data is encrypted in transit and at rest.'
+        q: 'What is TN Hub?',
+        a: 'TN Hub is Tamil Nadu\'s unified citizen service portal integrating government services, DigiLocker document vaults, grievance redressal, and e-Adangal land extracts into one seamless digital platform.'
     },
     {
-      title: 'Terms of Service',
-      icon: Scale,
-      desc: 'By using TN Hub, you agree to provide accurate information for government service applications. Misrepresentation may result in application rejection and legal action under applicable Indian Penal Code provisions.'
+        q: 'How do I track my submitted application?',
+        a: 'Click "Track Application" in the main navigation menu or visit your Citizen Dashboard. You will need to log in to view real-time officer workflow steps and status updates.'
     },
     {
-      title: 'Grievance Redressal Policy',
-      icon: AlertTriangle,
-      desc: 'Citizens may file grievances for service delays, incorrect rejections, or officer misconduct. All grievances are acknowledged within 24 hours and resolved within the prescribed SLA (typically 7-15 working days).'
+        q: 'Where do I fetch my e-Adangal extract?',
+        a: 'Navigate to "Services > e-Adangal Extract" from the main header. Enter your district, taluk, village, and survey number to view and download your signed crop extract.'
     },
     {
-      title: 'Accessibility Statement',
-      icon: FileText,
-      desc: 'TN Hub is designed to meet WCAG 2.1 AA accessibility standards. We support screen readers, keyboard navigation, high-contrast modes, and bilingual Tamil/English content to ensure inclusive access.'
+        q: 'Is there any fee for submitting applications?',
+        a: 'Most revenue and certificate services (Income, Community, Nativity) on TN Hub are completely free of government fees. Some services like Transport or Licences may have nominal fees displayed on the service detail page.'
+    },
+    {
+        q: 'How do I create an account on TN Hub?',
+        a: 'Click the "Login" button on the top right corner, then select "Create Account". You can register using your email address, mobile number, or link an existing Google account. Aadhaar-based verification may be used for enhanced services.'
+    },
+    {
+        q: 'What documents are needed for an Income Certificate?',
+        a: 'You typically need proof of identity (Aadhaar/Voter ID), proof of residence, and income proof (salary slips, bank statements, or self-declaration). Check the full document checklist on the Income Certificate service page.'
+    },
+    {
+        q: 'How long does it take to process applications?',
+        a: 'Processing times vary by service. Most certificates (Income, Community, Nativity) are processed within 3-7 working days. Complex services like land records or licences may take 15-30 working days. Each service page displays its estimated SLA.'
+    },
+    {
+        q: 'Can I apply on behalf of a family member?',
+        a: 'Yes. You can visit an e-Sevai Common Service Center where an authorized operator will assist you. Alternatively, you can use the citizen portal with proper authorization documents for your family member.'
+    },
+    {
+        q: 'What is DigiLocker integration?',
+        a: 'DigiLocker is a Government of India initiative that provides a digital document wallet. When connected to TN Hub, you can directly fetch verified certificates without re-uploading physical documents.'
+    },
+    {
+        q: 'How do I file a grievance or complaint?',
+        a: 'Log in to your account and navigate to "Grievances / Complaints" from the Help dropdown menu. Fill in the complaint form with details, attach relevant documents, and submit. You\'ll receive a tracking number to monitor resolution progress.'
+    },
+    {
+        q: 'What if my application is rejected?',
+        a: 'If your application is rejected, you will receive a notification with the specific reason. You can address the issue (e.g., upload missing documents, correct information) and resubmit. If you disagree with the decision, you can file a grievance.'
+    },
+    {
+        q: 'Is TN Hub available in Tamil?',
+        a: 'Yes. TN Hub fully supports both Tamil (தமிழ்) and English. You can switch languages at any time using the language toggle button in the header. All forms, notifications, and service information are available in both languages.'
+    },
+    {
+        q: 'Which departments are connected to TN Hub?',
+        a: 'TN Hub connects services from Revenue, Civil Supplies, Transport, Health, Education, Social Welfare, Labour, Agriculture, Local Government, and more. The full list is available on the Services page filtered by department.'
+    },
+    {
+        q: 'How secure is my personal data on TN Hub?',
+        a: 'TN Hub uses Firebase Authentication with encrypted sessions, server-side role-based authorization, and Firestore security rules. Your personal data is only accessible to you and authorized government officers processing your application.'
+    },
+    {
+        q: 'Can I download approved certificates digitally?',
+        a: 'Yes. Once your application is approved and the certificate is issued, you can download the digitally signed certificate from your Citizen Dashboard under "Completed Applications". The certificate is also available through DigiLocker if connected.'
     }
-  ];
+];
+const policies = [
+    {
+        title: 'Privacy Policy',
+        icon: ShieldCheck,
+        desc: 'Your personal data is collected solely for government service delivery. We follow IT Act 2000, DPDP Act 2023, and Government of Tamil Nadu data governance guidelines. Data is encrypted in transit and at rest.'
+    },
+    {
+        title: 'Terms of Service',
+        icon: Scale,
+        desc: 'By using TN Hub, you agree to provide accurate information for government service applications. Misrepresentation may result in application rejection and legal action under applicable Indian Penal Code provisions.'
+    },
+    {
+        title: 'Grievance Redressal Policy',
+        icon: AlertTriangle,
+        desc: 'Citizens may file grievances for service delays, incorrect rejections, or officer misconduct. All grievances are acknowledged within 24 hours and resolved within the prescribed SLA (typically 7-15 working days).'
+    },
+    {
+        title: 'Accessibility Statement',
+        icon: FileText,
+        desc: 'TN Hub is designed to meet WCAG 2.1 AA accessibility standards. We support screen readers, keyboard navigation, high-contrast modes, and bilingual Tamil/English content to ensure inclusive access.'
+    }
+];
 </script>
 
 <svelte:head>
@@ -207,7 +227,7 @@
             <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary-soft text-primary">
               <CheckCircle2 class="h-8 w-8" />
             </div>
-            <h3 class="text-lg font-bold text-text">Question Submitted!</h3>
+            <h3 class="text-lg font-bold text-text">Question Submitted</h3>
             <p class="mt-2 max-w-md text-sm text-text-muted">Your question has been sent to the TN Hub Help Desk. You will receive a response via email within 24 working hours.</p>
             <button
               onclick={() => questionSubmitted = false}
@@ -252,6 +272,9 @@
                 class="w-full resize-none rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text outline-none transition placeholder:text-text-faint focus:border-primary focus:ring-2 focus:ring-primary/15"
               ></textarea>
             </div>
+            {#if questionError}
+              <p class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-bold text-rose-700">{questionError}</p>
+            {/if}
             <div class="flex justify-end">
               <button
                 type="submit"

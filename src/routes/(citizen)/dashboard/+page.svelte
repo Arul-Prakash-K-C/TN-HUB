@@ -1,5 +1,4 @@
-<script lang="ts">
-  let { data } = $props();
+<script>
 
   import { tt, locale } from '$lib/i18n';
   import { currentUser, isAuthenticated, isRestored } from '$lib/stores/auth';
@@ -17,31 +16,30 @@
     Shield
   } from '@lucide/svelte';
 
-  const t = $derived($tt);
-  const currentLocale = $derived($locale);
-  const user = $derived($currentUser);
-  const authenticated = $derived($isAuthenticated);
-  const restored = $derived($isRestored);
-
-  const applications = $derived(data.applications);
-  const activeApplications = $derived(applications.filter(a => !['COMPLETED', 'REJECTED', 'DRAFT', 'CANCELLED'].includes(a.status)));
-  const completedApplications = $derived(applications.filter(a => a.status === 'COMPLETED'));
-  const pendingReview = $derived(applications.filter(a => ['OFFICER_REVIEW', 'DOCUMENT_VERIFICATION', 'FIELD_VERIFICATION'].includes(a.status)));
-  const documentsCount = $derived(data.documentCount);
-
-  function getStatusBadge(status: string) {
+let { data } = $props();
+const t = $derived($tt);
+const currentLocale = $derived($locale);
+const user = $derived($currentUser);
+const authenticated = $derived($isAuthenticated);
+const restored = $derived($isRestored);
+const applications = $derived(data.applications);
+const activeApplications = $derived(applications.filter(a => !['COMPLETED', 'REJECTED', 'DRAFT', 'CANCELLED'].includes(a.status)));
+const completedApplications = $derived(applications.filter(a => a.status === 'COMPLETED'));
+const pendingReview = $derived(applications.filter(a => ['OFFICER_REVIEW', 'DOCUMENT_VERIFICATION', 'FIELD_VERIFICATION'].includes(a.status)));
+const documentsCount = $derived(data.documentCount);
+function getStatusBadge(status) {
     switch (status) {
-      case 'COMPLETED':
-      case 'APPROVED':
-        return 'bg-[#316342]/10 text-[#316342] border border-[#316342]/20';
-      case 'REJECTED':
-        return 'bg-rose-500/10 text-rose-300 border border-rose-500/20';
-      case 'DRAFT':
-        return 'bg-white/8 text-text-muted border border-border';
-      default:
-        return 'bg-amber-500/10 text-amber-300 border border-amber-500/20';
+        case 'COMPLETED':
+        case 'APPROVED':
+            return 'bg-[#316342]/10 text-[#316342] border border-[#316342]/20';
+        case 'REJECTED':
+            return 'bg-rose-500/10 text-rose-300 border border-rose-500/20';
+        case 'DRAFT':
+            return 'bg-white/8 text-text-muted border border-border';
+        default:
+            return 'bg-amber-500/10 text-amber-300 border border-amber-500/20';
     }
-  }
+}
 </script>
 
 <svelte:head>
@@ -79,7 +77,7 @@
           <p class="public-banner-subtitle mt-1 max-w-2xl text-xs font-medium">Manage your government service applications, official certificates, and document vault.</p>
         </div>
         <div class="flex items-center gap-3">
-          <a href="/services" class="inline-flex items-center justify-center gap-2 rounded-xl bg-white dark:bg-primary-soft px-4 py-2.5 text-xs font-bold text-primary dark:text-primary-soft-text shadow-md transition-all hover:bg-surface-container dark:hover:bg-primary/20">
+          <a href="/services" class="adaptive-action-button inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition-all">
             <PlusCircle class="h-4 w-4" />
             Apply for New Service
           </a>

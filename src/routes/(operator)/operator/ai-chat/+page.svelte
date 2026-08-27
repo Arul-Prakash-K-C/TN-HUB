@@ -1,81 +1,71 @@
-<script lang="ts">
+<script>
+
   import { goto } from '$app/navigation';
   import { Bot, ChevronLeft, RefreshCcw, Route, ShieldCheck, Sparkles, ArrowRight, MessageSquare } from '@lucide/svelte';
   import { locale, tt } from '$lib/i18n';
-  import { buildScreen, createInitialContext, type OptionText, type ThozhanContext, type ThozhanOption } from '$lib/thozhan/assistant';
+  import { buildScreen, createInitialContext } from '$lib/thozhan/assistant';
 
-  let { data } = $props();
-
-  const t = $derived($tt);
-  const currentLocale = $derived($locale);
-
-  const assistantData = $derived({
+let { data } = $props();
+const t = $derived($tt);
+const currentLocale = $derived($locale);
+const assistantData = $derived({
     user: data.user ?? null,
     services: data.catalog?.services ?? [],
     departments: data.catalog?.departments ?? [],
     applications: data.applications ?? [],
     documents: data.documents ?? []
-  });
-
-  let history = $state<ThozhanContext[]>([createInitialContext()]);
-
-  const currentContext = $derived(history[history.length - 1]);
-  const screen = $derived(buildScreen(currentContext, assistantData, currentLocale, t));
-
-  function resolveText(text?: OptionText): string {
-    if (!text) return '';
+});
+let history = $state([createInitialContext()]);
+const currentContext = $derived(history[history.length - 1]);
+const screen = $derived(buildScreen(currentContext, assistantData, currentLocale, t));
+function resolveText(text) {
+    if (!text)
+        return '';
     return text.type === 'key' ? t(text.key, text.params) : text.value;
-  }
-
-  function pushState(nextContext: ThozhanContext) {
+}
+function pushState(nextContext) {
     history = [...history, nextContext];
-  }
-
-  function goBack() {
-    if (history.length === 1) return;
+}
+function goBack() {
+    if (history.length === 1)
+        return;
     history = history.slice(0, -1);
-  }
-
-  function startOver() {
+}
+function startOver() {
     history = [createInitialContext()];
-  }
-
-  async function handleOption(option: ThozhanOption) {
-    if (option.disabled) return;
+}
+async function handleOption(option) {
+    if (option.disabled)
+        return;
     if (option.id === 'back') {
-      goBack();
-      return;
+        goBack();
+        return;
     }
     if (option.id === 'startOver') {
-      startOver();
-      return;
+        startOver();
+        return;
     }
-
     const action = option.action;
     if (action.kind === 'state') {
-      pushState({
-        ...currentContext,
-        ...(action.patch ?? {}),
-        state: action.nextState
-      });
-      return;
+        pushState({
+            ...currentContext,
+            ...(action.patch ?? {}),
+            state: action.nextState
+        });
+        return;
     }
-
     if (action.kind === 'navigate') {
-      await goto(action.href);
-      return;
+        await goto(action.href);
+        return;
     }
-
     if (action.kind === 'external') {
-      window.open(action.href, '_blank', 'noopener,noreferrer');
+        window.open(action.href, '_blank', 'noopener,noreferrer');
     }
-  }
-
-  const visibleOptions = $derived(screen.options.filter((option) => !option.disabled || option.id === 'recentlyUsedServices'));
-  const actionOptions = $derived(screen.actions ?? []);
-
-  const operations = $derived(actionOptions.filter(a => a.id !== 'back' && a.id !== 'startOver'));
-  const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id === 'startOver'));
+}
+const visibleOptions = $derived(screen.options.filter((option) => !option.disabled || option.id === 'recentlyUsedServices'));
+const actionOptions = $derived(screen.actions ?? []);
+const operations = $derived(actionOptions.filter(a => a.id !== 'back' && a.id !== 'startOver'));
+const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id === 'startOver'));
 </script>
 
 <svelte:head>
@@ -87,7 +77,7 @@
   <div class="public-banner">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
       <div class="flex items-center gap-3 mb-2">
-        <div class="p-2 bg-white/10 rounded-xl">
+        <div class="p-2 bg-surface/15 rounded-xl">
           <MessageSquare class="h-5 w-5" />
         </div>
       </div>
@@ -130,7 +120,7 @@
 
         <div class="flex flex-col sm:flex-row sm:items-center gap-4">
           <div class="w-14 h-14 flex items-center justify-center shrink-0">
-            <img src="/thozhan-logo.png" alt="Thozhan AI Logo" class="w-14 h-14 object-contain" onerror={(e) => { (e.currentTarget as HTMLElement).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling as HTMLElement).style.display='block'; }} />
+            <img src="/thozhan-logo.png" alt="Thozhan AI Logo" class="w-14 h-14 object-contain" onerror={(e) => { (e.currentTarget).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling).style.display='block'; }} />
             <Bot class="w-7 h-7 text-primary hidden" />
           </div>
           <div class="flex-1">
@@ -220,7 +210,7 @@
         {#if history.length === 1}
           <div class="flex items-start gap-4 mb-6">
             <div class="w-10 h-10 flex items-center justify-center shrink-0">
-              <img src="/thozhan-logo.png" alt="Thozhan AI Logo" class="w-10 h-10 object-contain" onerror={(e) => { (e.currentTarget as HTMLElement).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling as HTMLElement).style.display='block'; }} />
+              <img src="/thozhan-logo.png" alt="Thozhan AI Logo" class="w-10 h-10 object-contain" onerror={(e) => { (e.currentTarget).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling).style.display='block'; }} />
               <Bot class="w-6 h-6 text-primary hidden" />
             </div>
             <div>
@@ -236,19 +226,19 @@
               type="button"
               disabled={option.disabled}
               onclick={() => handleOption(option)}
-              class="text-left px-5 py-4 rounded-lg border bg-slate-50 text-[14px] font-semibold transition-all group flex flex-col justify-center
+              class="text-left px-5 py-4 rounded-lg border bg-muted text-[14px] font-semibold transition-all group flex flex-col justify-center
                 {option.disabled
-                  ? 'cursor-not-allowed border-slate-200 bg-slate-50 text-slate-400'
-                  : 'border-slate-200 text-[#1a1c1b] hover:border-[#316342] hover:bg-[#316342]/5'}"
+                  ? 'cursor-not-allowed border-border bg-muted text-text-faint'
+                  : 'border-border text-text hover:border-primary hover:bg-primary-soft'}"
             >
               <div class="flex items-center justify-between w-full gap-2">
                 <span>{resolveText(option.label)}</span>
                 {#if !option.disabled}
-                  <ArrowRight class="w-5 h-5 shrink-0 opacity-0 group-hover:opacity-100 text-[#316342] transition-opacity" />
+                  <ArrowRight class="w-5 h-5 shrink-0 opacity-0 group-hover:opacity-100 text-primary transition-opacity" />
                 {/if}
               </div>
               {#if resolveText(option.description)}
-                <span class="mt-1 text-[12px] font-normal leading-relaxed {option.disabled ? 'text-slate-400' : 'text-[#414942]'}">{resolveText(option.description)}</span>
+                <span class="mt-1 text-[12px] font-normal leading-relaxed {option.disabled ? 'text-text-faint' : 'text-text'}">{resolveText(option.description)}</span>
               {/if}
             </button>
           {/each}
@@ -258,15 +248,15 @@
               type="button"
               disabled={action.disabled}
               onclick={() => handleOption(action)}
-              class="text-left px-5 py-4 rounded-lg border bg-slate-50 text-[14px] font-semibold transition-all group flex flex-col justify-center
+              class="text-left px-5 py-4 rounded-lg border bg-muted text-[14px] font-semibold transition-all group flex flex-col justify-center
                 {action.disabled
-                  ? 'cursor-not-allowed border-slate-200 bg-slate-50 text-slate-400'
-                  : 'border-slate-200 text-[#1a1c1b] hover:border-[#316342] hover:bg-[#316342]/5'}"
+                  ? 'cursor-not-allowed border-border bg-muted text-text-faint'
+                  : 'border-border text-text hover:border-primary hover:bg-primary-soft'}"
             >
               <div class="flex items-center justify-between w-full gap-2">
                 <span>{resolveText(action.label)}</span>
                 {#if !action.disabled}
-                  <ArrowRight class="w-5 h-5 shrink-0 opacity-0 group-hover:opacity-100 text-[#316342] transition-opacity" />
+                  <ArrowRight class="w-5 h-5 shrink-0 opacity-0 group-hover:opacity-100 text-primary transition-opacity" />
                 {/if}
               </div>
             </button>
@@ -274,14 +264,14 @@
         </div>
 
         {#if visibleOptions.length === 0 && operations.length === 0 && screen.emptyTitle}
-          <div class="rounded-[1.75rem] border border-dashed border-slate-300 bg-slate-50 px-6 py-8 text-center mt-4">
-            <div class="text-lg font-black text-slate-900">{resolveText(screen.emptyTitle)}</div>
-            <div class="mt-2 text-sm font-medium leading-relaxed text-slate-500">{resolveText(screen.emptyDescription)}</div>
+          <div class="rounded-[1.75rem] border border-dashed border-border bg-muted px-6 py-8 text-center mt-4">
+            <div class="text-lg font-black text-text">{resolveText(screen.emptyTitle)}</div>
+            <div class="mt-2 text-sm font-medium leading-relaxed text-text-muted">{resolveText(screen.emptyDescription)}</div>
           </div>
         {/if}
 
         {#if navigation.length > 0}
-          <div class="mt-6 flex flex-wrap gap-3 border-t border-slate-100 pt-6">
+          <div class="mt-6 flex flex-wrap gap-3 border-t border-border pt-6">
             {#each navigation as action}
               <button
                 type="button"
@@ -289,8 +279,8 @@
                 onclick={() => handleOption(action)}
                 class="rounded-full border px-5 py-2 text-sm font-semibold transition
                   {action.id === 'startOver'
-                    ? 'border-slate-200 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-100'
-                    : 'border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200'}"
+                    ? 'border-border bg-surface text-text hover:border-border-strong hover:bg-muted'
+                    : 'border-border bg-muted text-text hover:bg-surface-container'}"
               >
                 {resolveText(action.label)}
               </button>
@@ -302,31 +292,31 @@
       <!-- Right Column: Info & Actions -->
       <div class="lg:col-span-1 flex flex-col gap-6">
         <!-- How it works card -->
-        <div class="bg-white rounded-xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.24)] border border-slate-200">
-          <h4 class="text-[12px] font-bold text-[#316342] uppercase tracking-widest mb-3">How Thozhan AI Works</h4>
+        <div class="bg-surface rounded-xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.24)] border border-border">
+          <h4 class="text-[12px] font-bold text-primary uppercase tracking-widest mb-3">How Thozhan AI Works</h4>
           <div class="flex flex-col gap-3">
-            <div class="bg-slate-50 p-3 rounded-lg">
-              <h5 class="text-[11px] font-bold text-[#414942] uppercase mb-1">Selection-Only</h5>
-              <p class="text-[12px] text-[#414942]">Every step uses predefined TN HUB options. Free-text chat is disabled.</p>
+            <div class="bg-muted p-3 rounded-lg">
+              <h5 class="text-[11px] font-bold text-text uppercase mb-1">Selection-Only</h5>
+              <p class="text-[12px] text-text">Every step uses predefined TN HUB options. Free-text chat is disabled.</p>
             </div>
-            <div class="bg-slate-50 p-3 rounded-lg">
-              <h5 class="text-[11px] font-bold text-[#414942] uppercase mb-1">Real TN Hub Data</h5>
-              <p class="text-[12px] text-[#414942]">Services, departments, applications, and document requirements are loaded from the existing TN HUB data sources.</p>
+            <div class="bg-muted p-3 rounded-lg">
+              <h5 class="text-[11px] font-bold text-text uppercase mb-1">Real TN Hub Data</h5>
+              <p class="text-[12px] text-text">Services, departments, applications, and document requirements are loaded from the existing TN HUB data sources.</p>
             </div>
-            <div class="bg-slate-50 p-3 rounded-lg">
-              <h5 class="text-[11px] font-bold text-[#414942] uppercase mb-1">Operator Context</h5>
-              <p class="text-[12px] text-[#414942]">This view is embedded within the operator portal — no public header or footer is shown.</p>
+            <div class="bg-muted p-3 rounded-lg">
+              <h5 class="text-[11px] font-bold text-text uppercase mb-1">Operator Context</h5>
+              <p class="text-[12px] text-text">This view is embedded within the operator portal — no public header or footer is shown.</p>
             </div>
           </div>
         </div>
 
         <!-- Quick Actions Card -->
-        <div class="bg-white rounded-xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.24)] border border-slate-200">
-          <h4 class="text-[12px] font-bold text-[#316342] uppercase tracking-widest mb-3">Quick Actions</h4>
+        <div class="bg-surface rounded-xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.24)] border border-border">
+          <h4 class="text-[12px] font-bold text-primary uppercase tracking-widest mb-3">Quick Actions</h4>
           <div class="flex flex-col gap-2">
-            <a href="/operator/services" class="w-full text-left px-4 py-2.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-colors text-[13px] font-semibold text-[#1a1c1b] block">Browse Services</a>
-            <a href="/operator/applications" class="w-full text-left px-4 py-2.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-colors text-[13px] font-semibold text-[#1a1c1b] block">Open Applications</a>
-            <a href="/operator/help" class="w-full text-left px-4 py-2.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-colors text-[13px] font-semibold text-[#1a1c1b] block">Contact Help Desk</a>
+            <a href="/services" class="w-full text-left px-4 py-2.5 rounded-lg border border-border bg-muted hover:bg-muted transition-colors text-[13px] font-semibold text-text block">Browse Services</a>
+            <a href="/applications" class="w-full text-left px-4 py-2.5 rounded-lg border border-border bg-muted hover:bg-muted transition-colors text-[13px] font-semibold text-text block">Open Applications</a>
+            <a href="/operator/help" class="w-full text-left px-4 py-2.5 rounded-lg border border-border bg-muted hover:bg-muted transition-colors text-[13px] font-semibold text-text block">Contact Help Desk</a>
           </div>
         </div>
       </div>

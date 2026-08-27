@@ -1,77 +1,74 @@
-<script lang="ts">
+<script>
+
   import { Play, Video, Clock, CheckCircle, ExternalLink, HelpCircle } from '@lucide/svelte';
   import { tt, locale } from '$lib/i18n';
 
-  const t = $derived($tt);
-  const currentLocale = $derived($locale);
-
-  // List of high-quality educational YouTube tutorials for Tamil Nadu government services
-  const tutorials = $derived([
+const t = $derived($tt);
+const currentLocale = $derived($locale);
+// List of high-quality educational YouTube tutorials for Tamil Nadu government services
+const tutorials = $derived([
     {
-      id: 'income-cert',
-      title: currentLocale === 'ta' ? 'வருமான சான்றிதழ் விண்ணப்பிப்பது எப்படி' : 'How to Apply for Income Certificate Online',
-      desc: currentLocale === 'ta' ? 'வருமான சான்றிதழுக்கு தேவையான ஆவணங்கள் மற்றும் விண்ணப்ப நடைமுறைகள் பற்றிய முழு விளக்கம்.' : 'Learn the complete step-by-step procedure to apply for an Income Certificate online on the portal.',
-      duration: '8 mins',
-      youtubeId: 'F3zWvW0K_V0',
-      url: 'https://www.youtube.com/watch?v=F3zWvW0K_V0',
-      category: currentLocale === 'ta' ? 'வருவாய் துறை' : 'Revenue Department',
-      thumbnailGradient: 'from-emerald-700 to-teal-900'
+        id: 'income-cert',
+        title: currentLocale === 'ta' ? 'வருமான சான்றிதழ் விண்ணப்பிப்பது எப்படி' : 'How to Apply for Income Certificate Online',
+        desc: currentLocale === 'ta' ? 'வருமான சான்றிதழுக்கு தேவையான ஆவணங்கள் மற்றும் விண்ணப்ப நடைமுறைகள் பற்றிய முழு விளக்கம்.' : 'Learn the complete step-by-step procedure to apply for an Income Certificate online on the portal.',
+        duration: '8 mins',
+        youtubeId: 'F3zWvW0K_V0',
+        url: 'https://www.youtube.com/watch?v=F3zWvW0K_V0',
+        category: currentLocale === 'ta' ? 'வருவாய் துறை' : 'Revenue Department',
+        thumbnailGradient: 'from-emerald-700 to-teal-900'
     },
     {
-      id: 'community-cert',
-      title: currentLocale === 'ta' ? 'ஜாதி சான்றிதழ் விண்ணப்பிப்பது எப்படி' : 'How to Apply for Community Certificate Online',
-      desc: currentLocale === 'ta' ? 'சாதிச் சான்றிதழைப் பெற தகுதிகள், தேவையான சான்றுகள் மற்றும் ஆன்லைன் சமர்ப்பிப்பு முறைகள்.' : 'Step-by-step guide to applying for Community/Caste Certificate online, uploading docs, and tracking.',
-      duration: '10 mins',
-      youtubeId: 'B7bZfQp0J_U',
-      url: 'https://www.youtube.com/watch?v=B7bZfQp0J_U',
-      category: currentLocale === 'ta' ? 'வருவாய் துறை' : 'Revenue Department',
-      thumbnailGradient: 'from-[#316342] to-emerald-950'
+        id: 'community-cert',
+        title: currentLocale === 'ta' ? 'ஜாதி சான்றிதழ் விண்ணப்பிப்பது எப்படி' : 'How to Apply for Community Certificate Online',
+        desc: currentLocale === 'ta' ? 'சாதிச் சான்றிதழைப் பெற தகுதிகள், தேவையான சான்றுகள் மற்றும் ஆன்லைன் சமர்ப்பிப்பு முறைகள்.' : 'Step-by-step guide to applying for Community/Caste Certificate online, uploading docs, and tracking.',
+        duration: '10 mins',
+        youtubeId: 'B7bZfQp0J_U',
+        url: 'https://www.youtube.com/watch?v=B7bZfQp0J_U',
+        category: currentLocale === 'ta' ? 'வருவாய் துறை' : 'Revenue Department',
+        thumbnailGradient: 'from-[#316342] to-emerald-950'
     },
     {
-      id: 'patta-chitta',
-      title: currentLocale === 'ta' ? 'பட்டா சிட்டா ஆன்லைனில் பதிவிறக்கம் செய்வது எப்படி' : 'How to Download Patta Chitta Land Records',
-      desc: currentLocale === 'ta' ? 'உங்கள் நிலத்தின் பட்டா மற்றும் சிட்டா நகல்களை ஆன்லைனில் உடனடியாகப் பார்க்கும் முறை.' : 'Complete walk-through of searching land survey numbers and downloading official Patta/Chitta extracts.',
-      duration: '6 mins',
-      youtubeId: 'mRk2R3R2a1E',
-      url: 'https://www.youtube.com/watch?v=mRk2R3R2a1E',
-      category: currentLocale === 'ta' ? 'நில அளவை துறை' : 'Survey & Land Records',
-      thumbnailGradient: 'from-teal-700 to-emerald-900'
+        id: 'patta-chitta',
+        title: currentLocale === 'ta' ? 'பட்டா சிட்டா ஆன்லைனில் பதிவிறக்கம் செய்வது எப்படி' : 'How to Download Patta Chitta Land Records',
+        desc: currentLocale === 'ta' ? 'உங்கள் நிலத்தின் பட்டா மற்றும் சிட்டா நகல்களை ஆன்லைனில் உடனடியாகப் பார்க்கும் முறை.' : 'Complete walk-through of searching land survey numbers and downloading official Patta/Chitta extracts.',
+        duration: '6 mins',
+        youtubeId: 'mRk2R3R2a1E',
+        url: 'https://www.youtube.com/watch?v=mRk2R3R2a1E',
+        category: currentLocale === 'ta' ? 'நில அளவை துறை' : 'Survey & Land Records',
+        thumbnailGradient: 'from-teal-700 to-emerald-900'
     },
     {
-      id: 'eadangal',
-      title: currentLocale === 'ta' ? 'இ-அடங்கல் பயிர் பதிவு செய்வது எப்படி' : 'How to Register Crop Details on e-Adangal',
-      desc: currentLocale === 'ta' ? 'விவசாயிகள் தங்களின் பயிர் விவரங்களைப் பதிவு செய்து அடங்கல் சான்று பெரும் வழிமுறை.' : 'Guidance for farmers to enter crop cultivation details and request e-Adangal crop extraction certificates.',
-      duration: '12 mins',
-      youtubeId: 'kYJjZ39l6_k',
-      url: 'https://www.youtube.com/watch?v=kYJjZ39l6_k',
-      category: currentLocale === 'ta' ? 'வேளாண்மை துறை' : 'Agriculture Department',
-      thumbnailGradient: 'from-[#143520] to-[#316342]'
+        id: 'eadangal',
+        title: currentLocale === 'ta' ? 'இ-அடங்கல் பயிர் பதிவு செய்வது எப்படி' : 'How to Register Crop Details on e-Adangal',
+        desc: currentLocale === 'ta' ? 'விவசாயிகள் தங்களின் பயிர் விவரங்களைப் பதிவு செய்து அடங்கல் சான்று பெரும் வழிமுறை.' : 'Guidance for farmers to enter crop cultivation details and request e-Adangal crop extraction certificates.',
+        duration: '12 mins',
+        youtubeId: 'kYJjZ39l6_k',
+        url: 'https://www.youtube.com/watch?v=kYJjZ39l6_k',
+        category: currentLocale === 'ta' ? 'வேளாண்மை துறை' : 'Agriculture Department',
+        thumbnailGradient: 'from-[#143520] to-[#316342]'
     },
     {
-      id: 'digilocker',
-      title: currentLocale === 'ta' ? 'டிஜிலாக்கர் கணக்கை இணைப்பது எப்படி' : 'How to Link DigiLocker to TN Hub',
-      desc: currentLocale === 'ta' ? 'ஆவணங்களை உடனடியாகச் சரிபார்க்க உங்கள் டிஜிலாக்கர் கணக்கை எவ்வாறு இணைப்பது.' : 'Learn how to securely link DigiLocker to instantly retrieve verified identity, address, and academic certificates.',
-      duration: '5 mins',
-      youtubeId: 'Q8T2tP5vD_Q',
-      url: 'https://www.youtube.com/watch?v=Q8T2tP5vD_Q',
-      category: currentLocale === 'ta' ? 'டிஜிட்டல் சேவைகள்' : 'Digital Services',
-      thumbnailGradient: 'from-[#4a7c59] to-[#143520]'
+        id: 'digilocker',
+        title: currentLocale === 'ta' ? 'டிஜிலாக்கர் கணக்கை இணைப்பது எப்படி' : 'How to Link DigiLocker to TN Hub',
+        desc: currentLocale === 'ta' ? 'ஆவணங்களை உடனடியாகச் சரிபார்க்க உங்கள் டிஜிலாக்கர் கணக்கை எவ்வாறு இணைப்பது.' : 'Learn how to securely link DigiLocker to instantly retrieve verified identity, address, and academic certificates.',
+        duration: '5 mins',
+        youtubeId: 'Q8T2tP5vD_Q',
+        url: 'https://www.youtube.com/watch?v=Q8T2tP5vD_Q',
+        category: currentLocale === 'ta' ? 'டிஜிட்டல் சேவைகள்' : 'Digital Services',
+        thumbnailGradient: 'from-[#4a7c59] to-[#143520]'
     }
-  ]);
-
-  let activeVideo = $state<string | null>(null);
-
-  function getTutorialThumbnailClass(id: string) {
-    const palette: Record<string, string> = {
-      'income-cert': 'tutorial-thumb-income',
-      'community-cert': 'tutorial-thumb-community',
-      'patta-chitta': 'tutorial-thumb-patta',
-      eadangal: 'tutorial-thumb-eadangal',
-      digilocker: 'tutorial-thumb-digilocker'
+]);
+let activeVideo = $state(null);
+function getTutorialThumbnailClass(id) {
+    const palette = {
+        'income-cert': 'tutorial-thumb-income',
+        'community-cert': 'tutorial-thumb-community',
+        'patta-chitta': 'tutorial-thumb-patta',
+        eadangal: 'tutorial-thumb-eadangal',
+        digilocker: 'tutorial-thumb-digilocker'
     };
-
     return palette[id] ?? 'tutorial-thumb-default';
-  }
+}
 </script>
 
 <svelte:head>

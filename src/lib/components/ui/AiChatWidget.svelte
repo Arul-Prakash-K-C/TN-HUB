@@ -1,107 +1,101 @@
-<script lang="ts">
+<script>
+
   import { goto } from '$app/navigation';
   import { tt, locale } from '$lib/i18n';
   import { Bot, ChevronLeft, ArrowRight, X } from '@lucide/svelte';
-  import { buildScreen, createInitialContext, type OptionText, type ThozhanContext, type ThozhanOption } from '$lib/thozhan/assistant';
+  import { buildScreen, createInitialContext } from '$lib/thozhan/assistant';
 
-  const t = $derived($tt);
-  const currentLocale = $derived($locale);
-
-  let isOpen = $state(false);
-  let assistantData = $state<any>(null);
-  let loading = $state(false);
-  let loadError = $state('');
-
-  let history = $state<ThozhanContext[]>([createInitialContext()]);
-  const currentContext = $derived(history[history.length - 1]);
-  const screen = $derived(assistantData ? buildScreen(currentContext, assistantData, currentLocale, t) : null);
-
-  function resolveText(text?: OptionText): string {
-    if (!text) return '';
+const t = $derived($tt);
+const currentLocale = $derived($locale);
+let isOpen = $state(false);
+let assistantData = $state(null);
+let loading = $state(false);
+let loadError = $state('');
+let history = $state([createInitialContext()]);
+const currentContext = $derived(history[history.length - 1]);
+const screen = $derived(assistantData ? buildScreen(currentContext, assistantData, currentLocale, t) : null);
+function resolveText(text) {
+    if (!text)
+        return '';
     return text.type === 'key' ? t(text.key, text.params) : text.value;
-  }
-
-  function pushState(nextContext: ThozhanContext) {
+}
+function pushState(nextContext) {
     history = [...history, nextContext];
-  }
-
-  function goBack() {
-    if (history.length === 1) return;
+}
+function goBack() {
+    if (history.length === 1)
+        return;
     history = history.slice(0, -1);
-  }
-
-  function startOver() {
+}
+function startOver() {
     history = [createInitialContext()];
-  }
-
-  async function handleOption(option: ThozhanOption) {
-    if (option.disabled) return;
+}
+async function handleOption(option) {
+    if (option.disabled)
+        return;
     if (option.id === 'back') {
-      goBack();
-      return;
+        goBack();
+        return;
     }
     if (option.id === 'startOver') {
-      startOver();
-      return;
+        startOver();
+        return;
     }
-
     const action = option.action;
     if (action.kind === 'state') {
-      pushState({
-        ...currentContext,
-        ...(action.patch ?? {}),
-        state: action.nextState
-      });
-      return;
+        pushState({
+            ...currentContext,
+            ...(action.patch ?? {}),
+            state: action.nextState
+        });
+        return;
     }
-
     if (action.kind === 'navigate') {
-      isOpen = false;
-      await goto(action.href);
-      return;
+        isOpen = false;
+        await goto(action.href);
+        return;
     }
-
     if (action.kind === 'external') {
-      window.open(action.href, '_blank', 'noopener,noreferrer');
+        window.open(action.href, '_blank', 'noopener,noreferrer');
     }
-  }
-
-  const visibleOptions = $derived(screen?.options.filter((option) => !option.disabled || option.id === 'recentlyUsedServices') ?? []);
-  const actionOptions = $derived(screen?.actions ?? []);
-  const operations = $derived(actionOptions.filter(a => a.id !== 'back' && a.id !== 'startOver'));
-  const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id === 'startOver'));
-
-  async function loadAssistantData() {
-    if (assistantData || loading) return;
+}
+const visibleOptions = $derived(screen?.options.filter((option) => !option.disabled || option.id === 'recentlyUsedServices') ?? []);
+const actionOptions = $derived(screen?.actions ?? []);
+const operations = $derived(actionOptions.filter(a => a.id !== 'back' && a.id !== 'startOver'));
+const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id === 'startOver'));
+async function loadAssistantData() {
+    if (assistantData || loading)
+        return;
     loading = true;
     loadError = '';
     try {
-      const res = await fetch('/api/thozhan', { credentials: 'same-origin' });
-      if (!res.ok) {
-        throw new Error(`Assistant request failed with status ${res.status}`);
-      }
-      const rawData = await res.json();
-      assistantData = {
-        user: rawData.user ?? null,
-        services: rawData.catalog?.services ?? [],
-        departments: rawData.catalog?.departments ?? [],
-        applications: rawData.applications ?? [],
-        documents: rawData.documents ?? []
-      };
-    } catch (err) {
-      console.error('Failed to load assistant data', err);
-      loadError = 'Unable to load Thozhan AI right now. Please try again.';
-    } finally {
-      loading = false;
+        const res = await fetch('/api/thozhan', { credentials: 'same-origin' });
+        if (!res.ok) {
+            throw new Error(`Assistant request failed with status ${res.status}`);
+        }
+        const rawData = await res.json();
+        assistantData = {
+            user: rawData.user ?? null,
+            services: rawData.catalog?.services ?? [],
+            departments: rawData.catalog?.departments ?? [],
+            applications: rawData.applications ?? [],
+            documents: rawData.documents ?? []
+        };
     }
-  }
-
-  async function toggleOpen() {
+    catch (err) {
+        console.error('Failed to load assistant data', err);
+        loadError = 'Unable to load Thozhan AI right now. Please try again.';
+    }
+    finally {
+        loading = false;
+    }
+}
+async function toggleOpen() {
     isOpen = !isOpen;
     if (isOpen) {
-      await loadAssistantData();
+        await loadAssistantData();
     }
-  }
+}
 </script>
 
 <!-- Floating Action Button -->
@@ -111,7 +105,7 @@
     onclick={toggleOpen}
     aria-label="Open Thozhan AI"
   >
-    <img src="/thozhan-logo.png" alt="Thozhan AI" class="h-12 w-12 object-contain drop-shadow-md" onerror={(e) => { (e.currentTarget as HTMLElement).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling as HTMLElement).style.display='block'; }} />
+    <img src="/thozhan-logo.png" alt="Thozhan AI" class="h-12 w-12 object-contain drop-shadow-md" onerror={(e) => { (e.currentTarget).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling).style.display='block'; }} />
     <Bot class="hidden h-8 w-8 text-primary" />
   </button>
 </div>
@@ -125,7 +119,7 @@
     <div class="flex shrink-0 items-start justify-between border-b border-border bg-surface-container p-4">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 flex items-center justify-center shrink-0">
-          <img src="/thozhan-logo.png" alt="Thozhan AI" class="w-10 h-10 object-contain" onerror={(e) => { (e.currentTarget as HTMLElement).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling as HTMLElement).style.display='block'; }} />
+          <img src="/thozhan-logo.png" alt="Thozhan AI" class="w-10 h-10 object-contain" onerror={(e) => { (e.currentTarget).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling).style.display='block'; }} />
           <Bot class="hidden h-6 w-6 text-primary" />
         </div>
         <div>

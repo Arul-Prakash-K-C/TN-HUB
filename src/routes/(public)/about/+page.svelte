@@ -1,8 +1,9 @@
-<script lang="ts">
+<script>
+
   import { Eye, Building2, Shield, Briefcase, FileText, Users, Award, Sparkles, Network, Layers, CheckCircle2 } from '@lucide/svelte';
   import { t } from '$lib/i18n';
 
-  const committeeMembers = [
+const committeeMembers = [
     { nr: 1, position: 'The Principal Secretary to Government, IT Department', role: 'Chairman', class: 'bg-primary-950 text-white' },
     { nr: 2, position: 'The Chief Executive Officer, TNeGA', role: 'Member Secretary', class: 'bg-primary-500/10 border-primary-500/30 text-primary-950' },
     { nr: 3, position: 'The State Informatics Officer, National Informatics Centre (NIC)', role: 'Member', class: 'bg-slate-50 border-slate-200' },
@@ -11,25 +12,24 @@
     { nr: 6, position: 'The Managing Director, TACTV', role: 'Member', class: 'bg-slate-50 border-slate-200' },
     { nr: 7, position: 'The Registrar of Co-operative Societies', role: 'Member', class: 'bg-slate-50 border-slate-200' },
     { nr: 8, position: 'The Managing Director, TN Corporation for Development of Women', role: 'Member', class: 'bg-slate-50 border-slate-200' }
-  ];
-
-  const initiatives = [
+];
+const initiatives = [
     {
-      title: 'National e-Governance Plan (NeGP)',
-      icon: Network,
-      content: 'Tamil Nadu has progressively aligned its e-Governance strategies in consonance with NeGP since its formulation in May 2006. TN Hub extends this vision into a modern, unified citizen interface layer.'
+        title: 'National e-Governance Plan (NeGP)',
+        icon: Network,
+        content: 'Tamil Nadu has progressively aligned its e-Governance strategies in consonance with NeGP since its formulation in May 2006. TN Hub extends this vision into a modern, unified citizen interface layer.'
     },
     {
-      title: 'Common Service Centres (CSCs / e-Sevai)',
-      icon: Building2,
-      content: 'CSCs and e-Sevai Centres across rural and urban districts act as essential last-mile delivery networks, ensuring citizens are supported by assisted service operators.'
+        title: 'Common Service Centres (CSCs / e-Sevai)',
+        icon: Building2,
+        content: 'CSCs and e-Sevai Centres across rural and urban districts act as essential last-mile delivery networks, ensuring citizens are supported by assisted service operators.'
     },
     {
-      title: 'State Infrastructure Backbone',
-      icon: Layers,
-      content: 'Secured via high-speed Tamil Nadu State Wide Area Network (TNSWAN), State Data Centre (SDC), and State Resident Data Hub (SRDH) to ensure authenticated, real-time service orchestration.'
+        title: 'State Infrastructure Backbone',
+        icon: Layers,
+        content: 'Secured via high-speed Tamil Nadu State Wide Area Network (TNSWAN), State Data Centre (SDC), and State Resident Data Hub (SRDH) to ensure authenticated, real-time service orchestration.'
     }
-  ];
+];
 </script>
 
 <svelte:head>
@@ -56,7 +56,7 @@
           </div>
           <h2 class="mb-2 text-base font-bold text-text">Tamil Nadu e-Governance Agency (TNeGA)</h2>
           <p class="text-xs leading-relaxed text-text-muted">
-            Formed as the State Nodal Agency under the Information Technology Department, Government of Tamil Nadu, TNeGA is mandated to drive all e-Governance initiatives across the state.
+            Formed State Nodal Agency under the Information Technology Department, Government of Tamil Nadu, TNeGA is mandated to drive all e-Governance initiatives across the state.
           </p>
           <p class="mt-2 text-xs leading-relaxed text-text-muted">
             TNeGA implements key projects with the core objective of making all government services accessible to the common man through efficient, transparent, and reliable digital delivery channels, reducing administrative costs and processing times.

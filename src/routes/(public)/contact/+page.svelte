@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
   import { Mail, Phone, MapPin, Send, CheckCircle2, Clock, MessageSquare, Globe, Headphones } from '@lucide/svelte';
   import { t } from '$lib/i18n';
 
@@ -7,15 +7,45 @@
   let message = $state('');
   let sent = $state(false);
 
-  function handleSubmit() {
-    if (!name || !message) return;
-    sent = true;
-    setTimeout(() => {
-      sent = false;
-      name = '';
-      email = '';
-      message = '';
-    }, 3000);
+  let isSubmitting = $state(false);
+  let errorMessage = $state('');
+
+  async function handleSubmit() {
+    if (!name.trim() || !message.trim() || isSubmitting) return;
+    
+    isSubmitting = true;
+    errorMessage = '';
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          message: message.trim(),
+          source: 'contact_page'
+        })
+      });
+      const body = await response.json().catch(() => null);
+      
+      if (response.ok) {
+        sent = true;
+        setTimeout(() => {
+          sent = false;
+          name = '';
+          email = '';
+          message = '';
+        }, 3000);
+      } else {
+        throw new Error(body?.error ?? 'Unable to submit your message.');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      errorMessage = error instanceof Error ? error.message : 'Unable to submit your message.';
+    } finally {
+      isSubmitting = false;
+    }
   }
 
   const stats = [
@@ -119,10 +149,13 @@
                 <label for="contactMessage" class="mb-1.5 block text-xs font-bold text-text">{t('contact.messageLabel')}</label>
                 <textarea id="contactMessage" bind:value={message} required rows={5} placeholder="How can we help you?" class="w-full resize-none rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text outline-none transition placeholder:text-text-faint focus:border-primary focus:ring-2 focus:ring-primary/15"></textarea>
               </div>
+              {#if errorMessage}
+                <p class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-bold text-rose-700">{errorMessage}</p>
+              {/if}
 
               <div class="flex justify-end">
-                <button type="submit" class="flex items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-bold text-white shadow transition hover:bg-primary-hover">
-                  <Send class="h-4 w-4" /> {t('contact.sendBtn')}
+                <button type="submit" disabled={isSubmitting} class="flex items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-bold text-white shadow transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50">
+                  <Send class="h-4 w-4" /> {isSubmitting ? 'Sending...' : t('contact.sendBtn')}
                 </button>
               </div>
             </form>

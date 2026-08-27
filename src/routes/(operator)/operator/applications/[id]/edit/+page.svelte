@@ -1,265 +1,265 @@
-<script lang="ts">
+<script>
+
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
   import { tt, locale } from '$lib/i18n';
   import { ArrowLeft, ArrowRight, Check, Upload, FileText, AlertCircle, Trash2 } from '@lucide/svelte';
-  import type { ApplicationFormData } from '$lib/types';
 
-  let { data } = $props();
-
-  const t = $derived($tt);
-  const currentLocale = $derived($locale);
-  const service = $derived(data.catalogService);
-  const application = $derived(data.application);
-
-  let currentStep = $state(0);
-  let formData = $state<ApplicationFormData>({});
-  let declarationAgreed = $state(false);
-  let submitted = $state(false);
-  let applicationId = $state('');
-  let uploadedDocs = $state<Record<string, { name: string; size: number; url?: string; file?: File }>>({});
-  let stepError = $state('');
-  let isSaving = $state(false);
-  let isSubmitting = $state(false);
-  let isDeletingDraft = $state(false);
-
-  const steps = $derived([
+let { data } = $props();
+const t = $derived($tt);
+const currentLocale = $derived($locale);
+const service = $derived(data.catalogService);
+const application = $derived(data.application);
+let currentStep = $state(0);
+let formData = $state({});
+let declarationAgreed = $state(false);
+let submitted = $state(false);
+let applicationId = $state('');
+let uploadedDocs = $state({});
+let stepError = $state('');
+let isSaving = $state(false);
+let isSubmitting = $state(false);
+let isDeletingDraft = $state(false);
+const steps = $derived([
     t('apply.step.eligibility'),
     t('apply.step.personal'),
     t('apply.step.service'),
     t('apply.step.documents'),
     t('apply.step.review'),
     t('apply.step.declaration')
-  ]);
-
-  onMount(() => {
+]);
+onMount(() => {
     if (application.formData) {
-      formData = { ...application.formData };
+        formData = { ...application.formData };
     }
     if (application.documents && Array.isArray(application.documents)) {
-      for (const doc of application.documents) {
-        uploadedDocs[doc.documentId] = {
-          name: doc.name || doc.fileName,
-          size: doc.fileSize || 0,
-          url: doc.fileName
-        };
-      }
+        for (const doc of application.documents) {
+            uploadedDocs[doc.documentId] = {
+                name: doc.name || doc.fileName,
+                size: doc.fileSize || 0,
+                url: doc.fileName
+            };
+        }
     }
-  });
-
-  function validateCurrentStep(): boolean {
+});
+function validateCurrentStep() {
     stepError = '';
-
     if (currentStep === 1) { // Personal Details
-      if (!formData.fullName || String(formData.fullName).trim() === '') {
-        stepError = 'Please enter the Full Name.';
-        return false;
-      }
-      if (!formData.phone || !/^\d{10}$/.test(String(formData.phone).trim())) {
-        stepError = 'Please enter a valid 10-digit phone number.';
-        return false;
-      }
-      if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(formData.email).trim())) {
-        stepError = 'Please enter a valid email address.';
-        return false;
-      }
-      if (formData.aadhaarNumber && !/^\d{12}$/.test(String(formData.aadhaarNumber))) {
-        stepError = 'Aadhaar Number must be exactly 12 digits.';
-        return false;
-      }
-    } else if (currentStep === 2) { // Service Details
-      if (service?.slug === 'e-adangal-extract') {
-        if (!formData.surveyNumber || String(formData.surveyNumber).trim() === '') {
-          stepError = 'Please enter the Survey Number.';
-          return false;
-        }
-        if (!formData.taluk || String(formData.taluk).trim() === '') {
-          stepError = 'Please enter the Taluk.';
-          return false;
-        }
-        if (!formData.village || String(formData.village).trim() === '') {
-          stepError = 'Please enter the Village.';
-          return false;
-        }
-      } else if (service?.slug === 'income-certificate') {
-        if (!formData.annualIncome || Number(formData.annualIncome) <= 0) {
-          stepError = 'Please enter a valid Annual Income (greater than 0).';
-          return false;
-        }
-        if (!formData.occupation || String(formData.occupation).trim() === '') {
-          stepError = 'Please enter the Occupation.';
-          return false;
-        }
-      } else if (service?.slug === 'community-certificate') {
-        if (!formData.religion || String(formData.religion).trim() === '') {
-          stepError = 'Please enter the Religion.';
-          return false;
-        }
-        if (!formData.communityCategory || String(formData.communityCategory).trim() === '') {
-          stepError = 'Please select the Community Category.';
-          return false;
-        }
-        if (!formData.subCaste || String(formData.subCaste).trim() === '') {
-          stepError = 'Please enter the Sub-Caste Name.';
-          return false;
-        }
-      } else if (service?.slug === 'nativity-certificate') {
-        if (!formData.placeOfBirth || String(formData.placeOfBirth).trim() === '') {
-          stepError = 'Please enter the Place of Birth.';
-          return false;
-        }
-        if (!formData.residenceDurationYears || Number(formData.residenceDurationYears) <= 0) {
-          stepError = 'Please enter a valid duration of residence in years.';
-          return false;
-        }
-      } else {
-        // Fallback for default address services
-        if (!formData.district || String(formData.district).trim() === '') {
-          stepError = 'Please enter the District.';
-          return false;
-        }
-        if (!formData.pincode || String(formData.pincode).trim() === '') {
-          stepError = 'Please enter the Pincode.';
-          return false;
-        }
-      }
-    } else if (currentStep === 3) { // Documents Upload
-      if (service?.requiredDocuments && service.requiredDocuments.length > 0) {
-        for (const doc of service.requiredDocuments) {
-          if (doc.mandatory && !uploadedDocs[doc.id]) {
-            stepError = `Please upload required document: ${currentLocale === 'ta' ? doc.name.ta : doc.name.en}`;
+        if (!formData.fullName || String(formData.fullName).trim() === '') {
+            stepError = 'Please enter the Full Name.';
             return false;
-          }
         }
-      }
+        if (!formData.phone || !/^\d{10}$/.test(String(formData.phone).trim())) {
+            stepError = 'Please enter a valid 10-digit phone number.';
+            return false;
+        }
+        if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(formData.email).trim())) {
+            stepError = 'Please enter a valid email address.';
+            return false;
+        }
+        if (formData.aadhaarNumber && !/^\d{12}$/.test(String(formData.aadhaarNumber))) {
+            stepError = 'Aadhaar Number must be exactly 12 digits.';
+            return false;
+        }
     }
-
+    else if (currentStep === 2) { // Service Details
+        if (service?.slug === 'e-adangal-extract') {
+            if (!formData.surveyNumber || String(formData.surveyNumber).trim() === '') {
+                stepError = 'Please enter the Survey Number.';
+                return false;
+            }
+            if (!formData.taluk || String(formData.taluk).trim() === '') {
+                stepError = 'Please enter the Taluk.';
+                return false;
+            }
+            if (!formData.village || String(formData.village).trim() === '') {
+                stepError = 'Please enter the Village.';
+                return false;
+            }
+        }
+        else if (service?.slug === 'income-certificate') {
+            if (!formData.annualIncome || Number(formData.annualIncome) <= 0) {
+                stepError = 'Please enter a valid Annual Income (greater than 0).';
+                return false;
+            }
+            if (!formData.occupation || String(formData.occupation).trim() === '') {
+                stepError = 'Please enter the Occupation.';
+                return false;
+            }
+        }
+        else if (service?.slug === 'community-certificate') {
+            if (!formData.religion || String(formData.religion).trim() === '') {
+                stepError = 'Please enter the Religion.';
+                return false;
+            }
+            if (!formData.communityCategory || String(formData.communityCategory).trim() === '') {
+                stepError = 'Please select the Community Category.';
+                return false;
+            }
+            if (!formData.subCaste || String(formData.subCaste).trim() === '') {
+                stepError = 'Please enter the Sub-Caste Name.';
+                return false;
+            }
+        }
+        else if (service?.slug === 'nativity-certificate') {
+            if (!formData.placeOfBirth || String(formData.placeOfBirth).trim() === '') {
+                stepError = 'Please enter the Place of Birth.';
+                return false;
+            }
+            if (!formData.residenceDurationYears || Number(formData.residenceDurationYears) <= 0) {
+                stepError = 'Please enter a valid duration of residence in years.';
+                return false;
+            }
+        }
+        else {
+            // Fallback for default address services
+            if (!formData.district || String(formData.district).trim() === '') {
+                stepError = 'Please enter the District.';
+                return false;
+            }
+            if (!formData.pincode || String(formData.pincode).trim() === '') {
+                stepError = 'Please enter the Pincode.';
+                return false;
+            }
+        }
+    }
+    else if (currentStep === 3) { // Documents Upload
+        if (service?.requiredDocuments && service.requiredDocuments.length > 0) {
+            for (const doc of service.requiredDocuments) {
+                if (doc.mandatory && !uploadedDocs[doc.id]) {
+                    stepError = `Please upload required document: ${currentLocale === 'ta' ? doc.name.ta : doc.name.en}`;
+                    return false;
+                }
+            }
+        }
+    }
     return true;
-  }
-
-  async function saveDraft() {
+}
+async function saveDraft() {
     isSaving = true;
     stepError = '';
     try {
-      const response = await fetch(`/api/applications/${application.id}`, {
-        method: 'PUT',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ formData })
-      });
-      if (!response.ok) {
-        const body = await response.json().catch(() => null);
-        throw new Error(body?.message ?? 'Failed to save application draft progress.');
-      }
-    } catch (cause) {
-      stepError = cause instanceof Error ? cause.message : 'Unable to save draft progress.';
-    } finally {
-      isSaving = false;
+        const response = await fetch(`/api/applications/${application.id}`, {
+            method: 'PUT',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ formData })
+        });
+        if (!response.ok) {
+            const body = await response.json().catch(() => null);
+            throw new Error(body?.message ?? 'Failed to save application draft progress.');
+        }
     }
-  }
-
-  async function nextStep() {
-    if (!validateCurrentStep()) return;
+    catch (cause) {
+        stepError = cause instanceof Error ? cause.message : 'Unable to save draft progress.';
+    }
+    finally {
+        isSaving = false;
+    }
+}
+async function nextStep() {
+    if (!validateCurrentStep())
+        return;
     await saveDraft();
-    if (!stepError && currentStep < steps.length - 1) currentStep++;
-  }
-
-  async function prevStep() {
+    if (!stepError && currentStep < steps.length - 1)
+        currentStep++;
+}
+async function prevStep() {
     stepError = '';
     await saveDraft();
-    if (!stepError && currentStep > 0) currentStep--;
-  }
-
-  function handleFileUpload(docId: string, event: Event) {
-    const input = event.target as HTMLInputElement;
+    if (!stepError && currentStep > 0)
+        currentStep--;
+}
+function handleFileUpload(docId, event) {
+    const input = event.target;
     if (input.files && input.files[0]) {
-      const file = input.files[0];
-      uploadedDocs[docId] = { name: file.name, size: file.size, file };
+        const file = input.files[0];
+        uploadedDocs[docId] = { name: file.name, size: file.size, file };
     }
-  }
-
-  async function submitApplication() {
-    if (isSubmitting) return;
-
+}
+async function submitApplication() {
+    if (isSubmitting)
+        return;
     isSubmitting = true;
     stepError = '';
-
     try {
-      // 1. Save final form data to draft
-      const saveResponse = await fetch(`/api/applications/${application.id}`, {
-        method: 'PUT',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ formData })
-      });
-      if (!saveResponse.ok) {
-        const saveBody = await saveResponse.json().catch(() => null);
-        throw new Error(saveBody?.message ?? 'Unable to save the final draft details.');
-      }
-
-      // 2. Upload any new documents
-      for (const [documentType, upload] of Object.entries(uploadedDocs)) {
-        if (!upload.file) continue; // Skip already uploaded documents
-        const documentData = new FormData();
-        documentData.set('file', upload.file);
-        documentData.set('documentType', documentType);
-        const uploadResponse = await fetch(`/api/applications/${application.id}/documents`, {
-          method: 'POST',
-          body: documentData
+        // 1. Save final form data to draft
+        const saveResponse = await fetch(`/api/applications/${application.id}`, {
+            method: 'PUT',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ formData })
         });
-        if (!uploadResponse.ok) {
-          const uploadBody = await uploadResponse.json().catch(() => null);
-          throw new Error(uploadBody?.message ?? 'Unable to upload a required document.');
+        if (!saveResponse.ok) {
+            const saveBody = await saveResponse.json().catch(() => null);
+            throw new Error(saveBody?.message ?? 'Unable to save the final draft details.');
         }
-      }
-
-      // 3. Submit draft
-      const submitResponse = await fetch(`/api/applications/${application.id}/submit`, {
-        method: 'POST'
-      });
-      const submitBody = await submitResponse.json().catch(() => null);
-      if (!submitResponse.ok || !submitBody?.application?.trackingId) {
-        throw new Error(submitBody?.message ?? 'Unable to submit the application.');
-      }
-
-      applicationId = submitBody.application.trackingId;
-      submitted = true;
-    } catch (cause) {
-      stepError = cause instanceof Error ? cause.message : 'Unable to submit the application.';
-    } finally {
-      isSubmitting = false;
+        // 2. Upload any new documents
+        for (const [documentType, upload] of Object.entries(uploadedDocs)) {
+            if (!upload.file)
+                continue; // Skip already uploaded documents
+            const documentData = new FormData();
+            documentData.set('file', upload.file);
+            documentData.set('documentType', documentType);
+            const uploadResponse = await fetch(`/api/applications/${application.id}/documents`, {
+                method: 'POST',
+                body: documentData
+            });
+            if (!uploadResponse.ok) {
+                const uploadBody = await uploadResponse.json().catch(() => null);
+                throw new Error(uploadBody?.message ?? 'Unable to upload a required document.');
+            }
+        }
+        // 3. Submit draft
+        const submitResponse = await fetch(`/api/applications/${application.id}/submit`, {
+            method: 'POST'
+        });
+        const submitBody = await submitResponse.json().catch(() => null);
+        if (!submitResponse.ok || !submitBody?.application?.trackingId) {
+            throw new Error(submitBody?.message ?? 'Unable to submit the application.');
+        }
+        applicationId = submitBody.application.trackingId;
+        submitted = true;
     }
-  }
-
-  async function deleteDraft() {
-    if (isDeletingDraft) return;
+    catch (cause) {
+        stepError = cause instanceof Error ? cause.message : 'Unable to submit the application.';
+    }
+    finally {
+        isSubmitting = false;
+    }
+}
+async function deleteDraft() {
+    if (isDeletingDraft)
+        return;
     const confirmed = window.confirm('Delete this assisted draft?');
-    if (!confirmed) return;
-
+    if (!confirmed)
+        return;
     isDeletingDraft = true;
     stepError = '';
     try {
-      const response = await fetch(`/api/applications/${application.id}`, {
-        method: 'DELETE',
-        credentials: 'same-origin'
-      });
-      const body = await response.json().catch(() => null) as { message?: string } | null;
-      if (!response.ok) {
-        throw new Error(body?.message ?? 'Unable to delete this draft.');
-      }
-      await goto('/operator/applications');
-    } catch (cause) {
-      stepError = cause instanceof Error ? cause.message : 'Unable to delete this draft.';
-    } finally {
-      isDeletingDraft = false;
+        const response = await fetch(`/api/applications/${application.id}`, {
+            method: 'DELETE',
+            credentials: 'same-origin'
+        });
+        const body = await response.json().catch(() => null);
+        if (!response.ok) {
+            throw new Error(body?.message ?? 'Unable to delete this draft.');
+        }
+        await goto('/applications');
     }
-  }
+    catch (cause) {
+        stepError = cause instanceof Error ? cause.message : 'Unable to delete this draft.';
+    }
+    finally {
+        isDeletingDraft = false;
+    }
+}
 </script>
 
 <svelte:head>
   <title>{t('operator.editDraft')} — TN Hub</title>
 </svelte:head>
 
-<div class="bg-slate-50 min-h-screen pb-16">
+<div class="operator-application-editor min-h-screen bg-background pb-16 text-text">
   {#if submitted}
     <!-- Success state (consistent Operator green/primary palette) -->
     <div class="flex min-h-[70vh] items-center justify-center bg-slate-50 px-4">
@@ -274,7 +274,7 @@
           <div class="mt-1.5 text-lg font-black text-primary-800 font-mono">{applicationId}</div>
         </div>
         <div class="mt-6 flex flex-col gap-3">
-          <a href="/operator/applications" class="rounded-xl bg-primary-600 py-3 text-xs font-bold text-white transition hover:bg-primary-700 shadow-sm">
+          <a href="/applications" class="rounded-xl bg-primary-600 py-3 text-xs font-bold text-white transition hover:bg-primary-700 shadow-sm">
             {t('operator.viewAllServices')}
           </a>
           <a href="/operator/dashboard" class="rounded-xl border border-slate-200 py-3 text-xs font-bold text-slate-700 transition hover:bg-slate-50">
@@ -287,7 +287,7 @@
     <!-- Header -->
     <div class="bg-gradient-to-br from-[#062206] via-[#0a3d0a] to-[#062206] text-white border-b border-[#143A14] py-8 px-6 sm:px-8">
       <div class="mx-auto max-w-5xl">
-        <a href="/operator/applications" class="inline-flex items-center gap-1.5 text-xs font-bold text-primary-300 hover:text-white transition mb-3">
+        <a href="/applications" class="inline-flex items-center gap-1.5 text-xs font-bold text-primary-300 hover:text-white transition mb-3">
           <ArrowLeft class="h-4.5 w-4.5" /> {t('operator.viewAllServices')}
         </a>
         <h1 class="text-2xl font-black tracking-tight leading-tight">

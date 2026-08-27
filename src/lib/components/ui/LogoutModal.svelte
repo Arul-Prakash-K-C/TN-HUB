@@ -1,11 +1,9 @@
-<script lang="ts">
+<script>
+
   import { LogOut, X } from "@lucide/svelte";
   import { t } from "$lib/i18n";
 
-  let { isOpen = $bindable(false), onConfirm } = $props<{
-    isOpen: boolean;
-    onConfirm: () => void;
-  }>();
+let { isOpen = $bindable(false), onConfirm } = $props();
 </script>
 
 {#if isOpen}
@@ -18,24 +16,24 @@
     ></div>
 
     <div
-      class="relative bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+      class="relative bg-surface dark:bg-surface-container-highest rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200"
     >
       <div class="p-6">
         <div
-          class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4"
+          class="w-12 h-12 bg-danger-soft text-danger rounded-full flex items-center justify-center mb-4"
         >
           <LogOut class="w-6 h-6" />
         </div>
 
-        <h3 class="text-lg font-bold text-slate-900 mb-2">
+        <h3 class="text-lg font-bold text-text mb-2">
           {t("logout.confirmTitle")}
         </h3>
-        <p class="text-sm text-slate-500 mb-6">{t("logout.confirmText")}</p>
+        <p class="text-sm text-text-muted mb-6">{t("logout.confirmText")}</p>
 
         <div class="flex items-center gap-3 w-full">
           <button
             onclick={() => (isOpen = false)}
-            class="flex-1 py-2.5 px-4 bg-slate-100 text-slate-700 font-bold text-sm rounded-xl hover:bg-slate-200 transition-colors"
+            class="flex-1 py-2.5 px-4 bg-surface-container text-text-muted font-bold text-sm rounded-xl hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors"
           >
             {t("cancel")}
           </button>
@@ -44,7 +42,7 @@
               isOpen = false;
               onConfirm();
             }}
-            class="flex-1 py-2.5 px-4 bg-red-600 text-white font-bold text-sm rounded-xl hover:bg-red-700 shadow-sm shadow-red-600/20 transition-colors"
+            class="flex-1 py-2.5 px-4 bg-danger text-white font-bold text-sm rounded-xl hover:bg-danger/90 shadow-sm shadow-danger/20 transition-colors"
           >
             {t("logout.confirmBtn")}
           </button>
@@ -53,7 +51,7 @@
 
       <button
         onclick={() => (isOpen = false)}
-        class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+        class="absolute top-4 right-4 text-text-faint hover:text-text transition-colors"
       >
         <X class="w-5 h-5" />
       </button>

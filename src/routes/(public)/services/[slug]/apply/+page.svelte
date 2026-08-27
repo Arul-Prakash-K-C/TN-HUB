@@ -1,13 +1,10 @@
-<script lang="ts">
+<script>
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
-  import { untrack } from 'svelte';
-  import { env } from '$env/dynamic/public';
   import { tt, locale } from '$lib/i18n';
   import { currentUser, isAuthenticated } from '$lib/stores/auth';
   import { ArrowLeft, ArrowRight, Check, Upload, FileText, AlertCircle, Trash2 } from '@lucide/svelte';
-  import type { ApplicationFormData } from '$lib/types';
 
   let { data } = $props();
 
@@ -20,23 +17,21 @@
   const draftApplication = $derived(data.draftApplication ?? null);
 
   let currentStep = $state(0);
-  let formData = $state<ApplicationFormData>({});
+  let formData = $state({});
   let declarationAgreed = $state(false);
   let submitted = $state(false);
   let applicationId = $state('');
-  let uploadedDocs = $state<Record<string, { name: string; size: number; file?: File; id?: string }>>({});
+  let uploadedDocs = $state({});
   let stepError = $state('');
   let isSubmitting = $state(false);
   let isSavingDraft = $state(false);
   let isDeletingDraft = $state(false);
-  let submissionPending = $state(false);
+  let showDeleteConfirmModal = $state(false);
   let activeDraftId = $state('');
   let activeTrackingId = $state('');
-  let isRazorpayReady = $state(false);
-
-  const requiresPayment = $derived(Boolean(env.PUBLIC_RAZORPAY_KEY_ID));
-  const payableAmount = $derived(Math.round(Number(service?.fee ?? 0) * 100));
-  const payableLabel = $derived((Math.max(payableAmount, 100) / 100).toFixed(2));
+  let phoneVerified = $state(false);
+  let verifiedPhoneNumber = $state('');
+  let otpLoading = $state(false);
 
   const steps = $derived([
     t('apply.step.eligibility'),
@@ -47,114 +42,44 @@
     t('apply.step.declaration')
   ]);
 
-  // Pre-fill from user profile only once
-  $effect(() => {
-    if (user && user.role === 'citizen' && !draftApplication) {
-      untrack(() => {
-        if (!formData.fullName && !formData.phone) {
-          const citizen = user as any;
-          formData = {
-            fullName: citizen.name || '',
-            email: citizen.email || '',
-            phone: citizen.phone || '',
-            dateOfBirth: citizen.dateOfBirth || '',
-            gender: citizen.gender || '',
-            aadhaarNumber: citizen.aadhaarNumber || '',
-            doorNo: citizen.address?.doorNo || '',
-            street: citizen.address?.street || '',
-            area: citizen.address?.area || '',
-            city: citizen.address?.city || '',
-            district: citizen.district || '',
-            taluk: citizen.taluk || '',
-            village: citizen.village || '',
-            pincode: citizen.pincode || '',
-            annualIncome: citizen.annualIncome || undefined,
-            occupation: citizen.occupation || '',
-            community: citizen.community || '',
-            religion: citizen.religion || '',
-            purpose: ''
-          };
-        }
-      });
-    }
-  });
-
   onMount(() => {
-    if (requiresPayment && typeof window !== 'undefined' && !window.Razorpay) {
-      const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-      script.async = true;
-      script.onload = () => { isRazorpayReady = true; };
-      script.onerror = () => { stepError = 'Unable to load the payment gateway right now.'; };
-      document.head.appendChild(script);
-    } else if (window.Razorpay) {
-      isRazorpayReady = true;
-    }
-
     if (draftApplication) {
-      activeDraftId = draftApplication.id;
-      activeTrackingId = draftApplication.applicationNumber;
-      applicationId = draftApplication.applicationNumber;
-      formData = { ...draftApplication.formData };
-      declarationAgreed = true;
-      if (formData.phone) phoneVerified = true;
-      
-      const requestedStep = Number($page.url.searchParams.get('step'));
-      if (requestedStep) {
-        currentStep = requestedStep;
-      } else if (formData.lastStep) {
-        currentStep = Number(formData.lastStep);
-      }
-
-      const nextUploadedDocs: Record<string, { name: string; size: number; file?: File; id?: string }> = {};
-      for (const doc of draftApplication.documents ?? []) {
-        nextUploadedDocs[doc.documentId] = {
-          id: doc.id,
-          name: doc.fileName || doc.name,
-          size: doc.fileSize
-        };
-      }
-      uploadedDocs = nextUploadedDocs;
+        activeDraftId = draftApplication.id;
+        activeTrackingId = draftApplication.applicationNumber;
+        applicationId = draftApplication.applicationNumber;
+        formData = { ...draftApplication.formData };
+        declarationAgreed = true;
+        if (formData.phone) {
+            phoneVerified = true;
+            verifiedPhoneNumber = formData.phone;
+        }
+        const requestedStep = Number($page.url.searchParams.get('step'));
+        if (requestedStep) {
+            currentStep = requestedStep;
+        }
+        else if (formData.lastStep) {
+            currentStep = Number(formData.lastStep);
+        }
+        const nextUploadedDocs = {};
+        for (const doc of draftApplication.documents ?? []) {
+            nextUploadedDocs[doc.documentId] = {
+                id: doc.id,
+                name: doc.fileName || doc.name,
+                size: doc.fileSize
+            };
+        }
+        uploadedDocs = nextUploadedDocs;
     }
-
     const requestedStep = Number($page.url.searchParams.get('step') ?? '');
     if (Number.isInteger(requestedStep) && requestedStep >= 0 && requestedStep < steps.length) {
-      currentStep = requestedStep;
-    } else if (draftApplication) {
-      currentStep = steps.length - 1;
+        currentStep = requestedStep;
+    }
+    else if (draftApplication) {
+        currentStep = steps.length - 1;
     }
   });
 
-  async function launchPaymentCheckout(draftId: string) {
-    // Mock Payment Gateway for Prototype
-    // Bypassing real Razorpay SDK to skip mobile OTP authentication in testing.
-    return new Promise<void>((resolve, reject) => {
-      setTimeout(() => {
-        // 90% chance of success for the demo
-        if (Math.random() > 0.1) {
-          resolve();
-        } else {
-          reject(new Error('Payment failed in mock gateway. Please try again.'));
-        }
-      }, 1500);
-    });
-  }
-
-  async function ensureDraftExists(): Promise<{ id: string; trackingId: string }> {
-    if (activeDraftId && activeTrackingId) {
-      const updateResponse = await fetch(`/api/applications/${activeDraftId}`, {
-        method: 'PUT',
-        credentials: 'same-origin',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ formData })
-      });
-      const updateBody = await updateResponse.json().catch(() => null) as { message?: string } | null;
-      if (!updateResponse.ok) {
-        throw new Error(updateBody?.message ?? 'Unable to save the application draft.');
-      }
-      return { id: activeDraftId, trackingId: activeTrackingId };
-    }
-
+  async function createDraft() {
     const createResponse = await fetch('/api/applications', {
       method: 'POST',
       credentials: 'same-origin',
@@ -165,13 +90,10 @@
         submit: false
       })
     });
-    const createBody = (await createResponse.json().catch(() => null)) as {
-      application?: { id?: string; trackingId?: string };
-      message?: string;
-    } | null;
+    const createBody = await createResponse.json().catch(() => null);
 
     if (!createResponse.ok || !createBody?.application?.id || !createBody.application.trackingId) {
-      throw new Error(createBody?.message ?? 'Unable to save the application draft.');
+      throw new Error(createBody?.message ?? createBody?.error?.message ?? createBody?.error ?? 'Unable to save the application draft.');
     }
 
     activeDraftId = createBody.application.id;
@@ -180,7 +102,32 @@
     return { id: activeDraftId, trackingId: activeTrackingId };
   }
 
-  async function persistDraftUploads(draftId: string) {
+  async function ensureDraftExists() {
+    if (activeDraftId && activeTrackingId) {
+      const updateResponse = await fetch(`/api/applications/${activeDraftId}`, {
+        method: 'PUT',
+        credentials: 'same-origin',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ formData })
+      });
+      const updateBody = await updateResponse.json().catch(() => null);
+      if (!updateResponse.ok) {
+        const message = updateBody?.message ?? updateBody?.error?.message ?? updateBody?.error ?? 'Unable to save the application draft.';
+        if (updateResponse.status === 404 || message === 'Application not found.') {
+          activeDraftId = '';
+          activeTrackingId = '';
+          applicationId = '';
+          return createDraft();
+        }
+        throw new Error(message);
+      }
+      return { id: activeDraftId, trackingId: activeTrackingId };
+    }
+
+    return createDraft();
+  }
+
+  async function persistDraftUploads(draftId) {
     for (const [documentType, upload] of Object.entries(uploadedDocs)) {
       if (!upload.file) continue;
       const documentData = new FormData();
@@ -193,10 +140,10 @@
         body: documentData
       });
       if (!uploadResponse.ok) {
-        const uploadBody = await uploadResponse.json().catch(() => null) as { message?: string } | null;
+        const uploadBody = await uploadResponse.json().catch(() => null);
         throw new Error(uploadBody?.message ?? 'Unable to upload a required document.');
       }
-      const uploadBody = await uploadResponse.json().catch(() => null) as { document?: { id?: string } } | null;
+      const uploadBody = await uploadResponse.json().catch(() => null);
       uploadedDocs[documentType] = {
         ...upload,
         id: uploadBody?.document?.id ?? upload.id,
@@ -206,9 +153,57 @@
     }
   }
 
-  let phoneVerified = $state(false);
   let showOtpModal = $state(false);
   let otpInput = $state('');
+
+  function normalizePhone(value = formData.phone) {
+    return String(value ?? '').replace(/\D/g, '').slice(0, 10);
+  }
+
+  function handlePhoneInput() {
+    const phone = normalizePhone(formData.phone);
+    formData.phone = phone;
+    if (phone !== verifiedPhoneNumber) {
+        phoneVerified = false;
+    }
+  }
+
+  async function sendOtp() {
+      stepError = '';
+      const phone = normalizePhone(formData.phone);
+      formData.phone = phone;
+      if (phone.length !== 10) {
+          stepError = 'Enter a valid 10-digit number first.';
+          return;
+      }
+      otpLoading = true;
+      window.setTimeout(() => {
+          showOtpModal = true;
+          otpLoading = false;
+      }, 250);
+  }
+  
+  async function verifyOtp() {
+      stepError = '';
+      if (!/^\d{4}$/.test(otpInput)) {
+          stepError = 'Please enter the 4-digit dummy OTP.';
+          return;
+      }
+      
+      otpLoading = true;
+      window.setTimeout(() => {
+          if (otpInput === '1234') {
+              phoneVerified = true;
+              verifiedPhoneNumber = normalizePhone(formData.phone);
+              showOtpModal = false;
+              otpInput = '';
+          }
+          else {
+              stepError = 'Invalid OTP. Use 1234 for this demo.';
+          }
+          otpLoading = false;
+      }, 250);
+  }
 
   let showMessageModal = $state(false);
   let messageModalTitle = $state('');
@@ -216,12 +211,20 @@
   let messageModalIsError = $state(false);
   let messageModalRedirect = $state('');
   
-  function showMessage(title: string, text: string, isError = false, redirectUrl = '') {
+  function showMessage(title, text, isError = false, redirectUrl = '') {
     messageModalTitle = title;
     messageModalText = text;
     messageModalIsError = isError;
     messageModalRedirect = redirectUrl;
     showMessageModal = true;
+    if (redirectUrl && !isError) {
+      window.setTimeout(() => {
+        if (showMessageModal && messageModalRedirect === redirectUrl) {
+          showMessageModal = false;
+          goto(redirectUrl);
+        }
+      }, 900);
+    }
   }
 
   async function saveDraft(showPopup = true) {
@@ -237,7 +240,7 @@
       activeDraftId = draft.id;
       activeTrackingId = draft.trackingId;
       if (showPopup) {
-        showMessage('Draft Saved', `Your application has been saved to draft successfully. (ID: ${draft.trackingId})`, false, '/applications');
+        showMessage('draft saved', 'draft saved', false, '/applications');
       }
     } catch (cause) {
       if (showPopup) {
@@ -250,9 +253,8 @@
 
   async function deleteDraft() {
     if (!activeDraftId || isDeletingDraft) return;
-    const confirmed = window.confirm('Delete this draft application?');
-    if (!confirmed) return;
 
+    showDeleteConfirmModal = false;
     isDeletingDraft = true;
     stepError = '';
     try {
@@ -260,7 +262,7 @@
         method: 'DELETE',
         credentials: 'same-origin'
       });
-      const body = await response.json().catch(() => null) as { message?: string } | null;
+      const body = await response.json().catch(() => null);
       if (!response.ok) {
         throw new Error(body?.message ?? 'Unable to delete this draft.');
       }
@@ -272,12 +274,24 @@
     }
   }
 
-  function validateCurrentStep(): boolean {
+  function validateCurrentStep() {
     stepError = '';
 
     if (currentStep === 1) { // Personal Details
       if (!formData.fullName || String(formData.fullName).trim() === '') {
         stepError = 'Please enter your Full Name.';
+        return false;
+      }
+      if (!formData.fatherName || String(formData.fatherName).trim() === '') {
+        stepError = "Please enter your Father's/Guardian Name.";
+        return false;
+      }
+      if (!formData.dateOfBirth || String(formData.dateOfBirth).trim() === '') {
+        stepError = 'Please enter your Date of Birth.';
+        return false;
+      }
+      if (!formData.gender || String(formData.gender).trim() === '') {
+        stepError = 'Please select your Gender.';
         return false;
       }
       if (!formData.phone || !/^\d{10}$/.test(String(formData.phone).trim())) {
@@ -389,12 +403,6 @@
   async function nextStep() {
     if (!validateCurrentStep()) return;
     
-    // Auto-save the draft before moving to next step
-    if (authenticated && currentStep > 0) {
-      formData.lastStep = currentStep + 1;
-      await saveDraft(false);
-    }
-    
     if (currentStep < steps.length - 1) currentStep++;
   }
 
@@ -403,8 +411,8 @@
     if (currentStep > 0) currentStep--;
   }
 
-  function handleFileUpload(docId: string, event: Event) {
-    const input = event.target as HTMLInputElement;
+  function handleFileUpload(docId, event) {
+    const input = event.target;
     if (input.files && input.files[0]) {
       const file = input.files[0];
       if (file.size > 1024 * 1024) {
@@ -435,24 +443,31 @@
       await persistDraftUploads(draft.id);
 
       applicationId = draft.trackingId;
-      if (requiresPayment) {
-        await launchPaymentCheckout(draft.id);
-      }
       
       const submitResponse = await fetch(`/api/applications/${draft.id}/submit`, {
         method: 'POST',
         credentials: 'same-origin',
         headers: { Accept: 'application/json' }
       });
-      const submitBody = await submitResponse.json().catch(() => null) as { application?: { trackingId?: string }; message?: string } | null;
-      if (!submitResponse.ok || !submitBody?.application?.trackingId) {
-        throw new Error(submitBody?.message ?? 'Unable to submit the application.');
+      let errorMessage = 'Unable to submit the application.';
+      let trackingId = '';
+      try {
+        const submitBody = await submitResponse.json();
+        errorMessage = submitBody?.message ?? submitBody?.error?.message ?? submitBody?.error ?? errorMessage;
+        trackingId = submitBody?.application?.applicationNumber ?? submitBody?.application?.trackingId;
+      } catch (parseError) {
+        const text = await submitResponse.text().catch(() => null);
+        if (text && text.trim().length > 0 && text.length < 500) {
+          errorMessage = text.trim();
+        }
       }
-      applicationId = submitBody.application.trackingId;
+      if (!submitResponse.ok || !trackingId) {
+        throw new Error(errorMessage);
+      }
+      applicationId = trackingId;
 
       submitted = true;
-      submissionPending = false;
-      showMessage('Application Submitted', 'Payment and application submission completed successfully.', false, '/applications');
+      showMessage('APPLICATION submitted', 'APPLICATION submitted', false, '/applications');
       return;
     } catch (cause) {
       stepError = cause instanceof Error ? cause.message : 'Unable to submit the application.';
@@ -480,8 +495,8 @@
   </div>
 {:else if submitted}
   <!-- Success state -->
-  <div class="flex min-h-[70vh] items-center justify-center bg-surface-secondary px-4">
-    <div class="w-full max-w-md rounded-2xl border border-border bg-white dark:bg-surface-container p-8 text-center shadow-lg animate-fade-in">
+  <div class="flex min-h-[70vh] items-center justify-center bg-background px-4">
+    <div class="w-full max-w-md rounded-2xl border border-border bg-surface p-8 text-center shadow-lg animate-fade-in">
       <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-success-light">
         <Check class="h-8 w-8 text-success" />
       </div>
@@ -495,7 +510,7 @@
         <div class="mt-1 text-xl font-bold text-primary font-mono">{applicationId}</div>
       </div>
       <div class="mt-6 flex flex-col gap-3">
-        <a href="/applications" class="rounded-lg bg-primary py-3 text-sm font-semibold text-white transition hover:bg-primary-light">
+        <a href="/applications" class="rounded-lg bg-primary py-3 text-sm font-semibold text-white transition hover:bg-primary-hover">
           {t('apply.success.track')}
         </a>
         <a href="/dashboard" class="rounded-lg border border-border py-3 text-sm font-medium text-text transition hover:bg-surface">
@@ -505,47 +520,49 @@
     </div>
   </div>
 {:else}
-  <div class="bg-surface-secondary dark:bg-background min-h-screen">
+  <div class="min-h-screen bg-background">
     <!-- Header -->
-    <div class="bg-white dark:bg-surface border-b border-border">
+    <div class="border-b border-border bg-surface">
       <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6">
         <a href="/services/{slug}" class="inline-flex items-center gap-1 text-sm text-text-muted hover:text-primary transition mb-2">
           <ArrowLeft class="h-4 w-4" /> {t('common.back')}
         </a>
-        <h1 class="text-h2 text-text">
-          {t('apply.title', { service: currentLocale === 'ta' ? service.nameTA : service.name })}
+        <p class="text-xs font-bold uppercase tracking-wider text-text-muted">Application</p>
+        <h1 class="mt-1 text-xl font-black tracking-tight text-text sm:text-2xl">
+          {currentLocale === 'ta' ? service.nameTA : service.name}
         </h1>
       </div>
     </div>
 
-    <!-- Stepper (Redesigned as clean progress pills, no hyphens, no scrollbar) -->
-    <div class="bg-white dark:bg-surface border-b border-border py-4 px-4 sm:px-6">
+    <!-- Stepper -->
+    <div class="border-b border-border bg-surface px-4 py-4 sm:px-6">
       <div class="mx-auto max-w-7xl">
-        <div class="flex items-center justify-start gap-3 overflow-x-auto pb-1" style="scrollbar-width: none; -ms-overflow-style: none;">
+        <div class="hide-scrollbar flex items-center justify-start gap-2 overflow-x-auto pb-1 sm:gap-3">
           {#each steps as step, i}
-            <div class="flex items-center gap-3 shrink-0">
-              <div class="flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all text-xs font-bold
+            <div class="flex shrink-0 items-center gap-2 sm:gap-3">
+              <div class="flex min-w-fit items-center gap-2 rounded-full border px-2.5 py-2 text-xs font-bold shadow-vazhi-1 transition-all sm:px-4
                 {i === currentStep 
-                  ? 'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800/50 text-emerald-800 dark:text-emerald-300 shadow-xs' 
+                  ? 'border-primary bg-primary text-white ring-2 ring-primary/15' 
                   : i < currentStep 
-                    ? 'bg-emerald-50/40 dark:bg-emerald-900/20 border-emerald-100/50 dark:border-emerald-800/30 text-text dark:text-text' 
-                    : 'bg-surface-container dark:bg-surface-container-highest border-border dark:border-border text-text-muted dark:text-text-muted'}">
-                <div class="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-black shrink-0
+                    ? 'border-success/25 bg-success-soft text-success' 
+                    : 'border-border bg-muted text-text-muted'}">
+                <div class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-black
                   {i === currentStep 
-                    ? 'bg-emerald-600 text-white' 
+                    ? 'bg-white text-primary' 
                     : i < currentStep 
-                      ? 'bg-emerald-500 text-white' 
-                      : 'bg-surface-container-highest dark:bg-surface-container text-text-muted dark:text-text-muted'}">
+                      ? 'bg-success text-white' 
+                      : 'bg-surface-container-high text-text-muted'}">
                   {#if i < currentStep}
-                    ✓
+                    <Check class="h-3.5 w-3.5" />
                   {:else}
                     {i + 1}
                   {/if}
                 </div>
-                <span>{step}</span>
+                <span class="hidden whitespace-nowrap sm:inline">{step}</span>
+                <span class="whitespace-nowrap sm:hidden">{i === currentStep ? step : ''}</span>
               </div>
               {#if i < steps.length - 1}
-                <svg class="h-3.5 w-3.5 text-border shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <svg class="h-3.5 w-3.5 shrink-0 text-border-strong" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
               {/if}
@@ -557,26 +574,26 @@
 
     <!-- Form content -->
     <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <div class="rounded-xl border border-border bg-white dark:bg-surface p-6 shadow-sm animate-fade-in">
+      <div class="rounded-xl border border-border bg-surface p-6 shadow-sm animate-fade-in">
         <!-- Step 0: Eligibility -->
         {#if currentStep === 0}
-          <h2 class="text-h3 text-text mb-4">{t('service.eligibility')}</h2>
-          <ul class="space-y-3 mb-6">
+          <h2 class="mb-4 text-base font-black text-text">{t('service.eligibility')}</h2>
+          <ul class="mb-6 space-y-3">
             {#each (currentLocale === 'ta' ? service.eligibilityTA : service.eligibility) as item}
               <li class="flex items-start gap-2 text-sm">
                 <Check class="h-4 w-4 text-success mt-0.5 shrink-0" />
-                <span class="text-text-secondary">{item}</span>
+                <span class="text-text-muted">{item}</span>
               </li>
             {/each}
           </ul>
-          <div class="rounded-lg bg-info-light/50 p-4 text-sm text-info-dark">
-            <AlertCircle class="inline h-4 w-4 mr-1" />
-            Please ensure you meet all eligibility criteria before proceeding.
+          <div class="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary-soft p-4 text-sm font-semibold text-primary-soft-text">
+            <AlertCircle class="h-4 w-4 shrink-0" />
+            Review eligibility before continuing.
           </div>
 
         <!-- Step 1: Personal Details -->
         {:else if currentStep === 1}
-          <h2 class="text-h3 text-text mb-6">{t('apply.step.personal')}</h2>
+          <h2 class="mb-6 text-base font-black text-text">{t('apply.step.personal')}</h2>
           <div class="grid gap-4 sm:grid-cols-2">
             <div>
               <label for="fullName" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.fullName')} *</label>
@@ -602,13 +619,18 @@
             <div>
               <label for="phone" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.phone')} *</label>
               <div class="flex gap-2">
-                <input id="phone" type="tel" inputmode="numeric" maxlength="10" bind:value={formData.phone} disabled={phoneVerified} class="w-full rounded-lg border border-border bg-surface dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-50 disabled:bg-surface-secondary" />
+                <input id="phone" type="tel" inputmode="numeric" maxlength="10" bind:value={formData.phone} oninput={handlePhoneInput} class="w-full rounded-lg border border-border bg-surface dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 {#if phoneVerified}
-                  <div class="flex h-[42px] px-4 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50">
+                  <div class="flex h-[42px] px-4 items-center justify-center rounded-lg bg-success-soft text-success border border-success/25">
                     <Check class="h-4 w-4 mr-1 shrink-0" /> <span class="text-xs font-bold uppercase">Verified</span>
                   </div>
                 {:else}
-                  <button type="button" onclick={() => { if (formData.phone?.length === 10) { showOtpModal = true; stepError = ''; } else stepError = 'Enter a valid 10-digit number first.'; }} class="h-[42px] px-4 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary-light disabled:opacity-50 transition shrink-0">Verify</button>
+                  <button type="button" onclick={sendOtp} disabled={otpLoading} class="h-[42px] px-4 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary-hover disabled:opacity-50 transition shrink-0">
+                    {#if otpLoading}
+                      <span class="inline-block h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent mr-1"></span>
+                    {/if}
+                    Verify
+                  </button>
                 {/if}
               </div>
             </div>
@@ -624,7 +646,7 @@
 
         <!-- Step 2: Service Details (Address & specific) -->
         {:else if currentStep === 2}
-          <h2 class="text-h3 text-text mb-6">{t('apply.step.service')}</h2>
+          <h2 class="mb-6 text-base font-black text-text">{t('apply.step.service')}</h2>
           {#if service.slug === 'e-adangal-extract'}
             <div class="grid gap-4 sm:grid-cols-2">
               <div>
@@ -757,8 +779,8 @@
 
         <!-- Step 3: Documents -->
         {:else if currentStep === 3}
-          <h2 class="text-h3 text-text mb-2">{t('apply.step.documents')}</h2>
-          <p class="text-sm text-text-muted mb-6">Upload the required documents or fetch from DigiLocker. Maximum file size: 1 MB per file.</p>
+          <h2 class="mb-2 text-base font-black text-text">{t('apply.step.documents')}</h2>
+          <p class="text-sm text-text-muted mb-6">Upload required documents. Max size: 1 MB each.</p>
           <div class="space-y-4">
             {#each service.requiredDocuments as doc}
               <div class="rounded-lg border border-border p-4">
@@ -767,20 +789,20 @@
                     <FileText class="h-5 w-5 text-primary" />
                     <span class="text-sm font-medium text-text">{currentLocale === 'ta' ? doc.nameTA : doc.name}</span>
                   </div>
-                  <span class="text-xs font-medium {doc.mandatory ? 'text-error' : 'text-text-muted'}">
+                  <span class="text-xs font-medium {doc.mandatory ? 'text-danger' : 'text-text-muted'}">
                     {doc.mandatory ? t('common.required') : t('common.optional')}
                   </span>
                 </div>
                 {#if uploadedDocs[doc.id]}
-                  <div class="flex items-center justify-between rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 p-3 text-sm text-emerald-800 dark:text-emerald-300">
+                  <div class="flex items-center justify-between rounded-lg bg-success-soft border border-success/25 p-3 text-sm text-success">
                     <div class="flex items-center gap-2">
-                      <Check class="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                      <Check class="h-4 w-4 text-success" />
                       <span class="font-medium truncate">{uploadedDocs[doc.id].name}</span>
                     </div>
                     <button
                       type="button"
                       onclick={() => { delete uploadedDocs[doc.id]; uploadedDocs = { ...uploadedDocs }; }}
-                      class="text-xs font-bold text-rose-600 dark:text-rose-400 hover:text-rose-800 dark:hover:text-rose-300 hover:underline px-2.5 py-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-900/30 transition shrink-0"
+                      class="text-xs font-bold text-danger hover:underline px-2.5 py-1.5 rounded-lg hover:bg-danger-soft transition shrink-0"
                     >
                       Remove
                     </button>
@@ -802,7 +824,7 @@
                           const mockFile = new File([dummyBlob], `${doc.id}_digilocker.pdf`, { type: "application/pdf" });
                           uploadedDocs[doc.id] = { name: `${doc.name} (DigiLocker).pdf`, size: mockFile.size, file: mockFile };
                         }}
-                        class="rounded-lg border border-info bg-info-light px-4 py-2 text-xs font-medium text-info-dark hover:bg-info/10 transition"
+                        class="rounded-lg border border-primary/25 bg-primary-soft px-4 py-2 text-xs font-medium text-primary-soft-text hover:bg-primary/10 transition"
                       >
                         DigiLocker
                       </button>
@@ -815,7 +837,7 @@
 
         <!-- Step 4: Review -->
         {:else if currentStep === 4}
-          <h2 class="text-h3 text-text mb-6">{t('apply.step.review')}</h2>
+          <h2 class="mb-6 text-base font-black text-text">{t('apply.step.review')}</h2>
           <div class="space-y-4">
             <div class="rounded-lg bg-surface p-4">
               <h3 class="text-sm font-semibold text-text mb-3">
@@ -863,29 +885,19 @@
               {#each service.requiredDocuments as doc}
                 <div class="flex items-center justify-between py-1.5 text-sm">
                   <span class="text-text-muted">{currentLocale === 'ta' ? doc.nameTA : doc.name}</span>
-                  <span class="font-medium {uploadedDocs[doc.id] ? 'text-success' : 'text-error'}">
-                    {uploadedDocs[doc.id] ? '✓ Uploaded' : '✗ Missing'}
+                  <span class="font-medium {uploadedDocs[doc.id] ? 'text-success' : 'text-danger'}">
+                    {uploadedDocs[doc.id] ? 'Uploaded' : 'Missing'}
                   </span>
                 </div>
               {/each}
-            </div>
-            <div class="rounded-lg bg-surface p-4">
-              <h3 class="text-sm font-semibold text-text mb-3">Payment</h3>
-              <div class="flex items-center justify-between text-sm">
-                <span class="text-text-muted">Service fee</span>
-                <span class="font-medium text-text">{requiresPayment ? `₹${payableLabel}` : 'Free'}</span>
-              </div>
-              {#if Number(service.fee ?? 0) === 0 && requiresPayment}
-                <p class="mt-2 text-xs text-text-muted">A minimum Razorpay test charge of ₹1.00 is used for checkout-enabled demo submission.</p>
-              {/if}
             </div>
           </div>
 
         <!-- Step 5: Declaration -->
         {:else if currentStep === 5}
-          <h2 class="text-h3 text-text mb-6">{t('apply.step.declaration')}</h2>
-          <div class="rounded-lg border border-border p-6 text-sm text-text-secondary leading-relaxed mb-6">
-            {t('apply.declaration.text')}
+          <h2 class="mb-6 text-base font-black text-text">{t('apply.step.declaration')}</h2>
+          <div class="mb-6 rounded-lg border border-border bg-muted p-4 text-sm leading-relaxed text-text-muted">
+            I confirm the information in this application is true and correct.
           </div>
           <label class="flex items-start gap-3 cursor-pointer">
             <input type="checkbox" bind:checked={declarationAgreed} class="mt-1 h-4 w-4 rounded border-border text-primary" />
@@ -895,8 +907,8 @@
       </div>
 
       {#if stepError}
-        <div class="mt-4 rounded-xl border border-rose-300 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/30 p-3.5 text-xs font-bold text-rose-800 dark:text-rose-300 flex items-center gap-2.5 shadow-xs">
-          <AlertCircle class="h-4 w-4 text-rose-600 dark:text-rose-400 shrink-0" />
+        <div class="mt-4 rounded-xl border border-danger/25 bg-danger-soft p-3.5 text-xs font-bold text-danger flex items-center gap-2.5 shadow-xs">
+          <AlertCircle class="h-4 w-4 text-danger shrink-0" />
           <span>{stepError}</span>
         </div>
       {/if}
@@ -916,9 +928,9 @@
           {#if activeDraftId}
             <button
               type="button"
-              onclick={deleteDraft}
+              onclick={() => showDeleteConfirmModal = true}
               disabled={isDeletingDraft || isSubmitting}
-              class="inline-flex items-center gap-2 rounded-lg border border-rose-200 px-4 py-2.5 text-sm font-medium text-rose-700 transition hover:bg-rose-50 disabled:opacity-50"
+              class="inline-flex items-center gap-2 rounded-lg border border-danger/25 bg-danger-soft px-4 py-2.5 text-sm font-medium text-danger transition hover:bg-danger-soft/80 disabled:opacity-50"
             >
               <Trash2 class="h-4 w-4" />
               {isDeletingDraft ? 'Deleting...' : 'Delete Draft'}
@@ -938,7 +950,7 @@
           {#if currentStep < steps.length - 1}
             <button
               onclick={nextStep}
-              class="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-light"
+              class="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-hover"
             >
               {t('apply.next')}
               <ArrowRight class="h-4 w-4" />
@@ -946,16 +958,14 @@
           {:else}
             <button
               onclick={triggerSubmitConfirm}
-              disabled={!declarationAgreed || isSubmitting || (requiresPayment && !isRazorpayReady)}
-              class="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-light disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!declarationAgreed || isSubmitting}
+              class="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Check class="h-4 w-4" />
               {#if isSubmitting}
                 {t('common.loading')}
-              {:else if requiresPayment}
-                Pay & Submit
               {:else}
-                {t('apply.confirm')}
+                Submit
               {/if}
             </button>
           {/if}
@@ -966,27 +976,55 @@
 
   {#if showConfirmModal}
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
-      <div class="w-full max-w-md rounded-2xl bg-white dark:bg-surface-container p-6 shadow-xl animate-scale-up">
-        <h3 class="text-h3 text-text mb-3">Confirm Submission</h3>
-        <p class="text-sm text-text-secondary leading-relaxed mb-6">
-          {#if requiresPayment}
-            Razorpay checkout will open and process ₹{payableLabel} before this application is submitted.
-          {:else}
-            Are you sure you want to submit this application? This action cannot be undone. Please ensure all details are correct.
-          {/if}
+      <div class="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-xl animate-scale-up">
+        <h3 class="mb-3 text-lg font-black text-text">Submit application?</h3>
+        <p class="text-sm text-text-muted leading-relaxed mb-6">
+          Confirm that the entered details are correct.
         </p>
         <div class="flex items-center justify-end gap-3">
           <button
             onclick={() => showConfirmModal = false}
-            class="rounded-lg px-4 py-2 text-sm font-medium text-text-muted hover:bg-surface-secondary transition"
+            class="rounded-lg px-4 py-2 text-sm font-medium text-text-muted hover:bg-muted transition"
           >
             Cancel
           </button>
           <button
             onclick={submitApplication}
-            class="rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-white hover:bg-primary-light transition"
+            class="rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-white hover:bg-primary-hover transition"
           >
-            {#if requiresPayment}Confirm Pay & Submit{:else}Confirm & Submit{/if}
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  {#if showDeleteConfirmModal}
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm px-4">
+      <div class="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-vazhi-2 animate-scale-up">
+        <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-danger/25 bg-danger-soft text-danger">
+          <Trash2 class="h-5 w-5" />
+        </div>
+        <h3 class="mb-3 text-lg font-black text-text">Delete draft?</h3>
+        <p class="text-sm text-text-muted leading-relaxed mb-6">
+          This draft will be permanently deleted.
+        </p>
+        <div class="flex flex-col-reverse items-stretch justify-end gap-3 sm:flex-row sm:items-center">
+          <button
+            type="button"
+            onclick={() => showDeleteConfirmModal = false}
+            disabled={isDeletingDraft}
+            class="rounded-lg border border-border bg-muted px-4 py-2.5 text-sm font-semibold text-text transition hover:bg-surface-container disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onclick={deleteDraft}
+            disabled={isDeletingDraft}
+            class="rounded-lg border border-danger/30 bg-danger-soft px-5 py-2.5 text-sm font-bold text-danger transition hover:bg-danger-soft/80 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isDeletingDraft ? 'Deleting...' : 'Yes, Delete'}
           </button>
         </div>
       </div>
@@ -996,31 +1034,25 @@
   <!-- Mock OTP Modal -->
   {#if showOtpModal}
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
-      <div class="w-full max-w-sm rounded-2xl bg-white dark:bg-surface-container p-6 shadow-xl animate-scale-up">
-        <h3 class="text-h3 text-text mb-2">Verify Mobile Number</h3>
-        <p class="text-sm text-text-secondary mb-6">An OTP has been sent to +91 {formData.phone}. (Mock: enter any 4 digits)</p>
+      <div class="w-full max-w-sm rounded-2xl border border-border bg-surface p-6 shadow-xl animate-scale-up">
+        <h3 class="mb-2 text-lg font-black text-text">Verify Mobile</h3>
+        <p class="text-sm text-text-muted mb-6">Enter any 4 digits for +91 {formData.phone}.</p>
         
         <input type="text" bind:value={otpInput} placeholder="1234" maxlength="4" class="w-full text-center tracking-[0.5em] text-2xl font-bold rounded-lg border border-border bg-surface dark:bg-surface-container-highest dark:text-text py-3 px-4 outline-none focus:border-primary focus:ring-1 focus:ring-primary mb-6" />
 
         <div class="flex items-center justify-end gap-3">
           <button
             onclick={() => { showOtpModal = false; otpInput = ''; }}
-            class="rounded-lg px-4 py-2 text-sm font-medium text-text-muted hover:bg-surface-secondary transition"
+            class="rounded-lg px-4 py-2 text-sm font-medium text-text-muted hover:bg-muted transition"
           >
             Cancel
           </button>
           <button
-            onclick={() => { 
-              if (otpInput.length === 4) {
-                phoneVerified = true;
-                showOtpModal = false;
-                otpInput = '';
-              }
-            }}
-            disabled={otpInput.length < 4}
-            class="rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-white hover:bg-primary-light transition disabled:opacity-50"
+            onclick={verifyOtp}
+            disabled={otpLoading || !/^\d{4}$/.test(otpInput)}
+            class="rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-white hover:bg-primary-hover transition disabled:opacity-50"
           >
-            Verify OTP
+            {otpLoading ? 'Verifying...' : 'Verify OTP'}
           </button>
         </div>
       </div>
@@ -1030,16 +1062,16 @@
   <!-- Generic Message/Success Modal -->
   {#if showMessageModal}
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
-      <div class="w-full max-w-sm rounded-2xl bg-white dark:bg-surface-container p-6 shadow-xl animate-scale-up text-center">
-        <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full {messageModalIsError ? 'bg-rose-100 dark:bg-rose-900/30' : 'bg-emerald-100 dark:bg-emerald-900/30'}">
+      <div class="w-full max-w-sm rounded-2xl border border-border bg-surface p-6 shadow-xl animate-scale-up text-center">
+        <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full {messageModalIsError ? 'bg-danger-soft' : 'bg-success-soft'}">
           {#if messageModalIsError}
-            <AlertCircle class="h-6 w-6 text-rose-600 dark:text-rose-400" />
+            <AlertCircle class="h-6 w-6 text-danger" />
           {:else}
-            <Check class="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+            <Check class="h-6 w-6 text-success" />
           {/if}
         </div>
-        <h3 class="text-h3 text-text mb-2">{messageModalTitle}</h3>
-        <p class="text-sm text-text-secondary leading-relaxed mb-6">{messageModalText}</p>
+        <h3 class="mb-2 text-lg font-black text-text">{messageModalTitle}</h3>
+        <p class="text-sm text-text-muted leading-relaxed mb-6">{messageModalText}</p>
         
         <button
           onclick={() => {
@@ -1048,7 +1080,7 @@
               goto(messageModalRedirect);
             }
           }}
-          class="w-full rounded-lg {messageModalIsError ? 'bg-rose-600 hover:bg-rose-700' : 'bg-primary hover:bg-primary-light'} py-2.5 text-sm font-semibold text-white transition"
+          class="w-full rounded-lg {messageModalIsError ? 'bg-danger hover:bg-danger/90' : 'bg-primary hover:bg-primary-hover'} py-2.5 text-sm font-semibold text-white transition"
         >
           {messageModalRedirect ? 'Continue' : 'Close'}
         </button>

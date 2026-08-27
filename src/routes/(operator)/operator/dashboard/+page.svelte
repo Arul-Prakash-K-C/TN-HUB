@@ -1,52 +1,49 @@
-<script lang="ts">
+<script>
+
   import { goto } from '$app/navigation';
   import { currentUser, isAuthenticated, isRestored } from '$lib/stores/auth';
   import { canAccessRoute } from '$lib/utils/authGuard';
   import { Shield, UserCheck, PlusCircle, Search, FileText, CheckCircle2, Clock, Eye, AlertTriangle } from '@lucide/svelte';
   import { t } from '$lib/i18n';
 
-  let { data } = $props();
-
-  const user = $derived($currentUser);
-  const restored = $derived($isRestored);
-  const guard = $derived(canAccessRoute(user, '/operator/dashboard'));
-
-  let createError = $state('');
-  let creatingServiceId = $state<string | null>(null);
-
-  const applications = $derived(data.applications || []);
-  const stats = $derived({
+let { data } = $props();
+const user = $derived($currentUser);
+const restored = $derived($isRestored);
+const guard = $derived(canAccessRoute(user, '/operator/dashboard'));
+let createError = $state('');
+let creatingServiceId = $state(null);
+const applications = $derived(data.applications || []);
+const stats = $derived({
     total: applications.length,
-    completed: applications.filter((a: any) => ['COMPLETED', 'APPROVED', 'CERTIFICATE_GENERATED'].includes(a.status)).length,
-    drafts: applications.filter((a: any) => a.status === 'DRAFT').length,
-    pending: applications.filter((a: any) => !['COMPLETED', 'APPROVED', 'CERTIFICATE_GENERATED', 'DRAFT', 'REJECTED'].includes(a.status)).length
-  });
-
-  const popularServices = $derived(
-    data.catalog.services
-      .filter((service: any) => service.implementationMode === 'NATIVE_WORKFLOW')
-      .slice(0, 4)
-  );
-
-  async function createAssistedDraft(serviceId: string) {
+    completed: applications.filter((a) => ['COMPLETED', 'APPROVED', 'CERTIFICATE_GENERATED'].includes(a.status)).length,
+    drafts: applications.filter((a) => a.status === 'DRAFT').length,
+    pending: applications.filter((a) => !['COMPLETED', 'APPROVED', 'CERTIFICATE_GENERATED', 'DRAFT', 'REJECTED'].includes(a.status)).length
+});
+const popularServices = $derived(data.catalog.services
+    .filter((service) => service.implementationMode === 'NATIVE_WORKFLOW')
+    .slice(0, 4));
+async function createAssistedDraft(serviceId) {
     creatingServiceId = serviceId;
     createError = '';
     try {
-      const response = await fetch('/api/operator/applications', {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ citizenId: '', serviceId, formData: {} })
-      });
-      const body = await response.json().catch(() => null) as { application?: { id?: string; trackingId?: string }; message?: string } | null;
-      if (!response.ok || !body?.application?.id) throw new Error(body?.message ?? t('operator.createDraftError'));
-      await goto(`/operator/applications/${body.application.id}/edit`);
-    } catch (cause) {
-      createError = cause instanceof Error ? cause.message : t('operator.createDraftError');
-    } finally {
-      creatingServiceId = null;
+        const response = await fetch('/api/operator/applications', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ citizenId: '', serviceId, formData: {} })
+        });
+        const body = await response.json().catch(() => null);
+        if (!response.ok || !body?.application?.id)
+            throw new Error(body?.message ?? t('operator.createDraftError'));
+        await goto(`/operator/applications/${body.application.id}/edit`);
     }
-  }
+    catch (cause) {
+        createError = cause instanceof Error ? cause.message : t('operator.createDraftError');
+    }
+    finally {
+        creatingServiceId = null;
+    }
+}
 </script>
 
 <svelte:head>
@@ -140,7 +137,7 @@
               </div>
 
               <a 
-                href="/operator/services" 
+                href="/services" 
                 class="text-xs font-bold text-primary hover:text-primary-hover transition underline"
               >
                 Browse All Services
@@ -201,7 +198,7 @@
                     </span>
                   </div>
                 {/each}
-                <a href="/operator/applications" class="block text-center text-xs font-bold text-primary hover:text-primary-hover hover:underline mt-2">
+                <a href="/applications" class="block text-center text-xs font-bold text-primary hover:text-primary-hover hover:underline mt-2">
                   {t('operator.viewAllServices')}
                 </a>
               </div>

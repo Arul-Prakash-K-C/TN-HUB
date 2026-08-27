@@ -1,5 +1,4 @@
-<script lang="ts">
-  let { data } = $props();
+<script>
 
   import { page } from '$app/stores';
   import { currentUser, isAuthenticated, userRole, isRestored } from '$lib/stores/auth';
@@ -22,55 +21,52 @@
   } from '@lucide/svelte';
   import GlassLoader from '$lib/components/ui/GlassLoader.svelte';
 
-  const t = $derived($tt);
-  const currentLocale = $derived($locale);
-  const user = $derived($currentUser);
-  const authenticated = $derived($isAuthenticated);
-  const restored = $derived($isRestored);
-
-  const guard = $derived(canAccessRoute(user, '/department/applications'));
-  const allDeptApps = $derived(data.applications);
-
-  let searchQuery = $state('');
-  let selectedStatus = $state<string>('ALL');
-
-  // Read URL filter query parameter if present
-  $effect(() => {
+let { data } = $props();
+const t = $derived($tt);
+const currentLocale = $derived($locale);
+const user = $derived($currentUser);
+const authenticated = $derived($isAuthenticated);
+const restored = $derived($isRestored);
+const guard = $derived(canAccessRoute(user, '/department/applications'));
+const allDeptApps = $derived(data.applications);
+let searchQuery = $state('');
+let selectedStatus = $state('ALL');
+// Read URL filter query parameter if present
+$effect(() => {
     const urlFilter = $page.url.searchParams.get('filter');
     if (urlFilter === 'sla_breached') {
-      selectedStatus = 'SLA_RISK';
+        selectedStatus = 'SLA_RISK';
     }
-  });
-
-  const filteredApps = $derived(
-    allDeptApps.filter(app => {
-      const matchesSearch = 
-        !searchQuery ||
+});
+const filteredApps = $derived(allDeptApps.filter(app => {
+    const matchesSearch = !searchQuery ||
         app.applicationNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
         app.serviceName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         app.citizenName.toLowerCase().includes(searchQuery.toLowerCase());
-
-      if (!matchesSearch) return false;
-
-      if (selectedStatus === 'ALL') return true;
-      if (selectedStatus === 'NEW') return app.status === 'SUBMITTED';
-      if (selectedStatus === 'PENDING') return ['SUBMITTED', 'DOCUMENT_VERIFICATION', 'OFFICER_REVIEW'].includes(app.status);
-      if (selectedStatus === 'CORRECTION') return app.status === 'CLARIFICATION_REQUESTED';
-      if (selectedStatus === 'APPROVED') return ['APPROVED', 'COMPLETED', 'CERTIFICATE_GENERATED'].includes(app.status);
-      if (selectedStatus === 'REJECTED') return app.status === 'REJECTED';
-      if (selectedStatus === 'SLA_RISK') {
+    if (!matchesSearch)
+        return false;
+    if (selectedStatus === 'ALL')
+        return true;
+    if (selectedStatus === 'NEW')
+        return app.status === 'SUBMITTED';
+    if (selectedStatus === 'PENDING')
+        return ['SUBMITTED', 'DOCUMENT_VERIFICATION', 'OFFICER_REVIEW'].includes(app.status);
+    if (selectedStatus === 'CORRECTION')
+        return app.status === 'CLARIFICATION_REQUESTED';
+    if (selectedStatus === 'APPROVED')
+        return ['APPROVED', 'COMPLETED', 'CERTIFICATE_GENERATED'].includes(app.status);
+    if (selectedStatus === 'REJECTED')
+        return app.status === 'REJECTED';
+    if (selectedStatus === 'SLA_RISK') {
         const daysOld = (Date.now() - new Date(app.createdAt).getTime()) / (1000 * 60 * 60 * 24);
         return daysOld > 3 && !['APPROVED', 'COMPLETED', 'REJECTED'].includes(app.status);
-      }
-
-      return app.status === selectedStatus;
-    })
-  );
-
-  function resetFilters() {
+    }
+    return app.status === selectedStatus;
+}));
+function resetFilters() {
     searchQuery = '';
     selectedStatus = 'ALL';
-  }
+}
 </script>
 
 <svelte:head>
@@ -82,7 +78,7 @@
 {:else if !guard.allowed}
   <div class="flex min-h-[70vh] flex-col items-center justify-center p-6 bg-background">
     <div class="w-full max-w-md rounded-2xl border border-border bg-surface p-8 text-center shadow-xl">
-      <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-rose-100 text-rose-600">
+      <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-danger-soft text-danger">
         <Shield class="h-7 w-7" />
       </div>
       <h2 class="text-lg font-bold text-text">Access Restricted</h2>
@@ -95,14 +91,8 @@
     <div class="public-banner py-6 px-6 sm:px-8">
       <div class="mx-auto max-w-7xl flex justify-between items-center">
         <div>
-          <span class="inline-flex rounded-full bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
-            Workflow Queue
-          </span>
-          <h1 class="text-xl font-black mt-2 text-white">Applications Work Queue</h1>
+          <h1 class="text-xl font-black text-white">Applications Work Queue</h1>
         </div>
-        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/10 text-white border border-white/20">
-          {filteredApps.length} Application{filteredApps.length === 1 ? '' : 's'}
-        </span>
       </div>
     </div>
 
@@ -167,21 +157,21 @@
         {#if filteredApps.length === 0}
           <!-- Stitch Empty State UI -->
           <div class="p-16 text-center max-w-md mx-auto">
-            <div class="w-16 h-16 rounded-full bg-[#f2f4f6] text-slate-400 flex items-center justify-center mx-auto mb-4 border border-slate-200">
-              <Inbox class="h-8 w-8 text-slate-400" />
+            <div class="w-16 h-16 rounded-full bg-muted text-text-muted/80 flex items-center justify-center mx-auto mb-4 border border-border">
+              <Inbox class="h-8 w-8 text-text-muted/80" />
             </div>
-            <h3 class="text-base font-bold text-slate-900">No Applications Found</h3>
-            <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+            <h3 class="text-base font-bold text-text">No Applications Found</h3>
+            <p class="text-xs text-text-muted mt-1 leading-relaxed">
               {#if searchQuery || selectedStatus !== 'ALL'}
                 No records match your active search filter "{searchQuery}" or status "{selectedStatus}".
               {:else}
-                Your department processing queue is currently clear. Excellent job!
+                Your department processing queue is currently clear. Excellent job
               {/if}
             </p>
             <div class="mt-6">
               <button
                 onclick={resetFilters}
-                class="px-4 py-2 bg-[#062206] text-white text-xs font-bold rounded-lg hover:bg-[#143A14] transition shadow-2xs"
+                class="adaptive-action-button px-4 py-2 text-xs font-bold rounded-lg transition"
               >
                 Clear All Filters
               </button>
@@ -190,7 +180,7 @@
         {:else}
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
-              <thead class="bg-[#ECEEF0] text-slate-600 uppercase font-bold text-[10px] tracking-wider border-b border-slate-200">
+              <thead class="bg-surface-container dark:bg-surface-container-high text-text-muted uppercase font-bold text-[10px] tracking-wider border-b border-border">
                 <tr>
                   <th class="py-3 px-4">Application Ref</th>
                   <th class="py-3 px-4">Service Required</th>
@@ -201,50 +191,50 @@
                   <th class="py-3 px-4 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-100 font-medium">
+              <tbody class="divide-y divide-border font-medium">
                 {#each filteredApps as app}
-                  <tr class="hover:bg-slate-50/80 transition-colors">
-                    <td class="py-3.5 px-4 font-mono font-bold text-slate-900">
+                  <tr class="hover:bg-surface-container/50 transition-colors">
+                    <td class="py-3.5 px-4 font-mono font-bold text-text">
                       {app.applicationNumber}
                     </td>
-                    <td class="py-3.5 px-4 text-slate-900 font-semibold">
+                    <td class="py-3.5 px-4 text-text font-semibold">
                       {currentLocale === 'ta' ? app.serviceNameTA : app.serviceName}
                     </td>
-                    <td class="py-3.5 px-4 text-slate-700">
+                    <td class="py-3.5 px-4 text-text-muted">
                       <div>{app.citizenName}</div>
-                      <div class="text-[10px] text-slate-400 font-mono">{app.formData?.phone || 'Aadhaar Verified'}</div>
+                      <div class="text-[10px] text-text-muted/80 font-mono">{app.formData?.phone || 'Aadhaar Verified'}</div>
                     </td>
-                    <td class="py-3.5 px-4 text-slate-500 font-mono">
+                    <td class="py-3.5 px-4 text-text-muted font-mono">
                       {new Date(app.createdAt).toLocaleDateString()}
                     </td>
                     <td class="py-3.5 px-4 font-mono">
                       {#if app.status === 'APPROVED' || app.status === 'COMPLETED'}
-                        <span class="text-[#2E7D32] font-bold text-[10px]">Resolved</span>
+                        <span class="text-success font-bold text-[10px]">Resolved</span>
                       {:else}
-                        <span class="text-[#E65100] font-bold text-[10px]">3 Days Left</span>
+                        <span class="text-warning font-bold text-[10px]">3 Days Left</span>
                       {/if}
                     </td>
                     <td class="py-3.5 px-4">
                       {#if app.status === 'SUBMITTED'}
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#E3F2FD] text-[#1565C0]">New</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-soft text-primary-soft-text border border-primary/20">New</span>
                       {:else if app.status === 'DOCUMENT_VERIFICATION'}
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#FFF3E0] text-[#E65100]">Doc Verification</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-warning-soft text-warning border border-warning/25">Doc Verification</span>
                       {:else if app.status === 'OFFICER_REVIEW'}
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#F3E5F5] text-[#7B1FA2]">Officer Review</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-soft text-primary-soft-text border border-primary/20">Officer Review</span>
                       {:else if app.status === 'CLARIFICATION_REQUESTED'}
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#FCE4EC] text-[#C2185B]">Correction Req</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-danger-soft text-danger border border-danger/25">Correction Req</span>
                       {:else if app.status === 'APPROVED' || app.status === 'COMPLETED'}
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#E8F5E9] text-[#2E7D32]">Approved</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-success-soft text-success border border-success/25">Approved</span>
                       {:else if app.status === 'REJECTED'}
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#FFEBEE] text-[#C62828]">Rejected</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-danger-soft text-danger border border-danger/25">Rejected</span>
                       {:else}
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">{app.status}</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-muted text-text-muted border border-border">{app.status}</span>
                       {/if}
                     </td>
                     <td class="py-3.5 px-4 text-right">
                       <a
                         href="/department/applications/{app.id}"
-                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#062206] text-white font-bold text-[11px] hover:bg-[#143A14] transition shadow-2xs"
+                         class="adaptive-action-button inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold text-[11px] transition"
                       >
                         <span>Review</span>
                         <ArrowRight class="h-3 w-3" />

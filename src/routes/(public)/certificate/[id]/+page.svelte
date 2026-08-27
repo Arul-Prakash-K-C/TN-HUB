@@ -1,12 +1,11 @@
-<script lang="ts">
-  let { data } = $props();
-
-  const application = $derived(data.application);
-  const service = $derived(data.service);
-
-  function printCertificate() {
+<script>
+"use strict";
+let { data } = $props();
+const application = $derived(data.application);
+const service = $derived(data.service);
+function printCertificate() {
     window.print();
-  }
+}
 </script>
 
 <svelte:head>

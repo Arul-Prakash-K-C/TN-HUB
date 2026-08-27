@@ -1,82 +1,72 @@
-<script lang="ts">
+<script>
+
   import { goto } from '$app/navigation';
   import { Bot, ChevronLeft, RefreshCcw, Route, ShieldCheck, Sparkles, ArrowRight } from '@lucide/svelte';
   import { locale, tt } from '$lib/i18n';
-  import { buildScreen, createInitialContext, type OptionText, type ThozhanContext, type ThozhanOption } from '$lib/thozhan/assistant';
+  import { buildScreen, createInitialContext } from '$lib/thozhan/assistant';
 
-  let { data } = $props();
-
-  const t = $derived($tt);
-  const currentLocale = $derived($locale);
-
-  const assistantData = $derived({
+let { data } = $props();
+const t = $derived($tt);
+const currentLocale = $derived($locale);
+const assistantData = $derived({
     user: data.user ?? null,
     services: data.catalog?.services ?? [],
     departments: data.catalog?.departments ?? [],
     applications: data.applications ?? [],
     documents: data.documents ?? []
-  });
-
-  let history = $state<ThozhanContext[]>([createInitialContext()]);
-
-  const currentContext = $derived(history[history.length - 1]);
-  const screen = $derived(buildScreen(currentContext, assistantData, currentLocale, t));
-
-  function resolveText(text?: OptionText): string {
-    if (!text) return '';
+});
+let history = $state([createInitialContext()]);
+const currentContext = $derived(history[history.length - 1]);
+const screen = $derived(buildScreen(currentContext, assistantData, currentLocale, t));
+function resolveText(text) {
+    if (!text)
+        return '';
     return text.type === 'key' ? t(text.key, text.params) : text.value;
-  }
-
-  function pushState(nextContext: ThozhanContext) {
+}
+function pushState(nextContext) {
     history = [...history, nextContext];
-  }
-
-  function goBack() {
-    if (history.length === 1) return;
+}
+function goBack() {
+    if (history.length === 1)
+        return;
     history = history.slice(0, -1);
-  }
-
-  function startOver() {
+}
+function startOver() {
     history = [createInitialContext()];
-  }
-
-  async function handleOption(option: ThozhanOption) {
-    if (option.disabled) return;
+}
+async function handleOption(option) {
+    if (option.disabled)
+        return;
     if (option.id === 'back') {
-      goBack();
-      return;
+        goBack();
+        return;
     }
     if (option.id === 'startOver') {
-      startOver();
-      return;
+        startOver();
+        return;
     }
-
     const action = option.action;
     if (action.kind === 'state') {
-      pushState({
-        ...currentContext,
-        ...(action.patch ?? {}),
-        state: action.nextState
-      });
-      return;
+        pushState({
+            ...currentContext,
+            ...(action.patch ?? {}),
+            state: action.nextState
+        });
+        return;
     }
-
     if (action.kind === 'navigate') {
-      await goto(action.href);
-      return;
+        await goto(action.href);
+        return;
     }
-
     if (action.kind === 'external') {
-      window.open(action.href, '_blank', 'noopener,noreferrer');
+        window.open(action.href, '_blank', 'noopener,noreferrer');
     }
-  }
-
-  const visibleOptions = $derived(screen.options.filter((option) => !option.disabled || option.id === 'recentlyUsedServices'));
-  const actionOptions = $derived(screen.actions ?? []);
-
-  // Split actions into operations and navigation
-  const operations = $derived(actionOptions.filter(a => a.id !== 'back' && a.id !== 'startOver'));
-  const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id === 'startOver'));
+}
+const visibleOptions = $derived(screen.options.filter((option) => !option.disabled || option.id === 'recentlyUsedServices'));
+const actionOptions = $derived(screen.actions ?? []);
+// Split actions into operations and navigation
+const operations = $derived(actionOptions.filter(a => a.id !== 'back' && a.id !== 'startOver'));
+const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id === 'startOver'));
 </script>
 
 <svelte:head>
@@ -118,7 +108,7 @@
 
         <div class="flex flex-col sm:flex-row sm:items-center gap-4">
           <div class="w-14 h-14 flex items-center justify-center shrink-0">
-            <img src="/thozhan-logo.png" alt="Thozhan AI Logo" class="w-14 h-14 object-contain" onerror={(e) => { (e.currentTarget as HTMLElement).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling as HTMLElement).style.display='block'; }} />
+            <img src="/thozhan-logo.png" alt="Thozhan AI Logo" class="w-14 h-14 object-contain" onerror={(e) => { (e.currentTarget).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling).style.display='block'; }} />
               <Bot class="hidden h-7 w-7 text-primary" />
           </div>
           <div class="flex-1">
@@ -208,7 +198,7 @@
         {#if history.length === 1}
           <div class="flex items-start gap-4 mb-6">
             <div class="w-10 h-10 flex items-center justify-center shrink-0">
-              <img src="/thozhan-logo.png" alt="Thozhan AI Logo" class="w-10 h-10 object-contain" onerror={(e) => { (e.currentTarget as HTMLElement).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling as HTMLElement).style.display='block'; }} />
+              <img src="/thozhan-logo.png" alt="Thozhan AI Logo" class="w-10 h-10 object-contain" onerror={(e) => { (e.currentTarget).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling).style.display='block'; }} />
               <Bot class="hidden h-6 w-6 text-primary" />
             </div>
             <div>
