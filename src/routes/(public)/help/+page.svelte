@@ -20,7 +20,11 @@ let questionSubmitted = $state(false);
 let submitting = $state(false);
 let questionError = $state('');
 async function handleQuestionSubmit() {
-    if (!questionText.trim() || !questionName.trim() || submitting) return;
+    if (!questionText.trim() || !questionName.trim() || !questionEmail.trim() || submitting) return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(questionEmail.trim())) {
+        questionError = 'Please enter a valid email address.';
+        return;
+    }
     
     submitting = true;
     questionError = '';
@@ -251,11 +255,12 @@ const policies = [
                 />
               </div>
               <div>
-                <label for="q-email" class="mb-1.5 block text-xs font-bold text-text">Email Address (Optional)</label>
+                <label for="q-email" class="mb-1.5 block text-xs font-bold text-text">Email Address *</label>
                 <input
                   id="q-email"
                   type="email"
                   bind:value={questionEmail}
+                  required
                   placeholder="your@email.com"
                   class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text outline-none transition placeholder:text-text-faint focus:border-primary focus:ring-2 focus:ring-primary/15"
                 />
@@ -278,7 +283,7 @@ const policies = [
             <div class="flex justify-end">
               <button
                 type="submit"
-                disabled={submitting || !questionText.trim() || !questionName.trim()}
+                disabled={submitting || !questionText.trim() || !questionName.trim() || !questionEmail.trim()}
                 class="flex items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-bold text-white shadow transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Send class="h-4 w-4" />

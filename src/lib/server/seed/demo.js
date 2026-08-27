@@ -4,7 +4,7 @@ import { mockDocuments } from '$lib/data/documents';
 import { departments } from '$lib/data/departments';
 import { mockNotifications } from '$lib/data/notifications';
 import { services } from '$lib/data/services';
-import { demoAdmin, demoCitizen, demoCivilSuppliesOfficer, demoOfficer, demoOperator } from '$lib/data/users';
+import { demoAdmin, demoCitizen, demoCivilSuppliesOfficer, demoOfficer, demoOperator, demoSocialWelfareOfficer, demoLocalGovtOfficer, demoHealthOfficer, demoDrugsOfficer, demoTransportOfficer } from '$lib/data/users';
 import { workflows } from '$lib/data/workflows';
 import { normalizeUserRole } from '$lib/auth/identity';
 import { toCatalogDepartment, toCatalogService } from '$lib/server/catalog/repository';
@@ -44,7 +44,7 @@ function buildDemoDocuments() {
     const db = getFirebaseAdminFirestore();
     const now = Timestamp.now();
     const documents = [];
-    const demoUsers = [demoCitizen, demoOfficer, demoCivilSuppliesOfficer, demoOperator, demoAdmin];
+    const demoUsers = [demoCitizen, demoOfficer, demoCivilSuppliesOfficer, demoSocialWelfareOfficer, demoLocalGovtOfficer, demoHealthOfficer, demoDrugsOfficer, demoTransportOfficer, demoOperator, demoAdmin];
     for (const user of demoUsers) {
         const role = normalizeUserRole(user.role);
         documents.push({

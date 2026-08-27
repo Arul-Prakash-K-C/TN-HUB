@@ -3,6 +3,7 @@
   import { Menu, Bell } from '@lucide/svelte';
   import { auth, isAuthenticated, currentUser } from '$lib/stores/auth';
   import { t } from '$lib/i18n';
+  import BrandLogo from '$lib/components/ui/BrandLogo.svelte';
 
 const authenticated = $derived($isAuthenticated);
 const user = $derived($currentUser);
@@ -36,7 +37,7 @@ $effect(() => {
       <Menu class="h-5 w-5" />
     </button>
     <a href={isDept ? "/department/dashboard" : portal === 'operator' ? "/operator/dashboard" : portal === 'admin' ? "/admin" : "/"} class="flex items-center gap-2.5">
-      <div class="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-black text-white shadow-xs">TN</div>
+      <BrandLogo sizeClass="h-7 w-7" />
       <div>
         <div class="flex items-center gap-1.5">
           <h1 class="text-xs font-black tracking-tight uppercase leading-none">{isDept ? (user?.departmentName || 'Revenue Dept') : 'TN HUB'}</h1>

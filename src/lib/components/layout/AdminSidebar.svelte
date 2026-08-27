@@ -1,35 +1,39 @@
 <script>
-
   import { page } from '$app/stores';
   import { LayoutDashboard, UserCheck, MessageCircleQuestion, UserCircle, LogOut } from '@lucide/svelte';
   import { auth, isAuthenticated } from '$lib/stores/auth';
   import LogoutModal from '$lib/components/ui/LogoutModal.svelte';
   import { t } from '$lib/i18n';
+  import BrandLogo from '$lib/components/ui/BrandLogo.svelte';
 
-const authenticated = $derived($isAuthenticated);
-function isActive(path) {
+  const authenticated = $derived($isAuthenticated);
+
+  function isActive(path) {
     const currentPath = $page.url.pathname;
     if (path === '/admin' && currentPath === '/admin')
         return true;
     if (path !== '/admin' && currentPath.startsWith(path))
         return true;
     return false;
-}
-let { isOpen = $bindable(false) } = $props();
-let showLogoutModal = $state(false);
-$effect(() => {
+  }
+
+  let { isOpen = $bindable(false) } = $props();
+  let showLogoutModal = $state(false);
+
+  $effect(() => {
     if ($page.url.pathname) {
         isOpen = false;
     }
-});
-const mainLinks = [
+  });
+
+  const mainLinks = [
     { href: '/admin', icon: LayoutDashboard, label: 'Dashboard', labelTA: 'டாஷ்போர்டு' },
     { href: '/admin/approvals', icon: UserCheck, label: 'Registration Approvals', labelTA: 'பதிவு ஒப்புதல்கள்' },
-    { href: '/admin/helpdesk', icon: MessageCircleQuestion, label: 'Help Desk & Inquiries', labelTA: 'உதவி மையம்' },
-];
-const bottomLinks = [
+    { href: '/admin/helpdesk', icon: MessageCircleQuestion, label: 'Help Desk & Grievance', labelTA: 'உதவி மற்றும் புகார்கள்' },
+  ];
+  const bottomLinks = [
     { href: '/admin/profile', icon: UserCircle, label: 'Profile', labelTA: 'சுயவிவரம்' },
-];
+  ];
 </script>
 
 {#if isOpen}
@@ -41,15 +45,7 @@ const bottomLinks = [
 <aside class="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col gap-6 border-r border-white/10 bg-[var(--color-sidebar-bg)] px-4 py-6 text-[var(--color-sidebar-text)] transition-transform duration-300 ease-in-out md:translate-x-0 {isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}">
   <!-- Brand Header -->
   <a href="/admin" class="flex items-center gap-3 px-2 hover:opacity-90 transition">
-    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-black text-white shadow-md">
-      TN
-    </div>
-    <div class="flex flex-col overflow-hidden">
-      <span class="text-sm font-extrabold leading-tight tracking-tight text-[var(--color-sidebar-text)]">TN Hub</span>
-      <span class="truncate text-[10px] font-bold uppercase tracking-wider text-[var(--color-sidebar-text-muted)]">
-        {t('admin.portal')}
-      </span>
-    </div>
+    <BrandLogo showWordmark={true} subtitle={t('admin.portal')} sizeClass="h-10 w-10" wordmarkClass="text-sm text-[var(--color-sidebar-text)]" subtitleClass="text-[10px] text-[var(--color-sidebar-text-muted)]" />
   </a>
 
   <!-- Navigation Links -->

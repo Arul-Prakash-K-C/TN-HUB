@@ -20,6 +20,7 @@
   } from '@lucide/svelte';
   import { getPortalRedirectForRole } from '$lib/utils/authGuard';
   import { applyThemeMode, getPreferredThemeMode } from '$lib/utils/theme';
+  import BrandLogo from '$lib/components/ui/BrandLogo.svelte';
 
 let mobileMenuOpen = $state(false);
 let profileMenuOpen = $state(false);
@@ -90,17 +91,7 @@ function handleProtectedNav(targetPath, title, e) {
       
       <!-- Brand Logo / Wordmark -->
       <a href={authenticated ? getDashboardUrl() : "/"} class="flex items-center gap-3 shrink-0 group">
-        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white font-bold text-sm shadow-sm">
-          TN
-        </div>
-        <div class="hidden sm:block">
-          <div class="flex items-center gap-2.5">
-            <div class="text-sm font-extrabold tracking-tight leading-none text-primary">TN HUB</div>
-          </div>
-          <div class="text-[9px] font-bold text-primary leading-tight uppercase tracking-wider mt-0.5">
-            One Center. Every Government Service.
-          </div>
-        </div>
+        <BrandLogo showWordmark={true} subtitle="One Center. Every Government Service." sizeClass="h-10 w-10" wordmarkClass="text-sm" subtitleClass="text-[9px]" />
       </a>
       
       <!-- Desktop Navigation -->

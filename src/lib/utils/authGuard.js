@@ -95,12 +95,21 @@ export function canAccessRoute(user, path) {
             reason: 'Department users must use the department portal'
         };
     }
-    // Citizen Protected Routes (/dashboard, /documents, /complaints, /profile, /notifications)
+    // Shared Protected Routes (/notifications, /profile)
+    if (path.startsWith('/notifications') || path.startsWith('/profile')) {
+        if (role === 'citizen' || role === 'operator' || role === 'admin') {
+            return { allowed: true };
+        }
+        return {
+            allowed: false,
+            redirectTo: getPortalRedirectForRole(role),
+            reason: 'Authentication required'
+        };
+    }
+    // Citizen Protected Routes (/dashboard, /documents, /complaints)
     if (path.startsWith('/dashboard') ||
         path.startsWith('/documents') ||
-        path.startsWith('/complaints') ||
-        path.startsWith('/profile') ||
-        path.startsWith('/notifications')) {
+        path.startsWith('/complaints')) {
         if (role === 'citizen' || role === 'admin') {
             return { allowed: true };
         }

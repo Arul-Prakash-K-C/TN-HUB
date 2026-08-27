@@ -77,10 +77,28 @@ function roleCanPerformTransition(user, requiredRole) {
             return false;
     }
 }
+function canUseSyntheticReject(user, currentStatus, workflow) {
+    return user.role === 'department_user' &&
+        !workflow.terminalStates.includes(currentStatus) &&
+        currentStatus !== 'DRAFT' &&
+        currentStatus !== 'SUBMITTED';
+}
+function buildSyntheticRejectTransition(currentStatus) {
+    return {
+        id: 'reject',
+        fromState: currentStatus,
+        toState: 'REJECTED',
+        action: localized('Reject', 'Reject'),
+        requiresReason: true,
+        requiresDocuments: false,
+        requiredRole: 'officer',
+        autoTransition: false
+    };
+}
 export function getAvailableWorkflowActions(workflow, currentStatus, user) {
     if (!workflow.isActive)
         return [];
-    return workflow.transitions
+    const actions = workflow.transitions
         .filter((transition) => transition.fromState === currentStatus &&
         !transition.autoTransition &&
         roleCanPerformTransition(user, transition.requiredRole))
@@ -91,10 +109,29 @@ export function getAvailableWorkflowActions(workflow, currentStatus, user) {
         requiresReason: transition.requiresReason === true,
         requiresDocuments: transition.requiresDocuments === true
     }));
+    if (!actions.some((action) => action.toState === 'REJECTED') && canUseSyntheticReject(user, currentStatus, workflow)) {
+        actions.push({
+            id: 'reject',
+            toState: 'REJECTED',
+            label: localized('Reject', 'Reject'),
+            requiresReason: true,
+            requiresDocuments: false
+        });
+    }
+    return actions;
 }
 export function getWorkflowTransition(workflow, currentStatus, user, transitionId) {
     if (!workflow.isActive)
         return null;
+    const transition = workflow.transitions.find((candidate) => candidate.id === transitionId &&
+        candidate.fromState === currentStatus &&
+        !candidate.autoTransition &&
+        roleCanPerformTransition(user, candidate.requiredRole)) ?? null;
+    if (transition)
+        return transition;
+    if (transitionId === 'reject' && canUseSyntheticReject(user, currentStatus, workflow)) {
+        return buildSyntheticRejectTransition(currentStatus);
+    }
     return workflow.transitions.find((transition) => transition.id === transitionId &&
         transition.fromState === currentStatus &&
         !transition.autoTransition &&

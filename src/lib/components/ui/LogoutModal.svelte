@@ -1,39 +1,50 @@
 <script>
-
   import { LogOut, X } from "@lucide/svelte";
   import { t } from "$lib/i18n";
 
-let { isOpen = $bindable(false), onConfirm } = $props();
+  let { isOpen = $bindable(false), onConfirm } = $props();
 </script>
 
 {#if isOpen}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <!-- Backdrop with custom backdrop-blur and animation -->
     <div
-      class="absolute inset-0 bg-[#071A28]/60 backdrop-blur-sm transition-opacity"
+      class="absolute inset-0 bg-black/45 backdrop-blur-md transition-opacity duration-300 animate-fade-in"
       onclick={() => (isOpen = false)}
     ></div>
 
+    <!-- Modal Container -->
     <div
-      class="relative bg-surface dark:bg-surface-container-highest rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+      class="relative bg-surface border border-border/40 dark:border-border-strong/40 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200"
     >
       <div class="p-6">
-        <div
-          class="w-12 h-12 bg-danger-soft text-danger rounded-full flex items-center justify-center mb-4"
-        >
-          <LogOut class="w-6 h-6" />
+        <!-- Icon Container with Animated Glow and Rings -->
+        <div class="flex justify-center mb-6">
+          <div class="relative">
+            <div class="absolute inset-0 rounded-full bg-danger/20 blur-md animate-pulse"></div>
+            <div class="relative w-14 h-14 bg-danger-soft text-danger border border-danger/10 rounded-full flex items-center justify-center shadow-inner">
+              <LogOut class="w-6 h-6" />
+            </div>
+          </div>
         </div>
 
-        <h3 class="text-lg font-bold text-text mb-2">
-          {t("logout.confirmTitle")}
-        </h3>
-        <p class="text-sm text-text-muted mb-6">{t("logout.confirmText")}</p>
+        <!-- Title & Description -->
+        <div class="text-center mb-6">
+          <h3 class="text-lg font-extrabold text-text tracking-tight mb-2">
+            {t("logout.confirmTitle")}
+          </h3>
+          <p class="text-xs text-text-muted px-2 leading-relaxed font-medium">
+            {t("logout.confirmText")}
+          </p>
+        </div>
 
+        <!-- Action Buttons with micro-interactions -->
         <div class="flex items-center gap-3 w-full">
           <button
             onclick={() => (isOpen = false)}
-            class="flex-1 py-2.5 px-4 bg-surface-container text-text-muted font-bold text-sm rounded-xl hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors"
+            class="flex-1 py-3 px-4 bg-surface-container text-text-muted hover:text-text font-bold text-xs uppercase tracking-wider rounded-2xl hover:bg-surface-container-high active:scale-95 transition-all duration-200 cursor-pointer border border-border/30"
           >
             {t("cancel")}
           </button>
@@ -42,18 +53,19 @@ let { isOpen = $bindable(false), onConfirm } = $props();
               isOpen = false;
               onConfirm();
             }}
-            class="flex-1 py-2.5 px-4 bg-danger text-white font-bold text-sm rounded-xl hover:bg-danger/90 shadow-sm shadow-danger/20 transition-colors"
+            class="flex-1 py-3 px-4 bg-danger text-white font-bold text-xs uppercase tracking-wider rounded-2xl hover:bg-danger/95 shadow-md shadow-danger/10 hover:shadow-lg hover:shadow-danger/20 active:scale-95 transition-all duration-200 cursor-pointer transform hover:-translate-y-0.5"
           >
             {t("logout.confirmBtn")}
           </button>
         </div>
       </div>
 
+      <!-- Close icon button -->
       <button
         onclick={() => (isOpen = false)}
-        class="absolute top-4 right-4 text-text-faint hover:text-text transition-colors"
+        class="absolute top-4 right-4 text-text-faint hover:text-text rounded-lg p-1 hover:bg-surface-container/50 transition-colors cursor-pointer"
       >
-        <X class="w-5 h-5" />
+        <X class="w-4 h-4" />
       </button>
     </div>
   </div>

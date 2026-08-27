@@ -9,7 +9,8 @@ export const load = async ({ params, locals, url }) => {
         throw redirect(303, catalogService.externalUrl || `/services/${params.slug}`);
     }
     let draftApplication = null;
-    if (locals.user?.role === 'citizen') {
+    const userRole = locals.user?.role;
+    if (userRole === 'citizen' || userRole === 'operator') {
         const draftId = url.searchParams.get('draft');
         if (draftId) {
             const existingDraft = await getApplicationForUser(locals.user, draftId);
@@ -17,7 +18,7 @@ export const load = async ({ params, locals, url }) => {
                 draftApplication = existingDraft;
             }
         }
-        if (!draftApplication) {
+        if (!draftApplication && userRole === 'citizen') {
             draftApplication = await findLatestDraftForCitizenByService(locals.user, catalogService.id);
         }
     }

@@ -1,5 +1,4 @@
-﻿<script>
-
+<script>
   import { tt, locale } from '$lib/i18n';
   import { currentUser, isAuthenticated, userRole } from '$lib/stores/auth';
   import { departments } from '$lib/data/departments';
@@ -19,29 +18,32 @@
     TrendingUp
   } from '@lucide/svelte';
 
-let { data } = $props();
-const t = $derived($tt);
-const currentLocale = $derived($locale);
-const user = $derived($currentUser);
-const authenticated = $derived($isAuthenticated);
-const role = $derived($userRole);
-const services = $derived(data.catalog.services);
-const stats = $derived(data.stats);
-const totalServices = $derived(services.length);
-const nativeServices = $derived(services.filter((s) => s.implementationMode === 'NATIVE_WORKFLOW').length);
-const apiServices = $derived(services.filter((s) => s.implementationMode === 'API_INTEGRATED').length);
-const externalServices = $derived(services.filter((s) => s.implementationMode === 'EXTERNAL_REDIRECT').length);
-function getDeptName(deptId) {
+  let { data } = $props();
+  const t = $derived($tt);
+  const currentLocale = $derived($locale);
+  const user = $derived($currentUser);
+  const authenticated = $derived($isAuthenticated);
+  const role = $derived($userRole);
+  const services = $derived(data.catalog.services);
+  const stats = $derived(data.stats);
+  const totalServices = $derived(services.length);
+  const nativeServices = $derived(services.filter((s) => s.implementationMode === 'NATIVE_WORKFLOW').length);
+  const apiServices = $derived(services.filter((s) => s.implementationMode === 'API_INTEGRATED').length);
+  const externalServices = $derived(services.filter((s) => s.implementationMode === 'EXTERNAL_REDIRECT').length);
+
+  function getDeptName(deptId) {
     const dept = departments.find(d => d.id === deptId);
     return dept ? (currentLocale === 'ta' ? dept.nameTA : dept.shortName || dept.name) : deptId.replace('dept-', '');
-}
-// Calculate bar widths for chart
-function barWidth(value, max) {
+  }
+
+  function barWidth(value, max) {
     return max > 0 ? Math.max(8, (value / max) * 100) : 8;
-}
-const maxStatusCount = $derived(Math.max(...Object.values(stats.statusBreakdown).map(v => Number(v)), 1));
-const maxDeptCount = $derived(Math.max(...Object.values(stats.departmentBreakdown).map(v => Number(v)), 1));
-const statusColors = {
+  }
+
+  const maxStatusCount = $derived(Math.max(...Object.values(stats.statusBreakdown).map(v => Number(v)), 1));
+  const maxDeptCount = $derived(Math.max(...Object.values(stats.departmentBreakdown).map(v => Number(v)), 1));
+  
+  const statusColors = {
     DRAFT: 'bg-muted text-text',
     SUBMITTED: 'bg-primary text-white',
     DOCUMENT_VERIFICATION: 'bg-warning text-white',
@@ -54,8 +56,9 @@ const statusColors = {
     CERTIFICATE_GENERATED: 'bg-success text-white',
     COMPLETED: 'bg-success text-white',
     CANCELLED: 'bg-muted text-text'
-};
-const statusLabels = {
+  };
+
+  const statusLabels = {
     DRAFT: 'Draft',
     SUBMITTED: 'Submitted',
     DOCUMENT_VERIFICATION: 'Doc Verification',
@@ -68,11 +71,11 @@ const statusLabels = {
     CERTIFICATE_GENERATED: 'Certificate Ready',
     COMPLETED: 'Completed',
     CANCELLED: 'Cancelled'
-};
+  };
 </script>
 
 <svelte:head>
-  <title>{t('admin.title')} â€” TN Hub</title>
+  <title>{t('admin.title')} — TN Hub</title>
 </svelte:head>
 
 {#if !authenticated || role !== 'admin'}
@@ -128,7 +131,7 @@ const statusLabels = {
             Total Users
           </div>
           <div class="mt-2 text-3xl font-bold text-primary">{stats.totalUsers}</div>
-          <div class="mt-1 text-[10px] font-bold text-text-muted">{stats.citizenUsers} citizens â€¢ {stats.operatorUsers + stats.officerUsers} officials</div>
+          <div class="mt-1 text-[10px] font-bold text-text-muted">{stats.citizenUsers} citizens • {stats.operatorUsers + stats.officerUsers} officials</div>
         </div>
 
         <div class="rounded-2xl border border-border bg-surface p-5 shadow-vazhi-1">
@@ -137,7 +140,7 @@ const statusLabels = {
             Total Services
           </div>
           <div class="mt-2 text-3xl font-bold text-primary">{totalServices}</div>
-          <div class="mt-1 text-[10px] font-bold text-text-muted">{nativeServices} native â€¢ {apiServices} API â€¢ {externalServices} external</div>
+          <div class="mt-1 text-[10px] font-bold text-text-muted">{nativeServices} native • {apiServices} API • {externalServices} external</div>
         </div>
       </div>
 
@@ -164,13 +167,13 @@ const statusLabels = {
               <MessageCircleQuestion class="h-4 w-4" />
             </div>
             <div>
-              <span class="text-xs font-bold text-text">Help Desk</span>
+              <span class="text-xs font-bold text-text">Help Desk & Grievance</span>
               {#if stats.pendingQuestions > 0}
                 <span class="ml-1.5 inline-flex items-center justify-center w-5 h-5 rounded-full bg-warning text-white text-[9px] font-bold">{stats.pendingQuestions}</span>
               {/if}
             </div>
           </div>
-          <p class="text-[10px] text-text-muted mt-2">User inquiries & replies</p>
+          <p class="text-[10px] text-text-muted mt-2">User inquiries, grievances & replies</p>
         </a>
 
         <a href="/admin/profile" class="rounded-2xl border border-border bg-surface p-5 shadow-vazhi-1 hover:shadow-vazhi-2 transition group">
@@ -182,7 +185,6 @@ const statusLabels = {
           </div>
           <p class="text-[10px] text-text-muted mt-2">View account details</p>
         </a>
-
       </div>
 
       <!-- Charts Row -->
@@ -304,7 +306,7 @@ const statusLabels = {
                       </span>
                     {/if}
                   </td>
-                  <td class="p-3">{svc.processingTimeDays}d â€¢ â‚¹{svc.fee}</td>
+                  <td class="p-3">{svc.processingTimeDays}d • ₹{svc.fee}</td>
                   <td class="p-3 font-bold text-success">Active</td>
                 </tr>
               {/each}

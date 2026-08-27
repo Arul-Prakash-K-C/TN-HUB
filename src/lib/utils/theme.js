@@ -41,11 +41,11 @@ export function applyThemeMode(mode) {
 }
 export function getPreferredThemeMode() {
     if (typeof window === 'undefined')
-        return 'dark';
+        return 'light';
     const stored = localStorage.getItem('theme-mode');
     if (stored === 'light' || stored === 'dark')
         return stored;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return 'light';
 }
 export function loadSavedTheme() {
     if (typeof window === 'undefined')

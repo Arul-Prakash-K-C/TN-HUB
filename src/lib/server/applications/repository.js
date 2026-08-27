@@ -170,6 +170,9 @@ function toApplication(snapshot, details = {}) {
         formData,
         documents: details.documents ?? inlineDocuments,
         history: details.history ?? [],
+        reviewedDocumentIds: Array.isArray(data.reviewedDocumentIds)
+            ? data.reviewedDocumentIds.filter((value) => typeof value === 'string' && value.trim().length > 0)
+            : [],
         assignedOfficerId: optionalString(data.assignedOfficerId),
         assignedOfficerName: optionalString(data.assignedOfficerName),
         rejectionReason: optionalString(data.rejectionReason),
@@ -204,6 +207,13 @@ function assertDepartmentProcessor(user, application) {
     if (user.role !== 'department_user' || !user.departmentId || application.departmentId !== user.departmentId) {
         throw new Error('You are not authorized to process this application.');
     }
+}
+function normalizeReviewedDocumentIds(value) {
+    if (!Array.isArray(value))
+        return [];
+    return [...new Set(value
+            .filter((entry) => typeof entry === 'string' && entry.trim().length > 0)
+            .map((entry) => entry.trim()))];
 }
 async function getApplicationSnapshot(applicationId) {
     return getFirebaseAdminFirestore().collection('applications').doc(applicationId).get();
@@ -270,6 +280,7 @@ async function createApplicationForCitizen(citizen, input, assistedByOperator) {
             currentStage: status,
             formData: input.formData,
             documents: [],
+            reviewedDocumentIds: [],
             assignedOfficerId: null,
             submittedAt: input.submit ? now : null,
             ...(input.submit ? {
@@ -490,6 +501,8 @@ export async function transitionApplication(user, applicationId, input) {
     const workflow = await getWorkflowDefinition(workflowId);
     if (!workflow)
         throw new Error('Application workflow is unavailable.');
+    const serviceId = requiredString(initialData.serviceId, 'service ID');
+    const service = await getCatalogService(serviceId);
     const comment = input.comment?.trim();
     if (comment && comment.length > 2000)
         throw new Error('Remarks are too long.');
@@ -500,6 +513,10 @@ export async function transitionApplication(user, applicationId, input) {
         const application = applicationSnapshot.data();
         if (!canReadApplication(user, application))
             throw new Error('Application not found.');
+        const storedApplicationId = requiredString(application.id ?? applicationRef.id, 'id');
+        const trackingId = requiredString(application.trackingId, 'tracking ID');
+        const citizenId = requiredString(application.citizenId, 'citizen ID');
+        const assistedByOperatorId = optionalString(application.assistedByOperatorId);
         if (requiredString(application.workflowId, 'workflow ID') !== workflowId) {
             throw new Error('The application workflow changed. Refresh and try again.');
         }
@@ -522,8 +539,18 @@ export async function transitionApplication(user, applicationId, input) {
                 .map((officer) => officer.id)
             : [];
         const documents = Array.isArray(application.documents) ? application.documents : [];
+        const reviewedDocumentIds = normalizeReviewedDocumentIds(application.reviewedDocumentIds);
+        const submittedDocumentIds = documents
+            .map((document) => optionalString(document.id) ?? optionalString(document.documentId))
+            .filter((documentId) => typeof documentId === 'string');
         if (transition.requiresDocuments && documents.length === 0) {
             throw new Error('Required documents have not been uploaded.');
+        }
+        if (user.role === 'department_user' && ['APPROVED', 'REJECTED'].includes(targetStatus)) {
+            const unreviewedDocuments = submittedDocumentIds.filter((documentId) => !reviewedDocumentIds.includes(documentId));
+            if (submittedDocumentIds.length > 0 && unreviewedDocuments.length > 0) {
+                throw new Error('Please view all submitted documents before making a final decision.');
+            }
         }
         const now = Timestamp.now();
         const automaticTransitions = [];
@@ -558,6 +585,36 @@ export async function transitionApplication(user, applicationId, input) {
             update.rejectionReason = comment ?? null;
         if (workflow.terminalStates.includes(finalStatus))
             update.completedAt = now;
+        if (currentStatus === 'CLARIFICATION_REQUESTED' && targetStatus === 'DOCUMENT_VERIFICATION') {
+            update.isResubmitted = true;
+            update.isReady = true;
+        } else if (currentStatus === 'DOCUMENT_VERIFICATION') {
+            update.isResubmitted = false;
+            update.isReady = false;
+        }
+        if (finalStatus === 'APPROVED' || finalStatus === 'COMPLETED') {
+            const certRef = db.collection('documents').doc();
+            const serviceName = service ? service.name.en : (workflowId.includes('income') ? 'Income Certificate' : (workflowId.includes('adangal') ? 'e-Adangal Extract' : 'Government Certificate'));
+            const serviceNameTA = service ? service.name.ta : (workflowId.includes('income') ? 'வருமானச் சான்றிதழ்' : (workflowId.includes('adangal') ? 'இ-அடங்கல் சாறு' : 'அரசு சான்றிதழ்'));
+            transaction.set(certRef, {
+                id: certRef.id,
+                applicationId: null,
+                citizenId,
+                documentType: 'certificates',
+                name: { en: serviceName, ta: serviceNameTA },
+                category: 'certificates',
+                fileName: `${trackingId}.pdf`,
+                storagePath: '',
+                mimeType: 'application/pdf',
+                size: 256 * 1024,
+                uploadedAt: now,
+                uploadedBy: 'system',
+                status: 'verified',
+                source: 'SYSTEM',
+                issuedBy: 'Government of Tamil Nadu',
+                documentNumber: trackingId
+            });
+        }
         const historyRef = applicationRef.collection('statusHistory').doc();
         transaction.update(applicationRef, update);
         transaction.set(historyRef, {
@@ -586,9 +643,6 @@ export async function transitionApplication(user, applicationId, input) {
                 createdAt: now
             });
         }
-        const storedApplicationId = requiredString(application.id ?? applicationRef.id, 'id');
-        const trackingId = requiredString(application.trackingId, 'tracking ID');
-        const citizenId = requiredString(application.citizenId, 'citizen ID');
         const assignmentChanged = user.role === 'department_user'
             && optionalString(application.assignedOfficerId) !== user.uid;
         writeAuditLogInTransaction(db, transaction, {
@@ -635,6 +689,16 @@ export async function transitionApplication(user, applicationId, input) {
             targetStatus,
             finalStatus
         }));
+        if (assistedByOperatorId) {
+            writeNotificationInTransaction(db, transaction, applicationTransitionNotification({
+                recipientId: assistedByOperatorId,
+                applicationId: storedApplicationId,
+                trackingId,
+                fromStatus: currentStatus,
+                targetStatus,
+                finalStatus
+            }));
+        }
         if (departmentRecipientIds.length > 0) {
             writeDepartmentSubmissionNotificationsInTransaction(db, transaction, {
                 recipientIds: departmentRecipientIds,
@@ -816,6 +880,44 @@ export async function reviewApplicationDocument(user, applicationId, documentId,
         throw new Error('Application not found.');
     return application;
 }
+export async function markApplicationDocumentViewed(user, applicationId, documentId) {
+    const db = getFirebaseAdminFirestore();
+    const applicationRef = db.collection('applications').doc(applicationId);
+    const normalizedDocumentId = documentId.trim();
+    if (!normalizedDocumentId)
+        throw new Error('Document ID is required.');
+    await db.runTransaction(async (transaction) => {
+        const snapshot = await transaction.get(applicationRef);
+        if (!snapshot.exists)
+            throw new Error('Application not found.');
+        const application = snapshot.data();
+        if (!canReadApplication(user, application))
+            throw new Error('Application not found.');
+        if (user.role !== 'department_user' && user.role !== 'admin') {
+            throw new Error('You are not authorized to review this document.');
+        }
+        if (user.role === 'department_user' && user.departmentId && application.departmentId !== user.departmentId) {
+            throw new Error('You are not authorized to review this document.');
+        }
+        const applicationDocuments = Array.isArray(application.documents) ? application.documents : [];
+        const hasDocument = applicationDocuments.some((document) => optionalString(document.id) === normalizedDocumentId || optionalString(document.documentId) === normalizedDocumentId);
+        if (!hasDocument) {
+            throw new Error('Application document not found.');
+        }
+        const reviewedDocumentIds = normalizeReviewedDocumentIds(application.reviewedDocumentIds);
+        if (!reviewedDocumentIds.includes(normalizedDocumentId)) {
+            reviewedDocumentIds.push(normalizedDocumentId);
+        }
+        transaction.update(applicationRef, {
+            reviewedDocumentIds,
+            updatedAt: Timestamp.now()
+        });
+    });
+    const application = await getApplicationForUser(user, applicationId);
+    if (!application)
+        throw new Error('Application not found.');
+    return application;
+}
 export async function updateApplicationDraft(user, applicationId, formData) {
     const db = getFirebaseAdminFirestore();
     const applicationRef = db.collection('applications').doc(applicationId);
@@ -828,8 +930,9 @@ export async function updateApplicationDraft(user, applicationId, formData) {
     if (!isOwner && !isAssistingOperator && user.role !== 'admin') {
         throw new Error('Unauthorized to update this application.');
     }
-    if (asApplicationStatus(initialData.status) !== 'DRAFT') {
-        throw new Error('Only drafts can be updated.');
+    const currentStatus = asApplicationStatus(initialData.status);
+    if (currentStatus !== 'DRAFT' && currentStatus !== 'CLARIFICATION_REQUESTED') {
+        throw new Error('Only drafts and correction-requested applications can be updated.');
     }
     const now = Timestamp.now();
     await applicationRef.update({

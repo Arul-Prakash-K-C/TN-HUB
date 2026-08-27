@@ -528,7 +528,7 @@ export const services = [
         faqs: [
             { question: 'Can I cancel my bus ticket online?', questionTA: 'ஆன்லைனில் பஸ் டிக்கெட்டை ரத்து செய்ய முடியுமா?', answer: 'Yes, tickets booked online can be cancelled through the TNSTC portal.', answerTA: 'ஆம், ஆன்லைனில் முன்பதிவு செய்த டிக்கெட்டுகளை TNSTC போர்டல் மூலம் ரத்து செய்யலாம்.' }
         ],
-        externalUrl: 'https://www.tnstc.in/OTRSOnline/',
+        externalUrl: 'https://vazhi-cyan.vercel.app/',
         externalDepartmentName: 'Tamil Nadu State Transport Corporation',
         relatedServiceIds: [],
         isActive: true,
