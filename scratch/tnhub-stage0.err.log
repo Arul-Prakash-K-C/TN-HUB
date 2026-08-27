@@ -1,0 +1,33 @@
+[2m10:39:53 am[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mFailed to hydrate:  TypeError: Cannot read properties of undefined (reading 'call')
+    at get_next_sibling (http://localhost:5173/node_modules/.vite/deps/runtime-IS40GQt7.js?v=cdf6e092:4146:29)
+    at remove_effect_dom (http://localhost:5173/node_modules/.vite/deps/runtime-IS40GQt7.js?v=cdf6e092:4646:52)
+    at destroy_effect (http://localhost:5173/node_modules/.vite/deps/runtime-IS40GQt7.js?v=cdf6e092:4622:3)
+    at create_effect (http://localhost:5173/node_modules/.vite/deps/runtime-IS40GQt7.js?v=cdf6e092:4356:4)
+    at branch (http://localhost:5173/node_modules/.vite/deps/runtime-IS40GQt7.js?v=cdf6e092:4563:9)
+    at http://localhost:5173/node_modules/.vite/deps/client-C8wJpTiP.js?v=cdf6e092:700:13
+    at update_reaction (http://localhost:5173/node_modules/.vite/deps/runtime-IS40GQt7.js?v=cdf6e092:4933:16)
+    at update_effect (http://localhost:5173/node_modules/.vite/deps/runtime-IS40GQt7.js?v=cdf6e092:5040:18)
+    at create_effect (http://localhost:5173/node_modules/.vite/deps/runtime-IS40GQt7.js?v=cdf6e092:4354:4)
+    at block (http://localhost:5173/node_modules/.vite/deps/runtime-IS40GQt7.js?v=cdf6e092:4546:15)
+[2m10:39:53 am[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [31m[Unhandled rejection] [1mTypeError[22m: Cannot read properties of undefined (reading 'call')
+
+	in <unknown>
+
+
+	in <unknown>
+	in +layout.svelte
+	in +layout.svelte
+	in root.svelte
+	in undefined
+
+[39m > get_next_sibling node_modules/svelte/src/internal/client/dom/operations.js:100:64
+ > remove_effect_dom node_modules/svelte/src/internal/client/reactivity/effects.js:573:35
+ > destroy_effect node_modules/svelte/src/internal/client/reactivity/effects.js:519:2
+ > create_effect node_modules/svelte/src/internal/client/reactivity/effects.js:139:3
+ > branch node_modules/svelte/src/internal/client/reactivity/effects.js:437:8
+ > node_modules/svelte/src/internal/client/dev/hmr.js:42:12
+ > update_reaction node_modules/svelte/src/internal/client/runtime.js:259:15
+ > update_effect node_modules/svelte/src/internal/client/runtime.js:478:17
+ > create_effect node_modules/svelte/src/internal/client/reactivity/effects.js:137:3
+ > block node_modules/svelte/src/internal/client/reactivity/effects.js:414:14
+

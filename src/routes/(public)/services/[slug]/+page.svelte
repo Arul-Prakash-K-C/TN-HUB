@@ -1,23 +1,22 @@
-<script lang="ts">
+<script>
+
   import { tt, locale } from '$lib/i18n';
   import { isAuthenticated } from '$lib/stores/auth';
   import { ArrowLeft, Clock, FileText, IndianRupee, CheckCircle, ExternalLink, Zap, ChevronDown, ChevronUp, AlertTriangle } from '@lucide/svelte';
 
-  let { data } = $props();
-
-  const t = $derived($tt);
-  const currentLocale = $derived($locale);
-  const authenticated = $derived($isAuthenticated);
-  const service = $derived(data.catalogService);
-  const departmentName = $derived.by(() => {
+let { data } = $props();
+const t = $derived($tt);
+const currentLocale = $derived($locale);
+const authenticated = $derived($isAuthenticated);
+const service = $derived(data.catalogService);
+const departmentName = $derived.by(() => {
     const department = data.catalog.departments.find((entry) => entry.id === service?.departmentId);
     return department ? (currentLocale === 'ta' ? department.nameTA : department.name) : service?.departmentId ?? '';
-  });
-  let openFaqIndex = $state<number | null>(null);
-
-  function toggleFaq(index: number) {
+});
+let openFaqIndex = $state(null);
+function toggleFaq(index) {
     openFaqIndex = openFaqIndex === index ? null : index;
-  }
+}
 </script>
 
 <svelte:head>
@@ -25,9 +24,9 @@
 </svelte:head>
 
 {#if service}
-  <div class="bg-surface-secondary min-h-screen">
+  <div class="bg-background min-h-screen">
     <!-- Breadcrumb -->
-    <div class="bg-white border-b border-border">
+    <div class="bg-surface border-b border-border">
       <div class="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
         <nav class="flex items-center gap-2 text-sm text-text-muted">
           <a href="/services" class="hover:text-primary transition flex items-center gap-1">
@@ -45,7 +44,7 @@
         <!-- Main content -->
         <div class="lg:col-span-2 space-y-6">
           <!-- Title card -->
-          <div class="rounded-xl border border-border bg-white p-6 shadow-sm">
+          <div class="rounded-xl border border-border bg-surface p-6 shadow-sm">
             <div class="flex items-start justify-between mb-4">
               <div>
                 <h1 class="text-h1 text-text">
@@ -75,7 +74,7 @@
           </div>
 
           <!-- Eligibility -->
-          <div class="rounded-xl border border-border bg-white p-6 shadow-sm">
+          <div class="rounded-xl border border-border bg-surface p-6 shadow-sm">
             <h2 class="text-h3 text-text mb-4">{t('service.eligibility')}</h2>
             <ul class="space-y-2">
               {#each (currentLocale === 'ta' ? service.eligibilityTA : service.eligibility) as item}
@@ -93,7 +92,7 @@
 
           <!-- Required Documents -->
           {#if service.requiredDocuments.length > 0}
-            <div class="rounded-xl border border-border bg-white p-6 shadow-sm">
+            <div class="rounded-xl border border-border bg-surface p-6 shadow-sm">
               <h2 class="text-h3 text-text mb-4">{t('service.requiredDocs')}</h2>
               <div class="space-y-3">
                 {#each service.requiredDocuments as doc}
@@ -121,7 +120,7 @@
 
           <!-- Steps -->
           {#if service.applicationSteps.length > 0}
-            <div class="rounded-xl border border-border bg-white p-6 shadow-sm">
+            <div class="rounded-xl border border-border bg-surface p-6 shadow-sm">
               <h2 class="text-h3 text-text mb-4">{t('service.steps')}</h2>
               <div class="space-y-4">
                 {#each service.applicationSteps as step}
@@ -141,12 +140,12 @@
 
           <!-- FAQ -->
           {#if service.faqs.length > 0}
-            <div class="rounded-xl border border-border bg-white p-6 shadow-sm">
+            <div class="rounded-xl border border-border bg-surface p-6 shadow-sm">
               <h2 class="text-h3 text-text mb-4">{t('service.faq')}</h2>
               <div class="space-y-2">
                 {#each service.faqs as faq, i}
                   <div class="border border-border rounded-lg">
-                    <button onclick={() => toggleFaq(i)} class="flex w-full items-center justify-between p-4 text-left text-sm font-medium text-text hover:bg-surface-secondary transition">
+                    <button onclick={() => toggleFaq(i)} class="flex w-full items-center justify-between p-4 text-left text-sm font-medium text-text hover:bg-background transition">
                       {currentLocale === 'ta' ? faq.questionTA : faq.question}
                       {#if openFaqIndex === i}<ChevronUp class="h-4 w-4" />{:else}<ChevronDown class="h-4 w-4" />{/if}
                     </button>
@@ -165,7 +164,7 @@
         <!-- Sidebar -->
         <div class="space-y-4">
           <!-- Quick info card -->
-          <div class="rounded-xl border border-border bg-white p-6 shadow-sm sticky top-24">
+          <div class="rounded-xl border border-border bg-surface p-6 shadow-sm sticky top-24">
             <div class="space-y-4">
               <div class="flex items-center justify-between">
                 <span class="text-sm text-text-muted">{t('service.fees')}</span>

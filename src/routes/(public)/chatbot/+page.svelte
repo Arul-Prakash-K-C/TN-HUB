@@ -1,194 +1,313 @@
-<script lang="ts">
-  import { tt, locale } from '$lib/i18n';
-  import { Send, Bot, User, HelpCircle } from '@lucide/svelte';
+<script>
 
-  const t = $derived($tt);
-  const currentLocale = $derived($locale);
+  import { goto } from '$app/navigation';
+  import { Bot, ChevronLeft, RefreshCcw, Route, ShieldCheck, Sparkles, ArrowRight } from '@lucide/svelte';
+  import { locale, tt } from '$lib/i18n';
+  import { buildScreen, createInitialContext } from '$lib/thozhan/assistant';
 
-  interface ChatMessage {
-    id: string;
-    sender: 'user' | 'bot';
-    text: string;
-    timestamp: string;
-  }
-
-  let query = $state('');
-  let messages = $state<ChatMessage[]>([]);
-  let isTyping = $state(false);
-
-  const sampleSuggestions = [
-    "How to apply for an Income Certificate?",
-    "What documents are needed for a new Ration Card?",
-    "Check community certificate eligibility",
-    "How long does a nativity certificate take?"
-  ];
-
-  const sampleSuggestionsTA = [
-    "வருமான சான்றிதழுக்கு விண்ணப்பிப்பது எப்படி?",
-    "புதிய ரேஷன் கார்டுக்கு என்ன ஆவணங்கள் தேவை?",
-    "சமூக சான்றிதழ் தகுதியை சரிபார்க்கவும்",
-    "இருப்பிட சான்றிதழ் பெற எவ்வளவு காலம் ஆகும்?"
-  ];
-
-  const activeSuggestions = $derived(currentLocale === 'ta' ? sampleSuggestionsTA : sampleSuggestions);
-
-  function handleSend(promptText?: string) {
-    const textToSend = promptText || query;
-    if (!textToSend.trim()) return;
-
-    const userMsg: ChatMessage = {
-      id: Date.now().toString(),
-      sender: 'user',
-      text: textToSend,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-
-    messages = [...messages, userMsg];
-    if (!promptText) query = '';
-    isTyping = true;
-
-    // Simulate AI response synthesis
-    setTimeout(() => {
-      let botAnswer = "To apply for an Income Certificate in Tamil Nadu, you need: 1) Aadhaar Card, 2) Ration Card, 3) Salary proof or Income self-declaration, and 4) Address proof. Processing time is usually 5-7 working days and there is no service fee.";
-      
-      const lower = textToSend.toLowerCase();
-      if (lower.includes('ration') || lower.includes('ரேஷன்')) {
-        botAnswer = "For a new Ration Card under PDS Tamil Nadu: Submit Aadhaar cards of all family members, address proof (electricity bill or gas consumer card), and income details. Process takes 10-15 working days.";
-      } else if (lower.includes('community') || lower.includes('சமூக')) {
-        botAnswer = "Community Certificates certify SC/ST/BC/MBC categories in TN. Applicants must be residents of Tamil Nadu and submit Aadhaar, School TC, and parent community certificate.";
-      } else if (lower.includes('nativity') || lower.includes('இருப்பிட')) {
-        botAnswer = "A Nativity Certificate confirms you are a native of Tamil Nadu. Processing takes 5-7 working days. Required documents: Aadhaar card, School Transfer Certificate, and parent's nativity proof.";
-      } else if (lower.includes('track') || lower.includes('status') || lower.includes('கண்காணி')) {
-        botAnswer = "You can track your submitted application by clicking 'Track Application' in the top menu or navigating to your Citizen Dashboard after logging in.";
-      }
-
-      const botMsg: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        sender: 'bot',
-        text: botAnswer,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-
-      messages = [...messages, botMsg];
-      isTyping = false;
-    }, 1000);
-  }
+let { data } = $props();
+const t = $derived($tt);
+const currentLocale = $derived($locale);
+const assistantData = $derived({
+    user: data.user ?? null,
+    services: data.catalog?.services ?? [],
+    departments: data.catalog?.departments ?? [],
+    applications: data.applications ?? [],
+    documents: data.documents ?? []
+});
+let history = $state([createInitialContext()]);
+const currentContext = $derived(history[history.length - 1]);
+const screen = $derived(buildScreen(currentContext, assistantData, currentLocale, t));
+function resolveText(text) {
+    if (!text)
+        return '';
+    return text.type === 'key' ? t(text.key, text.params) : text.value;
+}
+function pushState(nextContext) {
+    history = [...history, nextContext];
+}
+function goBack() {
+    if (history.length === 1)
+        return;
+    history = history.slice(0, -1);
+}
+function startOver() {
+    history = [createInitialContext()];
+}
+async function handleOption(option) {
+    if (option.disabled)
+        return;
+    if (option.id === 'back') {
+        goBack();
+        return;
+    }
+    if (option.id === 'startOver') {
+        startOver();
+        return;
+    }
+    const action = option.action;
+    if (action.kind === 'state') {
+        pushState({
+            ...currentContext,
+            ...(action.patch ?? {}),
+            state: action.nextState
+        });
+        return;
+    }
+    if (action.kind === 'navigate') {
+        await goto(action.href);
+        return;
+    }
+    if (action.kind === 'external') {
+        window.open(action.href, '_blank', 'noopener,noreferrer');
+    }
+}
+const visibleOptions = $derived(screen.options.filter((option) => !option.disabled || option.id === 'recentlyUsedServices'));
+const actionOptions = $derived(screen.actions ?? []);
+// Split actions into operations and navigation
+const operations = $derived(actionOptions.filter(a => a.id !== 'back' && a.id !== 'startOver'));
+const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id === 'startOver'));
 </script>
 
 <svelte:head>
-  <title>{t('chatbot.title')} — TN Hub</title>
+  <title>{t('chatbot.controlled.pageTitle')} - TN Hub</title>
 </svelte:head>
 
-<div class="bg-white flex-1 flex flex-col w-full min-h-[calc(100vh-4rem)] relative">
-  
-  {#if messages.length === 0}
-    <!-- Clean Minimalist Landing Screen -->
-    <div class="flex-1 flex flex-col items-center justify-center px-6 sm:px-8 w-full max-w-2xl mx-auto text-center pb-36 pt-12">
-      <!-- 8-Petal Minimalist Flower Icon -->
-      <div class="flex items-center justify-center mb-6">
-        <div class="h-16 w-16 rounded-full bg-stone-50 border border-stone-200 flex items-center justify-center text-stone-600 shadow-xs">
-          <svg class="h-8 w-8 text-stone-500/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3" />
-            <path d="M12 5V3m0 16v-2m-7-7H3m16 0h-2m-2.12-4.88l1.42-1.42M6.7 17.3l1.42-1.42m0-8.48L6.7 6.7m10.6 10.6l-1.42-1.42" />
-            <path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-4 0V4a2 2 0 0 1 2-2z" />
-            <path d="M12 16a2 2 0 0 1 2 2v2a2 2 0 0 1-4 0v-2a2 2 0 0 1 2-2z" />
-            <path d="M2 12a2 2 0 0 1 2-2h2a2 2 0 0 1 0 4H4a2 2 0 0 1-2-2z" />
-            <path d="M16 12a2 2 0 0 1 2-2h2a2 2 0 0 1 0 4h-2a2 2 0 0 1-2-2z" />
-          </svg>
+<div class="flex-grow min-h-screen w-full bg-background font-sans text-text">
+  <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 flex flex-col gap-6">
+    <!-- Hero Section -->
+    <section class="flex flex-col md:flex-row gap-6 items-start">
+      <div class="relative w-full flex-1 overflow-hidden rounded-xl border border-border bg-surface p-6 shadow-[var(--shadow-vazhi-1)]">
+        <!-- Background pattern/icon -->
+        <div class="absolute -right-16 -top-16 opacity-5 pointer-events-none">
+          <Sparkles class="w-[300px] h-[300px]" />
         </div>
-      </div>
 
-      <h1 class="text-2xl font-black text-slate-800 tracking-tight sm:text-3xl leading-snug">
-        {currentLocale === 'ta' ? "உரையாடுவோம்! உங்கள் மனதில் என்ன இருக்கிறது?" : "Let's chat! What's on your mind?"}
-      </h1>
-      
-      <p class="mt-3 text-sm text-slate-500 max-w-md leading-relaxed font-medium">
-        {currentLocale === 'ta' ? "கீழே உள்ள கேள்விகளில் இருந்து தேர்ந்தெடுக்கவும் அல்லது கேட்கத் தொடங்கவும். உங்களுக்கு உதவ நான் தயாராக இருக்கிறேன்." : "Choose from the prompts below or start asking queries. I'm here to help with whatever you need."}
-      </p>
-
-      <!-- Suggestion Grid -->
-      <div class="mt-10 w-full">
-        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-4">
-          {currentLocale === 'ta' ? "இவற்றை முயற்சிக்கவும்:" : "Try these prompts:"}
-        </p>
-        
-        <div class="grid gap-3 sm:grid-cols-2 w-full max-w-xl mx-auto">
-          {#each activeSuggestions as sug}
+        <!-- Breadcrumbs -->
+        {#if history.length > 1}
+          <div class="flex flex-wrap items-center gap-2 mb-4">
             <button
-              onclick={() => handleSend(sug)}
-              class="w-full text-left rounded-2xl border border-slate-200 bg-white p-4 text-xs font-bold text-slate-800 hover:bg-slate-50 hover:border-slate-300 transition shadow-xs flex items-center gap-3 active:scale-98 duration-100"
+              type="button"
+              onclick={goBack}
+              class="inline-flex items-center gap-2 rounded-xl bg-muted px-3 py-2 text-xs font-bold text-text transition hover:bg-surface-container"
             >
-              <HelpCircle class="h-4.5 w-4.5 text-stone-400 shrink-0" />
-              <span>{sug}</span>
+              <ChevronLeft class="h-4 w-4" />
+              {t('chatbot.action.back')}
+            </button>
+
+            {#each screen.breadcrumbs as crumb, index}
+              <span class="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.14em] text-text-muted">
+                {resolveText(crumb)}
+                {#if index < screen.breadcrumbs.length - 1}
+                  <Route class="h-3.5 w-3.5" />
+                {/if}
+              </span>
+            {/each}
+          </div>
+        {/if}
+
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div class="w-14 h-14 flex items-center justify-center shrink-0">
+            <img src="/thozhan-logo.png" alt="Thozhan AI Logo" class="w-14 h-14 object-contain" onerror={(e) => { (e.currentTarget).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling).style.display='block'; }} />
+              <Bot class="hidden h-7 w-7 text-primary" />
+          </div>
+          <div class="flex-1">
+            <div class="flex flex-wrap items-center gap-3">
+              <h2 class="text-[22px] font-bold leading-tight text-text">{history.length > 1 ? resolveText(screen.title) : 'Thozhan AI'}</h2>
+              <span class="flex items-center gap-1 rounded-full bg-primary-soft px-2 py-1 text-[10px] font-bold uppercase text-primary">
+                <ShieldCheck class="w-[12px] h-[12px]" /> Selection Only
+              </span>
+            </div>
+            <p class="mt-1 text-[15px] text-text-muted">{history.length > 1 ? resolveText(screen.description) : 'Choose guided options to find services, start applications, track status, review document requirements, and get TN HUB help.'}</p>
+          </div>
+          
+          {#if history.length > 1}
+            <button 
+              onclick={startOver}
+              class="mt-3 flex shrink-0 items-center gap-2 rounded-full border border-border px-4 py-2 text-[13px] font-medium transition-colors hover:bg-muted sm:ml-auto sm:mt-0"
+            >
+              <RefreshCcw class="w-[16px] h-[16px]" /> Start Over
+            </button>
+          {/if}
+        </div>
+
+        <!-- Auth Required / Result Card logic -->
+        {#if screen.authRequired}
+          <div class="mt-4 rounded-xl border border-warning/25 bg-warning-soft px-4 py-3 text-sm text-warning">
+            <div class="font-bold">{t('chatbot.authRequired.title')}</div>
+            <div class="mt-1">{t('chatbot.authRequired.description')}</div>
+          </div>
+        {/if}
+
+        {#if screen.resultCard}
+          <div class="mt-4 rounded-2xl border border-border bg-surface-container p-4">
+            <div class="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <h3 class="text-lg font-black tracking-tight text-text">{resolveText(screen.resultCard.title)}</h3>
+                {#if resolveText(screen.resultCard.subtitle)}
+                  <p class="mt-1 text-xs font-semibold text-text-muted">{resolveText(screen.resultCard.subtitle)}</p>
+                {/if}
+              </div>
+
+              {#if screen.resultCard.badges?.length}
+                <div class="flex flex-wrap gap-2">
+                  {#each screen.resultCard.badges as badge}
+                    <span class="rounded-full bg-surface px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.12em] text-primary shadow-sm">
+                      {resolveText(badge)}
+                    </span>
+                  {/each}
+                </div>
+              {/if}
+            </div>
+
+            {#if screen.resultCard.sections?.length}
+              <div class="mt-4 grid gap-3">
+                {#each screen.resultCard.sections as section}
+                  <div class="rounded-xl border border-border bg-surface p-4 shadow-sm">
+                    <h4 class="text-xs font-black uppercase tracking-[0.14em] text-text-muted">{resolveText(section.title)}</h4>
+                    <div class="mt-3 grid gap-2">
+                      {#each section.items as item}
+                        {#if resolveText(item.value)}
+                          <div class="rounded-xl bg-muted px-3 py-2">
+                            <div class="text-[10px] font-extrabold uppercase tracking-[0.12em] text-text-faint">{resolveText(item.label)}</div>
+                            <div class="mt-1 text-sm font-semibold leading-relaxed text-text">{resolveText(item.value)}</div>
+                          </div>
+                        {/if}
+                      {/each}
+                    </div>
+                  </div>
+                {/each}
+              </div>
+            {/if}
+
+            {#if resolveText(screen.resultCard.notice)}
+              <div class="mt-3 rounded-xl border border-border bg-surface px-4 py-3 text-xs font-medium leading-relaxed text-text-muted shadow-sm">
+                {resolveText(screen.resultCard.notice)}
+              </div>
+            {/if}
+          </div>
+        {/if}
+      </div>
+    </section>
+
+    <!-- Bento Grid Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Left Column: Primary Interaction -->
+      <div class="lg:col-span-2 rounded-xl border border-border bg-surface p-6 shadow-[var(--shadow-vazhi-1)]">
+        
+        {#if history.length === 1}
+          <div class="flex items-start gap-4 mb-6">
+            <div class="w-10 h-10 flex items-center justify-center shrink-0">
+              <img src="/thozhan-logo.png" alt="Thozhan AI Logo" class="w-10 h-10 object-contain" onerror={(e) => { (e.currentTarget).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling).style.display='block'; }} />
+              <Bot class="hidden h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h3 class="mb-1 text-[18px] font-bold text-text">What would you like help with?</h3>
+              <p class="text-[15px] text-text-muted">Thozhan AI guides you only through approved TN HUB options. It does not accept free-text questions.</p>
+            </div>
+          </div>
+        {/if}
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {#each visibleOptions as option}
+            <button
+              type="button"
+              disabled={option.disabled}
+              onclick={() => handleOption(option)}
+              class="text-left px-5 py-4 rounded-lg border bg-[#f9f9f6] text-[14px] font-semibold transition-all group flex flex-col justify-center
+                {option.disabled
+                  ? 'cursor-not-allowed border-border bg-muted text-text-faint'
+                  : 'border-border bg-surface-container text-text hover:border-primary hover:bg-primary-soft/50'}"
+            >
+              <div class="flex items-center justify-between w-full gap-2">
+                <span>{resolveText(option.label)}</span>
+                {#if !option.disabled}
+                  <ArrowRight class="w-5 h-5 shrink-0 text-primary opacity-0 transition-opacity group-hover:opacity-100" />
+                {/if}
+              </div>
+              {#if resolveText(option.description)}
+                <span class="mt-1 text-[12px] font-normal leading-relaxed {option.disabled ? 'text-text-faint' : 'text-text-muted'}">{resolveText(option.description)}</span>
+              {/if}
+            </button>
+          {/each}
+
+          {#each operations as action}
+            <button
+              type="button"
+              disabled={action.disabled}
+              onclick={() => handleOption(action)}
+              class="text-left px-5 py-4 rounded-lg border bg-[#f9f9f6] text-[14px] font-semibold transition-all group flex flex-col justify-center
+                {action.disabled
+                  ? 'cursor-not-allowed border-border bg-muted text-text-faint'
+                  : 'border-border bg-surface-container text-text hover:border-primary hover:bg-primary-soft/50'}"
+            >
+              <div class="flex items-center justify-between w-full gap-2">
+                <span>{resolveText(action.label)}</span>
+                {#if !action.disabled}
+                  <ArrowRight class="w-5 h-5 shrink-0 text-primary opacity-0 transition-opacity group-hover:opacity-100" />
+                {/if}
+              </div>
             </button>
           {/each}
         </div>
+
+        {#if visibleOptions.length === 0 && operations.length === 0 && screen.emptyTitle}
+          <div class="mt-4 rounded-[1.75rem] border border-dashed border-border-strong bg-muted px-6 py-8 text-center">
+            <div class="text-lg font-black text-text">{resolveText(screen.emptyTitle)}</div>
+            <div class="mt-2 text-sm font-medium leading-relaxed text-text-muted">{resolveText(screen.emptyDescription)}</div>
+          </div>
+        {/if}
+
+        {#if navigation.length > 0}
+          <div class="mt-6 flex flex-wrap gap-3 border-t border-border pt-6">
+            {#each navigation as action}
+              <button
+                type="button"
+                disabled={action.disabled}
+                onclick={() => handleOption(action)}
+                class="rounded-full border px-5 py-2 text-sm font-semibold transition
+                  {action.id === 'startOver'
+                    ? 'border-border bg-surface text-text hover:border-border-strong hover:bg-muted'
+                    : 'border-border bg-muted text-text hover:bg-surface-container'}"
+              >
+                {resolveText(action.label)}
+              </button>
+            {/each}
+          </div>
+        {/if}
+      </div>
+
+      <!-- Right Column: Info & Actions -->
+      <div class="lg:col-span-1 flex flex-col gap-6">
+        <!-- How it works card -->
+        <div class="rounded-xl border border-border bg-surface p-5 shadow-[var(--shadow-vazhi-1)]">
+          <h4 class="mb-3 text-[12px] font-bold uppercase tracking-widest text-primary">How Thozhan AI Works</h4>
+          <div class="flex flex-col gap-3">
+            <div class="rounded-lg bg-muted p-3">
+              <h5 class="mb-1 text-[11px] font-bold uppercase text-text">Selection-Only</h5>
+              <p class="text-[12px] text-text-muted">Every step uses predefined TN HUB options. Free-text chat is disabled.</p>
+            </div>
+            <div class="rounded-lg bg-muted p-3">
+              <h5 class="mb-1 text-[11px] font-bold uppercase text-text">Real TN Hub Data</h5>
+              <p class="text-[12px] text-text-muted">Services, departments, applications, and document requirements are loaded from the existing TN HUB data sources.</p>
+            </div>
+            <div class="rounded-lg bg-muted p-3">
+              <h5 class="mb-1 text-[11px] font-bold uppercase text-text">Scoped Access</h5>
+              <p class="text-[12px] text-text-muted">Personal applications and document vault data are shown only when the authenticated TN HUB session allows them.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions Card -->
+        <div class="rounded-xl border border-border bg-surface p-5 shadow-[var(--shadow-vazhi-1)]">
+          <h4 class="mb-3 text-[12px] font-bold uppercase tracking-widest text-primary">Quick Actions</h4>
+          <div class="flex flex-col gap-2">
+            <a href="/services" class="block w-full rounded-lg border border-border bg-muted px-4 py-2.5 text-left text-[13px] font-semibold text-text transition-colors hover:bg-surface-container">Browse Services</a>
+            <a href="/applications" class="block w-full rounded-lg border border-border bg-muted px-4 py-2.5 text-left text-[13px] font-semibold text-text transition-colors hover:bg-surface-container">Open Applications</a>
+            <a href="/help" class="block w-full rounded-lg border border-border bg-muted px-4 py-2.5 text-left text-[13px] font-semibold text-text transition-colors hover:bg-surface-container">Contact Help Desk</a>
+          </div>
+        </div>
       </div>
     </div>
-  {:else}
-    <!-- Active Chat Conversation Screen -->
-    <div class="flex-1 overflow-y-auto px-4 py-8 max-w-3xl w-full mx-auto space-y-6 pb-32">
-      {#each messages as msg}
-        <div class="flex gap-4 max-w-[85%] {msg.sender === 'user' ? 'self-end ml-auto flex-row-reverse' : ''} animate-fade-in">
-          <div class="w-8 h-8 rounded-full flex items-center justify-center text-white shrink-0 mt-0.5 shadow-sm
-            {msg.sender === 'user' ? 'bg-gradient-to-br from-blue-500 to-indigo-600' : 'bg-gradient-to-br from-emerald-500 to-emerald-700'}">
-            {#if msg.sender === 'user'}
-              <User class="h-4.5 w-4.5" />
-            {:else}
-              <Bot class="h-4.5 w-4.5" />
-            {/if}
-          </div>
-          <div class="rounded-3xl px-5 py-3.5 text-slate-800 shadow-xs border
-            {msg.sender === 'user'
-              ? 'bg-slate-50 border-slate-100 rounded-tr-sm'
-              : 'bg-white border-slate-200 rounded-tl-sm'}">
-            <p class="text-[13px] leading-relaxed whitespace-pre-wrap font-medium">{msg.text}</p>
-            <span class="block text-[9px] text-slate-400 mt-2 font-bold uppercase tracking-wider">{msg.timestamp}</span>
-          </div>
-        </div>
-      {/each}
-
-      {#if isTyping}
-        <div class="flex gap-4 max-w-[85%] animate-fade-in">
-          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white shrink-0 mt-0.5 shadow-sm">
-            <Bot class="h-4.5 w-4.5" />
-          </div>
-          <div class="bg-white border border-slate-200 rounded-3xl rounded-tl-sm px-5 py-3.5 shadow-xs flex items-center gap-2">
-            <span class="flex gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style="animation-delay: 0ms"></span>
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style="animation-delay: 150ms"></span>
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style="animation-delay: 300ms"></span>
-            </span>
-            <span class="text-xs text-slate-400 font-bold ml-1 uppercase tracking-wider">Searching...</span>
-          </div>
-        </div>
-      {/if}
-    </div>
-  {/if}
-
-  <!-- Bottom Centered Capsule Input Area -->
-  <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white via-white/95 to-transparent pt-6 pb-6 px-4 z-10">
-    <div class="max-w-xl mx-auto w-full">
-      <form onsubmit={(e) => { e.preventDefault(); handleSend(); }} class="relative flex items-center rounded-full bg-slate-100 p-1.5 border border-slate-200 shadow-sm focus-within:ring-2 focus-within:ring-emerald-400/50 focus-within:bg-white focus-within:border-emerald-400 transition-all duration-200">
-        <input
-          bind:value={query}
-          placeholder={currentLocale === 'ta' ? "கேளுங்கள்..." : "Ask Something"}
-          class="flex-1 pl-4 pr-3 py-2.5 bg-transparent border-0 focus:outline-none text-xs font-semibold text-slate-900 placeholder:text-slate-400"
-          type="text"
-        />
-        <button
-          type="submit"
-          disabled={!query.trim() || isTyping}
-          aria-label={t('chatbot.send')}
-          class="h-9 w-9 bg-transparent hover:bg-slate-200/50 active:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center transition-all disabled:opacity-30 shrink-0"
-        >
-          <svg class="h-4.5 w-4.5 text-stone-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="22" y1="2" x2="11" y2="13"></line>
-            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-          </svg>
-        </button>
-      </form>
-    </div>
   </div>
-
 </div>

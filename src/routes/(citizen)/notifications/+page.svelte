@@ -1,36 +1,33 @@
-<script lang="ts">
+<script>
+
   import { tt, locale } from '$lib/i18n';
-  import type { Notification } from '$lib/types';
   import { Bell, CheckCircle, Check, ArrowRight } from '@lucide/svelte';
 
-  let { data } = $props<{ data: { notifications: Notification[] } }>();
-
-  const t = $derived($tt);
-  const currentLocale = $derived($locale);
-
-  let notificationsList = $state<Notification[]>([]);
-
-  $effect(() => {
+let { data } = $props();
+const t = $derived($tt);
+const currentLocale = $derived($locale);
+let notificationsList = $state([]);
+$effect(() => {
     notificationsList = data.notifications;
-  });
-
-  async function markAllRead() {
+});
+async function markAllRead() {
     const response = await fetch('/api/notifications/read-all', {
-      method: 'POST',
-      credentials: 'same-origin'
+        method: 'POST',
+        credentials: 'same-origin'
     });
-    if (!response.ok) return;
+    if (!response.ok)
+        return;
     notificationsList = notificationsList.map(n => ({ ...n, isRead: true }));
-  }
-
-  async function markSingleRead(id: string) {
+}
+async function markSingleRead(id) {
     const response = await fetch(`/api/notifications/${id}`, {
-      method: 'PATCH',
-      credentials: 'same-origin'
+        method: 'PATCH',
+        credentials: 'same-origin'
     });
-    if (!response.ok) return;
+    if (!response.ok)
+        return;
     notificationsList = notificationsList.map(n => n.id === id ? { ...n, isRead: true } : n);
-  }
+}
 </script>
 
 <svelte:head>

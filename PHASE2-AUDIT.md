@@ -1,4 +1,4 @@
-# Sympho Center — Phase 2 Audit & Remediation Report
+# TN HUB — Phase 2 Audit & Remediation Report
 
 Audit date: 2026-08-25 (Remediation Completed)
 
@@ -63,15 +63,15 @@ The single remaining gap is that live deployment of `firestore.rules` and `stora
   `Error: Failed to authenticate, have you run firebase login?`
 
 ### Required IAM Role for Deployment (Option C Report)
-- **Target Project:** `sympho-center`
-- **Configured Identity:** `firebase-adminsdk-fbsvc@sympho-center.iam.gserviceaccount.com`
+- **Target Project:** Firebase project configured in local environment.
+- **Configured Identity:** Firebase Admin service account configured in local environment.
 - **Missing IAM Role:** `Firebase Security Rules Admin` (`roles/firebaserules.admin`)
 - **Action for Authorized Developer:**
   ```powershell
   # Authenticate with an authorized Google Cloud / Firebase account:
   npx firebase-tools login
   # Deploy the rules:
-  npx firebase-tools deploy --only firestore:rules,storage:rules --project sympho-center
+  npx firebase-tools deploy --only firestore:rules,storage:rules --project <firebase-project-id>
   ```
 
 ---
