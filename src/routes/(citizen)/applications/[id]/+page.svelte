@@ -22,6 +22,7 @@ let { data } = $props();
 const t = $derived($tt);
 const currentLocale = $derived($locale);
 const application = $derived(data.application);
+const timelineEntries = $derived([...(application?.history ?? [])].sort((left, right) => left.timestamp.localeCompare(right.timestamp)));
 
 const getFieldMeta = (key) => {
   switch (key) {
@@ -52,19 +53,73 @@ const getFieldMeta = (key) => {
   }
 };
 function getStatusColor(status) {
-    switch (status) {
+    switch (String(status ?? '').toUpperCase()) {
         case 'COMPLETED':
         case 'APPROVED':
-            return 'bg-success text-white';
+        case 'CERTIFICATE_GENERATED':
+            return 'bg-success text-white ring-4 ring-success/10';
         case 'REJECTED':
-            return 'bg-error text-white';
+            return 'bg-danger text-white ring-4 ring-danger/10';
+        case 'CLARIFICATION_REQUESTED':
+            return 'bg-warning text-white ring-4 ring-warning/10';
+        case 'DOCUMENT_VERIFICATION':
         case 'OFFICER_REVIEW':
         case 'FIELD_VERIFICATION':
-        case 'DOCUMENT_VERIFICATION':
-            return 'bg-warning text-white';
+        case 'FAMILY_VERIFICATION':
+        case 'SUBMITTED':
+            return 'bg-primary text-white ring-4 ring-primary/10';
+        case 'DRAFT':
+            return 'bg-surface-container text-text-muted ring-4 ring-border/50';
         default:
-            return 'bg-border text-text-muted';
+            return 'bg-surface-container text-text-muted ring-4 ring-border/50';
     }
+}
+
+function getTimelineTitle(status) {
+  const normalized = String(status ?? '').toUpperCase();
+  return t(`status.${normalized}`) || normalized.replaceAll('_', ' ');
+}
+
+function getTimelineCardClass(status) {
+  switch (String(status ?? '').toUpperCase()) {
+    case 'COMPLETED':
+    case 'APPROVED':
+    case 'CERTIFICATE_GENERATED':
+      return 'border-success/20 bg-success-soft/40';
+    case 'REJECTED':
+      return 'border-danger/20 bg-danger-soft/40';
+    case 'CLARIFICATION_REQUESTED':
+      return 'border-warning/20 bg-warning-soft/40';
+    case 'DOCUMENT_VERIFICATION':
+    case 'OFFICER_REVIEW':
+    case 'FIELD_VERIFICATION':
+    case 'FAMILY_VERIFICATION':
+    case 'SUBMITTED':
+      return 'border-primary/15 bg-primary-soft/35';
+    default:
+      return 'border-border bg-surface-container/70';
+  }
+}
+
+function getTimelineTextClass(status) {
+  switch (String(status ?? '').toUpperCase()) {
+    case 'COMPLETED':
+    case 'APPROVED':
+    case 'CERTIFICATE_GENERATED':
+      return 'text-success';
+    case 'REJECTED':
+      return 'text-danger';
+    case 'CLARIFICATION_REQUESTED':
+      return 'text-warning';
+    case 'DOCUMENT_VERIFICATION':
+    case 'OFFICER_REVIEW':
+    case 'FIELD_VERIFICATION':
+    case 'FAMILY_VERIFICATION':
+    case 'SUBMITTED':
+      return 'text-primary-soft-text';
+    default:
+      return 'text-text-muted';
+  }
 }
 async function deleteDraft() {
     if (!application)
@@ -188,7 +243,7 @@ async function downloadDocument(documentId) {
           <div class="flex-1">
             <h3 class="text-base font-black text-text">Correction Required / Change Requested</h3>
             <p class="mt-1.5 text-xs text-text-muted leading-relaxed font-medium">
-              The reviewing officer has requested corrections. Please review the official comments below, make the necessary changes to your application, and resubmit it.
+              The reviewing officer has requested corrections. Please review the official comments below, make the necessary changes to your application, and resubmit it. <strong class="text-primary font-bold">Resubmission is completely free of cost.</strong>
             </p>
             {#if application.history.length > 0 && application.history.find(h => h.status === 'CLARIFICATION_REQUESTED')?.remarks}
               <div class="mt-4 bg-surface dark:bg-surface-container border border-warning/20 p-4 rounded-2xl">
@@ -217,31 +272,31 @@ async function downloadDocument(documentId) {
           <div class="rounded-2xl border border-border bg-surface p-6 shadow-sm">
             <h2 class="text-lg font-bold text-text mb-6">{t('application.timeline')}</h2>
 
-            <div class="relative space-y-6 before:absolute before:left-4 before:top-3 before:bottom-3 before:w-0.5 before:bg-border">
-              {#each application.history as entry, index}
+            <div class="relative space-y-6 before:absolute before:left-5 before:top-3 before:bottom-3 before:w-0.5 before:bg-border">
+              {#each timelineEntries as entry, index}
                 <div class="relative flex items-start gap-4">
-                  <div class="z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold shadow-sm {getStatusColor(entry.status)}">
+                  <div class="z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-[11px] font-black shadow-sm {getStatusColor(entry.status)}">
                     {index + 1}
                   </div>
 
-                  <div class="flex-1 rounded-xl border border-border bg-surface-container p-4">
+                  <div class="flex-1 rounded-2xl border p-4 shadow-sm transition-colors {getTimelineCardClass(entry.status)}">
                     <div class="flex items-center justify-between">
-                      <span class="text-xs font-bold text-primary">
-                        {t(`status.${entry.status}`)}
+                      <span class="text-xs font-black uppercase tracking-wider {getTimelineTextClass(entry.status)}">
+                        {getTimelineTitle(entry.status)}
                       </span>
                       <span class="text-[11px] text-text-muted">
                         {new Date(entry.timestamp).toLocaleString()}
                       </span>
                     </div>
 
-                    <p class="mt-1 text-sm font-medium text-text">
+                    <p class="mt-1 text-sm font-semibold text-text">
                       {currentLocale === 'ta' ? entry.descriptionTA : entry.description}
                     </p>
 
-                    <div class="mt-2 flex items-center justify-between border-t border-border/70 pt-2 text-xs text-text-muted">
+                    <div class="mt-3 flex flex-col gap-2 border-t border-border/70 pt-3 text-xs text-text-muted sm:flex-row sm:items-center sm:justify-between">
                       <span>Actor: <strong class="text-text">{entry.actorName}</strong> ({entry.actorRole})</span>
                       {#if entry.remarks}
-                        <span class="italic text-text-faint">"{entry.remarks}"</span>
+                        <span class="max-w-full italic text-text-faint sm:text-right">"{entry.remarks}"</span>
                       {/if}
                     </div>
                   </div>

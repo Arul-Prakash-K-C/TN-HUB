@@ -15,15 +15,31 @@
   let actionModal = $state(null);
   let remarkText = $state('');
   let docVerificationMap = $state({});
+  let viewedDocumentIds = $state([]);
   let actionError = $state('');
 
   $effect(() => {
     appState = data.application;
     availableActions = data.availableActions;
+    viewedDocumentIds = Array.isArray(data.application?.reviewedDocumentIds) ? [...new Set(data.application.reviewedDocumentIds)] : [];
     docVerificationMap = Object.fromEntries(
       (data.application?.documents ?? []).map((document) => [document.id, document.status === 'verified' ? 'VERIFIED' : 'FLAGGED'])
     );
   });
+
+  const allDocumentsViewed = $derived(
+    !appState || appState.documents.length === 0
+      ? true
+      : appState.documents.every((document) => viewedDocumentIds.includes(document.id))
+  );
+  const finalDecisionLocked = $derived(
+    !!appState &&
+      appState.status !== 'COMPLETED' &&
+      appState.status !== 'APPROVED' &&
+      appState.status !== 'CERTIFICATE_GENERATED' &&
+      appState.status !== 'REJECTED' &&
+      !allDocumentsViewed
+  );
 
   async function toggleDocStatus(docId) {
     if (!appState) return;
@@ -47,6 +63,16 @@
 
   async function viewDocument(documentId) {
     try {
+      const viewedResponse = await fetch(`/api/applications/${appState.id}/documents/${documentId}/viewed`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'content-type': 'application/json' }
+      });
+      const viewedBody = await viewedResponse.json().catch(() => null);
+      if (!viewedResponse.ok || !viewedBody?.application) throw new Error(viewedBody?.message ?? 'Unable to record this document view.');
+      appState = viewedBody.application;
+      viewedDocumentIds = Array.isArray(viewedBody.application.reviewedDocumentIds) ? [...new Set(viewedBody.application.reviewedDocumentIds)] : viewedDocumentIds;
+
       const response = await fetch(`/api/documents/${documentId}/download`, { credentials: 'same-origin' });
       const body = await response.json().catch(() => null);
       if (!response.ok || !body?.url) throw new Error(body?.message ?? 'Unable to access this document.');
@@ -98,6 +124,10 @@
 
   async function handleAction(type) {
     if (!appState) return;
+    if ((type === 'approve' || type === 'reject') && !allDocumentsViewed) {
+      actionError = 'Please view all submitted documents before making a final decision.';
+      return;
+    }
     const action = getWorkflowAction(type);
     if (!action) {
       console.warn(`Action transition for "${type}" not available in current stage. Falling back to simulated action.`);
@@ -158,13 +188,14 @@
           <h1 class="text-2xl md:text-3xl font-black text-text tracking-tight flex items-center gap-3 flex-wrap">
             {appState.applicationNumber}
             <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase shadow-sm
-              {appState.status === 'SUBMITTED' || appState.status === 'OFFICER_REVIEW' ? 'bg-primary-soft text-primary-soft-text border border-primary/20' : 
+              {appState.status === 'DOCUMENT_VERIFICATION' && (appState.isResubmitted || appState.isReady) ? 'bg-success-soft text-success border border-success/25' :
+               appState.status === 'SUBMITTED' || appState.status === 'OFFICER_REVIEW' ? 'bg-primary-soft text-primary-soft-text border border-primary/20' : 
                appState.status === 'DOCUMENT_VERIFICATION' || appState.status === 'FIELD_VERIFICATION' ? 'bg-warning-soft text-warning border border-warning/25' : 
                appState.status === 'CLARIFICATION_REQUESTED' ? 'bg-danger-soft text-danger border border-danger/25' : 
                appState.status === 'APPROVED' || appState.status === 'COMPLETED' || appState.status === 'CERTIFICATE_GENERATED' ? 'bg-success-soft text-success border border-success/25' : 
                appState.status === 'REJECTED' ? 'bg-danger-soft text-danger border border-danger/25' : 
                'bg-muted text-text-muted border border-border'}">
-              {appState.status}
+              {appState.status === 'DOCUMENT_VERIFICATION' && (appState.isResubmitted || appState.isReady) ? 'Ready (Resubmitted)' : appState.status}
             </span>
           </h1>
           <p class="text-sm font-bold text-text-muted mt-2">
@@ -181,6 +212,19 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Left Column (Main Content) -->
         <div class="lg:col-span-2 space-y-6">
+          {#if appState.status === 'DOCUMENT_VERIFICATION' && (appState.isResubmitted || appState.isReady)}
+            <div class="rounded-3xl border border-success/20 bg-success-soft p-6 flex items-start gap-4 text-text animate-fade-in shadow-sm">
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-success text-white shrink-0 shadow-sm">
+                <Check class="h-6 w-6" />
+              </div>
+              <div class="flex-1">
+                <h3 class="text-base font-black text-text">Application Corrected & Resubmitted</h3>
+                <p class="mt-1.5 text-xs text-text-muted leading-relaxed font-medium">
+                  The applicant has corrected the requested information/documents and resubmitted the application. Please review the updated details and verify again.
+                </p>
+              </div>
+            </div>
+          {/if}
           
           <!-- Applicant Info -->
           <div class="bg-surface border border-border rounded-3xl p-6 sm:p-8 shadow-sm">
@@ -268,13 +312,18 @@
               {#if actionError}
                 <p class="mb-4 rounded-xl border border-danger/25 bg-danger-soft p-3 text-xs font-semibold text-danger">{actionError}</p>
               {/if}
+              {#if finalDecisionLocked}
+                <div class="mb-4 rounded-2xl border border-warning/25 bg-warning-soft p-3 text-xs font-semibold text-warning">
+                  Please open every submitted document before approving or rejecting this application.
+                </div>
+              {/if}
               
               <div class="flex flex-col gap-3">
-                <button onclick={() => { actionModal = 'approve'; remarkText = ''; }} class="w-full py-3.5 bg-primary text-white font-bold text-xs rounded-2xl hover:bg-primary-hover transition-colors flex items-center justify-center gap-2 shadow-sm">
+                <button onclick={() => { actionModal = 'approve'; remarkText = ''; }} disabled={finalDecisionLocked} class="w-full py-3.5 bg-primary text-white font-bold text-xs rounded-2xl hover:bg-primary-hover transition-colors flex items-center justify-center gap-2 shadow-sm disabled:cursor-not-allowed disabled:opacity-50">
                   <CheckCircle class="h-4 w-4" /> Approve & Issue
                 </button>
                 
-                <button onclick={() => { actionModal = 'reject'; remarkText = ''; }} class="w-full py-3.5 bg-surface dark:bg-surface-container border border-border text-danger font-bold text-xs rounded-2xl hover:bg-danger-soft transition-colors flex items-center justify-center gap-2 shadow-sm">
+                <button onclick={() => { actionModal = 'reject'; remarkText = ''; }} disabled={finalDecisionLocked} class="w-full py-3.5 bg-surface dark:bg-surface-container border border-border text-danger font-bold text-xs rounded-2xl hover:bg-danger-soft transition-colors flex items-center justify-center gap-2 shadow-sm disabled:cursor-not-allowed disabled:opacity-50">
                   <XCircle class="h-4 w-4" /> Reject Request
                 </button>
                 

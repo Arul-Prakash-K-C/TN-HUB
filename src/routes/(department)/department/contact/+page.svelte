@@ -1,17 +1,21 @@
 <script>
-
   import { Mail, Phone, MapPin, Send, CheckCircle2, Clock, MessageSquare, Globe, Headphones } from '@lucide/svelte';
   import { t } from '$lib/i18n';
 
-let name = $state('');
-let email = $state('');
-let message = $state('');
-let sent = $state(false);
-let errorMessage = $state('');
-let isSubmitting = $state(false);
-async function handleSubmit() {
-    if (!name.trim() || !message.trim() || isSubmitting)
+  let name = $state('');
+  let email = $state('');
+  let message = $state('');
+  let sent = $state(false);
+  let errorMessage = $state('');
+  let isSubmitting = $state(false);
+
+  async function handleSubmit() {
+    if (!name.trim() || !email.trim() || !message.trim() || isSubmitting)
         return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+        errorMessage = 'Please enter a valid email address.';
+        return;
+    }
     isSubmitting = true;
     errorMessage = '';
     try {
@@ -44,17 +48,18 @@ async function handleSubmit() {
     finally {
         isSubmitting = false;
     }
-}
-const stats = [
+  }
+
+  const stats = [
     { label: 'Support Hours', value: '24/7', icon: Clock },
     { label: 'Response Time', value: '<24 hrs', icon: MessageSquare },
     { label: 'Languages', value: 'EN / தமிழ்', icon: Globe },
     { label: 'Support Channels', value: '3+', icon: Headphones }
-];
+  ];
 </script>
 
 <svelte:head>
-  <title>{t('contact.title')} — Officer Support</title>
+  <title>{t('contact.title')} — Officer Portal</title>
 </svelte:head>
 
 <div class="bg-background text-text min-h-screen pb-16 w-full">
@@ -62,7 +67,7 @@ const stats = [
   <div class="public-banner">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       <h1 class="text-2xl font-black tracking-tight leading-tight">{t('contact.heading')}</h1>
-      <p class="public-banner-subtitle mt-1 text-xs max-w-2xl leading-relaxed">{t('contact.subheading')}</p>
+      <p class="public-banner-subtitle mt-1 max-w-2xl text-xs leading-relaxed">{t('contact.subheading')}</p>
     </div>
   </div>
 
@@ -71,9 +76,9 @@ const stats = [
     <div class="grid gap-8 lg:grid-cols-3">
       <!-- Contact Info Cards -->
       <div class="space-y-4">
-        <div class="rounded-3xl border border-border bg-surface p-6 shadow-vazhi-1 hover:shadow-vazhi-2 transition">
+        <div class="rounded-3xl border border-border bg-surface p-6 shadow-sm hover:shadow-md transition">
           <div class="flex items-center gap-3 text-primary mb-3">
-            <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-soft text-primary-soft-text">
+            <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-soft">
               <MapPin class="h-5 w-5" />
             </div>
             <h3 class="text-sm font-bold text-text">{t('contact.headquarters')}</h3>
@@ -85,9 +90,9 @@ const stats = [
           </p>
         </div>
 
-        <div class="rounded-3xl border border-border bg-surface p-6 shadow-vazhi-1 hover:shadow-vazhi-2 transition">
+        <div class="rounded-3xl border border-border bg-surface p-6 shadow-sm hover:shadow-md transition">
           <div class="flex items-center gap-3 text-primary mb-3">
-            <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-soft text-primary-soft-text">
+            <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-soft">
               <Phone class="h-5 w-5" />
             </div>
             <h3 class="text-sm font-bold text-text">{t('contact.tollFree')}</h3>
@@ -96,9 +101,9 @@ const stats = [
           <p class="text-[11px] text-text-faint mt-1">Mon–Sat, 9 AM – 6 PM IST</p>
         </div>
 
-        <div class="rounded-3xl border border-border bg-surface p-6 shadow-vazhi-1 hover:shadow-vazhi-2 transition">
+        <div class="rounded-3xl border border-border bg-surface p-6 shadow-sm hover:shadow-md transition">
           <div class="flex items-center gap-3 text-primary mb-3">
-            <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-soft text-primary-soft-text">
+            <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-soft">
               <Mail class="h-5 w-5" />
             </div>
             <h3 class="text-sm font-bold text-text">{t('contact.emailSupport')}</h3>
@@ -110,7 +115,7 @@ const stats = [
 
       <!-- Contact Form -->
       <div class="lg:col-span-2">
-        <div class="rounded-3xl border border-border bg-surface p-8 shadow-vazhi-1">
+        <div class="rounded-3xl border border-border bg-surface p-8 shadow-sm">
           <div class="flex items-center gap-3 mb-6">
             <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-soft text-primary-soft-text">
               <Send class="h-5 w-5" />
@@ -137,8 +142,8 @@ const stats = [
                   <input id="contactName" type="text" bind:value={name} required placeholder="Meena Lakshmi" class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text placeholder:text-text-faint outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" />
                 </div>
                 <div>
-                  <label for="contactEmail" class="block text-xs font-bold text-text mb-1.5">{t('contact.emailLabel')}</label>
-                  <input id="contactEmail" type="email" bind:value={email} placeholder="meena@example.com" class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text placeholder:text-text-faint outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" />
+                  <label for="contactEmail" class="block text-xs font-bold text-text mb-1.5">{t('contact.emailLabel')} *</label>
+                  <input id="contactEmail" type="email" bind:value={email} required placeholder="meena@example.com" class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text placeholder:text-text-faint outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" />
                 </div>
               </div>
 
@@ -151,7 +156,7 @@ const stats = [
               {/if}
 
               <div class="flex justify-end">
-                <button type="submit" disabled={isSubmitting} class="flex items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-bold text-white shadow-vazhi-1 hover:bg-primary-hover transition disabled:cursor-not-allowed disabled:opacity-50">
+                <button type="submit" disabled={isSubmitting || !name.trim() || !email.trim() || !message.trim()} class="flex items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-bold text-white shadow-vazhi-1 hover:bg-primary-hover transition disabled:cursor-not-allowed disabled:opacity-50">
                   <Send class="h-4 w-4" /> {isSubmitting ? 'Sending...' : t('contact.sendBtn')}
                 </button>
               </div>

@@ -11,7 +11,11 @@
   let errorMessage = $state('');
 
   async function handleSubmit() {
-    if (!name.trim() || !message.trim() || isSubmitting) return;
+    if (!name.trim() || !email.trim() || !message.trim() || isSubmitting) return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      errorMessage = 'Please enter a valid email address.';
+      return;
+    }
     
     isSubmitting = true;
     errorMessage = '';
@@ -140,8 +144,8 @@
                   <input id="contactName" type="text" bind:value={name} required placeholder="Meena Lakshmi" class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text outline-none transition placeholder:text-text-faint focus:border-primary focus:ring-2 focus:ring-primary/15" />
                 </div>
                 <div>
-                  <label for="contactEmail" class="mb-1.5 block text-xs font-bold text-text">{t('contact.emailLabel')}</label>
-                  <input id="contactEmail" type="email" bind:value={email} placeholder="meena@example.com" class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text outline-none transition placeholder:text-text-faint focus:border-primary focus:ring-2 focus:ring-primary/15" />
+                  <label for="contactEmail" class="mb-1.5 block text-xs font-bold text-text">{t('contact.emailLabel')} *</label>
+                  <input id="contactEmail" type="email" bind:value={email} required placeholder="meena@example.com" class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text outline-none transition placeholder:text-text-faint focus:border-primary focus:ring-2 focus:ring-primary/15" />
                 </div>
               </div>
 
@@ -154,7 +158,7 @@
               {/if}
 
               <div class="flex justify-end">
-                <button type="submit" disabled={isSubmitting} class="flex items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-bold text-white shadow transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50">
+                <button type="submit" disabled={isSubmitting || !name.trim() || !email.trim() || !message.trim()} class="flex items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-bold text-white shadow transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50">
                   <Send class="h-4 w-4" /> {isSubmitting ? 'Sending...' : t('contact.sendBtn')}
                 </button>
               </div>

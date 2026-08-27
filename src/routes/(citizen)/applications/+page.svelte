@@ -85,12 +85,18 @@ async function deleteDraft() {
 
 <div class="flex min-h-screen w-full flex-col bg-background pb-12 text-text">
   <!-- Page Header (Green Banner matching Public Pages) -->
-  <div class="h-6 bg-primary-900/80"></div>
+  <div class="public-banner px-6 py-8 sm:px-8">
+    <div class="mx-auto flex max-w-7xl flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-black tracking-tight text-white">{t('applications.title')}</h1>
+        <p class="public-banner-subtitle mt-1 max-w-2xl text-xs font-medium">{t('applications.subtitle')}</p>
+      </div>
+    </div>
+  </div>
 
   <!-- Content Canvas -->
   <div class="flex-1 px-4 py-7 pb-24 sm:px-6 lg:px-8 w-full">
     <div class="mx-auto flex w-full max-w-7xl flex-col gap-7">
-      
       <!-- Toolbar: Search & Filters -->
       <div class="flex flex-col items-stretch justify-between gap-4 rounded-[1.75rem] border border-border bg-surface p-5 shadow-vazhi-1 lg:flex-row lg:items-center">
         <div class="relative w-full lg:max-w-[500px]">

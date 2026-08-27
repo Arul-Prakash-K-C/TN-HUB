@@ -1,18 +1,24 @@
 <script>
-
   import { PlusCircle, AlertCircle, Clock, CheckCircle } from '@lucide/svelte';
+  import { currentUser } from '$lib/stores/auth';
+  import { tt, locale } from '$lib/i18n';
 
-let showNewModal = $state(false);
-let category = $state('kiosk_hardware');
-let subject = $state('');
-let description = $state('');
-let location = $state('');
-let complaintList = $state([]);
-let isLoading = $state(true);
-let isSubmitting = $state(false);
-let submittedSuccess = $state(false);
-let errorMessage = $state('');
-$effect(() => {
+  const t = $derived($tt);
+  const currentLocale = $derived($locale);
+  const user = $derived($currentUser);
+
+  let showNewModal = $state(false);
+  let category = $state('kiosk_hardware');
+  let subject = $state('');
+  let description = $state('');
+  let location = $state('');
+  let complaintList = $state([]);
+  let isLoading = $state(true);
+  let isSubmitting = $state(false);
+  let submittedSuccess = $state(false);
+  let errorMessage = $state('');
+
+  $effect(() => {
     let cancelled = false;
     isLoading = true;
     fetch('/api/complaints', { credentials: 'same-origin' })
@@ -30,8 +36,9 @@ $effect(() => {
         }
     });
     return () => { cancelled = true; };
-});
-async function submitGrievance() {
+  });
+
+  async function submitGrievance() {
     if (!subject || !description || isSubmitting)
         return;
     isSubmitting = true;
@@ -41,7 +48,7 @@ async function submitGrievance() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'same-origin',
-            body: JSON.stringify({ category, subject, description, location, departmentId: 'dept-tnega' })
+            body: JSON.stringify({ category, subject, description, location, departmentId: 'dept-tnega', email: user?.email })
         });
         if (!res.ok) {
             const body = await res.json().catch(() => ({}));
@@ -64,7 +71,7 @@ async function submitGrievance() {
     finally {
         isSubmitting = false;
     }
-}
+  }
 </script>
 
 <svelte:head>
@@ -128,49 +135,97 @@ async function submitGrievance() {
   </div>
 </div>
 
-<!-- Raise Kiosk Complaint Modal -->
+<!-- Raise Complaint Modal -->
 {#if showNewModal}
-  <div class="fixed inset-0 z-50 flex items-center justify-center bg-[#071A28]/60 p-4 backdrop-blur-sm">
-    <div class="w-full max-w-md rounded-2xl bg-surface p-6 shadow-2xl">
-      <h2 class="text-lg font-black text-text mb-4">Register Kiosk Issue</h2>
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div class="w-full max-w-lg rounded-3xl border border-border bg-surface p-6 shadow-2xl animate-scale-in">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-base font-bold text-text">Raise Kiosk Complaint</h3>
+        <button
+          onclick={() => showNewModal = false}
+          class="rounded-lg p-1 text-text-muted hover:bg-surface-container"
+        >
+          ✕
+        </button>
+      </div>
 
       {#if submittedSuccess}
-        <div class="rounded-xl bg-success-soft p-4 text-center text-xs font-bold text-success animate-pulse">
-          Complaint submitted successfully TNeGA support has been notified.
+        <div class="text-center py-8">
+          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft text-primary mb-3">
+            ✓
+          </div>
+          <p class="text-sm font-bold text-text">Grievance registered successfully!</p>
         </div>
       {:else}
-        {#if errorMessage}
-          <div class="mb-4 rounded-xl bg-danger-soft border border-danger/20 p-3 text-xs font-bold text-danger">
-            {errorMessage}
-          </div>
-        {/if}
         <form onsubmit={(e) => { e.preventDefault(); submitGrievance(); }} class="space-y-4">
           <div>
-            <label for="complaint-category" class="block text-xs font-bold text-text mb-1">Issue Category</label>
-            <select id="complaint-category" bind:value={category} class="w-full rounded-xl border border-border bg-surface-container-low p-2.5 text-xs text-text outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15">
-              <option value="kiosk_hardware">Kiosk Biometric / Printer Hardware Malfunction</option>
-              <option value="payment_gateway">Kiosk Wallet / Payment Gateway Failure</option>
-              <option value="service_registry">Service Registry Configuration Error</option>
-              <option value="citizen_conflict">Citizen Registry / Document Sync Conflict</option>
+            <label for="comp-cat" class="mb-1.5 block text-xs font-bold text-text">Issue Category</label>
+            <select
+              id="comp-cat"
+              bind:value={category}
+              class="w-full rounded-xl border border-border bg-muted px-3 py-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-primary/20"
+            >
+              <option value="kiosk_hardware">Kiosk Hardware / Printer failure</option>
+              <option value="portal_bug">Software Bug / Crash</option>
+              <option value="payment_gateway">Payment Failure / Token issue</option>
+              <option value="service_missing">Service catalogue missing</option>
+              <option value="other">Other technical issue</option>
             </select>
           </div>
 
           <div>
-            <label for="complaint-subject" class="block text-xs font-bold text-text mb-1">Subject *</label>
-            <input id="complaint-subject" type="text" bind:value={subject} required placeholder="e.g. Biometric scanner not responding" class="w-full rounded-xl border border-border bg-surface-container-low p-2.5 text-xs text-text outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" />
+            <label for="comp-sub" class="mb-1.5 block text-xs font-bold text-text">Subject *</label>
+            <input
+              id="comp-sub"
+              type="text"
+              bind:value={subject}
+              required
+              placeholder="e.g. Thermal printer not outputting receipts"
+              class="w-full rounded-xl border border-border bg-muted px-3 py-2 text-xs text-text placeholder:text-text-faint outline-none focus:ring-2 focus:ring-primary/20"
+            />
           </div>
 
           <div>
-            <label for="complaint-description" class="block text-xs font-bold text-text mb-1">Detailed Description *</label>
-            <textarea id="complaint-description" bind:value={description} required rows="3" placeholder="Provide full details of the issue..." class="w-full rounded-xl border border-border bg-surface-container-low p-2.5 text-xs text-text outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"></textarea>
+            <label for="comp-desc" class="mb-1.5 block text-xs font-bold text-text">Detailed Description *</label>
+            <textarea
+              id="comp-desc"
+              bind:value={description}
+              required
+              rows={4}
+              placeholder="Provide specific details about the malfunction, error messages displayed, and steps to reproduce..."
+              class="w-full rounded-xl border border-border bg-muted px-3 py-2 text-xs text-text placeholder:text-text-faint outline-none resize-none focus:ring-2 focus:ring-primary/20"
+            ></textarea>
           </div>
 
-          <div class="flex justify-end gap-3 pt-4">
-            <button type="button" onclick={() => showNewModal = false} class="rounded-xl border border-border px-4 py-2 text-xs font-semibold text-text hover:bg-muted transition">
+          <div>
+            <label for="comp-loc" class="mb-1.5 block text-xs font-bold text-text">Kiosk Location / ID</label>
+            <input
+              id="comp-loc"
+              type="text"
+              bind:value={location}
+              placeholder="e.g. Kiosk #42, Madurai e-Sevai Center"
+              class="w-full rounded-xl border border-border bg-muted px-3 py-2 text-xs text-text placeholder:text-text-faint outline-none focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+
+          {#if errorMessage}
+            <p class="text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-3 py-2">{errorMessage}</p>
+          {/if}
+
+          <div class="flex justify-end gap-3 pt-2">
+            <button
+              type="button"
+              onclick={() => showNewModal = false}
+              class="rounded-xl px-4 py-2 text-xs font-bold text-text-muted hover:bg-surface-container"
+            >
               Cancel
             </button>
-            <button type="submit" class="rounded-xl bg-primary px-5 py-2 text-xs font-bold text-white hover:bg-primary-hover transition">
-              Submit Grievance
+            <button
+              type="submit"
+              disabled={isSubmitting || !subject.trim() || !description.trim()}
+              class="rounded-xl bg-primary px-4 py-2 text-xs font-bold text-white hover:bg-primary-hover disabled:opacity-50"
+            >
+              {isSubmitting ? 'Registering...' : 'Register Grievance'}
             </button>
           </div>
         </form>

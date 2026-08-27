@@ -4,6 +4,7 @@
   import { tt, locale } from '$lib/i18n';
   import { mockDigiLockerDocuments } from '$lib/data/documents';
   import { FileText, Shield, Upload, Download, CheckCircle, RefreshCw, Lock, AlertCircle } from '@lucide/svelte';
+  import { triggerFeatureNotice } from '$lib/stores/featureNotice';
 
   const t = $derived($tt);
   const currentLocale = $derived($locale);
@@ -25,12 +26,8 @@
   }
 
   function confirmDigiLockerConnect() {
-    isConnecting = true;
     showConsentModal = false;
-    setTimeout(() => {
-      isDigiLockerConnected = true;
-      isConnecting = false;
-    }, 1200);
+    triggerFeatureNotice('MeitY DigiLocker Integration');
   }
 
   async function uploadVaultDocument(event) {
@@ -166,9 +163,9 @@
       {:else}
         <!-- DigiLocker Integration -->
         <div class="mx-auto max-w-4xl">
-          <div class="rounded-3xl border border-purple-200 dark:border-purple-900/50 bg-gradient-to-br from-purple-50 dark:from-purple-900/20 via-white dark:via-surface to-purple-50/30 dark:to-purple-900/10 p-8 shadow-sm">
+          <div class="rounded-3xl border border-primary-soft/50 dark:border-primary/20 bg-gradient-to-br from-primary-soft/10 dark:from-primary/10 via-white dark:via-surface to-primary-soft/5 dark:to-primary/5 p-8 shadow-sm">
             <div class="flex items-start gap-4">
-              <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-600 text-white shadow-md">
+              <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-md">
                 <Shield class="h-8 w-8" />
               </div>
   
@@ -176,21 +173,21 @@
                 <h2 class="text-2xl font-black text-text">{t('digilocker.title')}</h2>
                 <p class="mt-1 text-sm text-text-muted">{t('digilocker.subtitle')}</p>
   
-                <div class="mt-3 inline-flex items-center gap-2 rounded-lg bg-purple-100 dark:bg-purple-950/40 px-3 py-1 text-xs text-purple-800 dark:text-purple-300 font-bold">
+                <div class="mt-3 inline-flex items-center gap-2 rounded-lg bg-primary-soft text-primary-soft-text px-3 py-1 text-xs font-bold">
                   <AlertCircle class="h-3.5 w-3.5" />
                   {t('digilocker.mock')}
                 </div>
               </div>
             </div>
   
-            <div class="mt-8 border-t border-purple-100 dark:border-purple-900/50 pt-6">
+            <div class="mt-8 border-t border-border pt-6">
               {#if !isDigiLockerConnected}
                 <div class="text-center py-8">
                   <p class="text-sm text-text-muted mb-6 font-medium">Link your MeitY DigiLocker account to instantly fetch verified identity and academic certificates without manual document upload.</p>
                   <button
                     onclick={connectDigiLocker}
                     disabled={isConnecting}
-                    class="inline-flex items-center gap-2 rounded-xl bg-purple-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg transition hover:bg-purple-700 disabled:opacity-50"
+                    class="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3.5 text-sm font-bold text-white shadow-lg transition hover:bg-primary-hover disabled:opacity-50"
                   >
                     {#if isConnecting}
                       <RefreshCw class="h-4 w-4 animate-spin" />
@@ -212,9 +209,9 @@
   
                   <div class="space-y-3">
                     {#each mockDigiLockerDocuments as dldoc}
-                      <div class="flex items-center justify-between rounded-xl border border-border bg-surface dark:bg-surface-container p-4 shadow-sm hover:border-purple-300 dark:hover:border-purple-800 transition-colors">
+                      <div class="flex items-center justify-between rounded-xl border border-border bg-surface dark:bg-surface-container p-4 shadow-sm hover:border-primary/50 dark:hover:border-primary/30 transition-colors">
                         <div class="flex items-center gap-3">
-                          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300">
+                          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft text-primary">
                             <CheckCircle class="h-5 w-5" />
                           </div>
                           <div>
@@ -225,7 +222,7 @@
   
                         <button
                           onclick={() => alert(`Imported ${dldoc.name} into vault`)}
-                          class="rounded-xl border border-purple-600 px-4 py-2 text-xs font-bold text-purple-600 hover:bg-purple-600 hover:text-white transition"
+                          class="rounded-xl border border-primary px-4 py-2 text-xs font-bold text-primary hover:bg-primary hover:text-white transition"
                         >
                           Import to Vault
                         </button>
@@ -247,7 +244,7 @@
   <div class="fixed inset-0 z-50 flex items-center justify-center bg-[#071A28]/60 p-4 backdrop-blur-sm animate-fade-in">
     <div class="w-full max-w-md rounded-2xl bg-surface dark:bg-surface-container-highest p-6 shadow-2xl">
       <div class="flex items-center gap-3 mb-4">
-        <Shield class="h-6 w-6 text-purple-600 dark:text-purple-400" />
+        <Shield class="h-6 w-6 text-primary" />
         <h3 class="text-lg font-bold text-text">{t('digilocker.consent.title')}</h3>
       </div>
 
@@ -259,7 +256,7 @@
         <button onclick={() => showConsentModal = false} class="rounded-xl border border-border px-4 py-2 text-xs font-semibold text-text hover:bg-surface-container-high dark:hover:bg-surface-container-highest">
           {t('digilocker.consent.cancel')}
         </button>
-        <button onclick={confirmDigiLockerConnect} class="rounded-xl bg-purple-600 dark:bg-purple-700 px-5 py-2 text-xs font-semibold text-white hover:bg-purple-700 dark:hover:bg-purple-600">
+        <button onclick={confirmDigiLockerConnect} class="rounded-xl bg-primary px-5 py-2 text-xs font-semibold text-white hover:bg-primary-hover">
           {t('digilocker.consent.allow')}
         </button>
       </div>

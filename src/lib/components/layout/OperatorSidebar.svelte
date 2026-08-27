@@ -4,6 +4,7 @@
   import { LayoutDashboard, Grid, LogOut, AlertCircle, User, Settings, HelpCircle, FileText, MessageSquare } from '@lucide/svelte';
   import { auth, isAuthenticated } from '$lib/stores/auth';
   import LogoutModal from '$lib/components/ui/LogoutModal.svelte';
+  import BrandLogo from '$lib/components/ui/BrandLogo.svelte';
 import { t } from '$lib/i18n';
 
 const authenticated = $derived($isAuthenticated);
@@ -36,15 +37,7 @@ $effect(() => {
 <aside class="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col gap-6 border-r border-white/10 bg-[var(--color-sidebar-bg)] px-4 py-6 text-[var(--color-sidebar-text)] transition-transform duration-300 ease-in-out md:translate-x-0 {isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}">
   <!-- Brand Header -->
   <a href="/operator/dashboard" class="flex items-center gap-3 px-2 hover:opacity-90 transition">
-    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-black text-white shadow-md">
-      TN
-    </div>
-    <div class="flex flex-col overflow-hidden">
-      <span class="text-sm font-extrabold leading-tight tracking-tight text-[var(--color-sidebar-text)]">TN Hub</span>
-      <span class="truncate text-[10px] font-bold uppercase tracking-wider text-[var(--color-sidebar-text-muted)]">
-        {t('operator.portal')}
-      </span>
-    </div>
+    <BrandLogo showWordmark={true} subtitle={t('operator.portal')} sizeClass="h-10 w-10" wordmarkClass="text-sm text-[var(--color-sidebar-text)]" subtitleClass="text-[10px] text-[var(--color-sidebar-text-muted)]" />
   </a>
 
   <!-- Navigation Links -->

@@ -5,6 +5,7 @@
   import { isAuthenticated, userRole } from '$lib/stores/auth';
   import { getPortalRedirectForRole } from '$lib/utils/authGuard';
   import { Search, FileText, CheckCircle2, Bot, ArrowRight, ArrowDown } from '@lucide/svelte';
+  import BrandLogo from '$lib/components/ui/BrandLogo.svelte';
 
 const t = $derived($tt);
 const authenticated = $derived($isAuthenticated);
@@ -38,6 +39,10 @@ const conceptSteps = [
 
       <div class="inline-flex items-center justify-center gap-2 mb-4">
         <span class="text-xs font-bold uppercase tracking-widest text-white/70">Prototype Release</span>
+      </div>
+
+      <div class="mb-6 flex justify-center">
+        <BrandLogo sizeClass="h-20 w-20" />
       </div>
 
       <h1 class="text-4xl font-black tracking-tight text-white sm:text-6xl lg:text-7xl leading-[1.1]">

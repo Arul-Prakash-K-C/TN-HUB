@@ -21,10 +21,10 @@ export const POST = async ({ request, locals }) => {
         const message = cleanString(body.message, 3000);
         const source = ALLOWED_SOURCES.has(body.source) ? body.source : 'contact_page';
 
-        if (!name || !message) {
-            return json({ success: false, error: 'Name and message are required.' }, { status: 400 });
+        if (!name || !email || !message) {
+            return json({ success: false, error: 'Name, email, and message are required.' }, { status: 400 });
         }
-        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             return json({ success: false, error: 'Enter a valid email address.' }, { status: 400 });
         }
 

@@ -11,6 +11,7 @@
   import { User, Building2, Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, UserPlus, Monitor } from '@lucide/svelte';
 
   import { getFirebaseAuth } from '$lib/firebase/client';
+  import BrandLogo from '$lib/components/ui/BrandLogo.svelte';
 
 const t = $derived($tt);
 const currentLocale = $derived($locale);
@@ -25,6 +26,7 @@ let error = $state('');
 let loading = $state(false);
 let desiredDeptId = $state('dept-revenue');
 let registrationSuccess = $state(false);
+let officialAuthUser = null;
 const demoRoleByTab = {
     citizen: 'citizen',
     operator: 'operator',
@@ -86,11 +88,12 @@ async function handleAuthentication() {
             }
             else {
                 // Official registration flow (Operator/Officer)
-                const [{ createUserWithEmailAndPassword, updateProfile }, firebaseAuth] = await Promise.all([
+                const [{ createUserWithEmailAndPassword, updateProfile, signOut }, firebaseAuth] = await Promise.all([
                     import('firebase/auth'),
                     getFirebaseAuth()
                 ]);
                 const credential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+                officialAuthUser = credential.user;
                 if (displayName.trim()) {
                     await updateProfile(credential.user, { displayName: displayName.trim() });
                 }
@@ -109,10 +112,13 @@ async function handleAuthentication() {
                     const body = await registerRes.json();
                     throw new Error(body.message || 'Registration failed at admin registry.');
                 }
+                await signOut(firebaseAuth);
                 registrationSuccess = true;
                 displayName = '';
                 confirmPassword = '';
+                password = '';
                 authMode = 'login';
+                officialAuthUser = null;
             }
         }
         else {
@@ -126,6 +132,16 @@ async function handleAuthentication() {
         }
     }
     catch (cause) {
+        if (officialAuthUser) {
+            try {
+                await officialAuthUser.delete();
+            }
+            catch {
+                // Best-effort cleanup. If deletion fails, the account remains
+                // inactive and hidden behind the admin approval flow.
+            }
+            officialAuthUser = null;
+        }
         error = cause instanceof Error ? cause.message : 'Authentication failed.';
     }
     finally {
@@ -146,8 +162,8 @@ async function handleAuthentication() {
 
       <!-- Top Branding Header -->
       <div class="public-banner px-6 py-8 text-center sm:px-8">
-        <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-surface text-2xl font-black text-primary shadow-sm">
-          TN
+        <div class="mx-auto mb-3 flex justify-center">
+          <BrandLogo sizeClass="h-14 w-14" />
         </div>
         <h1 class="text-2xl font-extrabold tracking-tight text-white">{t('auth.portalTitle')}</h1>
         <p class="public-banner-subtitle mt-1.5 text-xs font-semibold uppercase tracking-wider">{t('auth.portalDesc')}</p>
@@ -199,7 +215,7 @@ async function handleAuthentication() {
 
         {#if registrationSuccess}
           <div class="mb-4 rounded-2xl border border-success/30 bg-success-soft px-4 py-3 text-xs font-bold text-success">
-            Official account registration request submitted Your account is currently pending administrator verification. You can log in once approved.
+            Official account registration request submitted. Your account is now pending administrator verification and you will receive an email once it is approved.
           </div>
         {/if}
 

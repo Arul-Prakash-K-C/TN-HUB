@@ -47,6 +47,8 @@ export async function createComplaint(user, input) {
         complaintNumber,
         citizenId: user.uid ?? user.id,
         citizenName: user.name,
+        citizenEmail: input.email || user.email || '',
+        email: input.email || user.email || '',
         departmentId: input.departmentId || 'dept-revenue',
         category: input.category,
         subject: input.subject,

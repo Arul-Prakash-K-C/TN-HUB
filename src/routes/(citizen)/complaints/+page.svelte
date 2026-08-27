@@ -52,7 +52,7 @@ async function submitGrievance() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'same-origin',
-            body: JSON.stringify({ category, subject, description, location })
+            body: JSON.stringify({ category, subject, description, location, email: user?.email })
         });
         if (!res.ok) {
             const body = await res.json().catch(() => ({}));

@@ -218,7 +218,11 @@ function resetFilters() {
                       {#if app.status === 'SUBMITTED'}
                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-soft text-primary-soft-text border border-primary/20">New</span>
                       {:else if app.status === 'DOCUMENT_VERIFICATION'}
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-warning-soft text-warning border border-warning/25">Doc Verification</span>
+                        {#if app.isResubmitted || app.isReady}
+                          <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#316342]/10 text-[#316342] border border-[#316342]/20">Ready (Resubmitted)</span>
+                        {:else}
+                          <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-warning-soft text-warning border border-warning/25">Doc Verification</span>
+                        {/if}
                       {:else if app.status === 'OFFICER_REVIEW'}
                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-soft text-primary-soft-text border border-primary/20">Officer Review</span>
                       {:else if app.status === 'CLARIFICATION_REQUESTED'}

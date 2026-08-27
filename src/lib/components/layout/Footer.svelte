@@ -2,6 +2,7 @@
 
   import { tt, locale } from '$lib/i18n';
   import { getDepartmentName } from '$lib/data/departments';
+  import BrandLogo from '$lib/components/ui/BrandLogo.svelte';
 
 const t = $derived($tt);
 </script>
@@ -15,13 +16,7 @@ const t = $derived($tt);
     <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
       <div class="space-y-3">
         <div class="flex items-center gap-3">
-          <div class="flex h-10 w-10 items-center justify-center rounded-full bg-surface text-sm font-black text-primary shadow-sm">
-            TN
-          </div>
-          <div>
-          <div class="text-sm font-black tracking-wide text-white">TN HUB</div>
-          <div class="text-xs font-bold text-primary/90">{t('app.tagline')}</div>
-          </div>
+          <BrandLogo showWordmark={true} subtitle={t('app.tagline')} sizeClass="h-10 w-10" wordmarkClass="text-sm text-white" subtitleClass="text-xs text-primary/90" />
         </div>
         <p class="text-xs leading-relaxed text-white/68">
           One Center. Every Government Service. Engineered for speed, clarity, and zero-paper citizen workflow orchestration.

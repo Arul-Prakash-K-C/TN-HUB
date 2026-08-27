@@ -4,6 +4,7 @@
   import { onMount } from 'svelte';
   import { tt, locale } from '$lib/i18n';
   import { currentUser, isAuthenticated } from '$lib/stores/auth';
+  import { triggerFeatureNotice } from '$lib/stores/featureNotice';
   import { ArrowLeft, ArrowRight, Check, Upload, FileText, AlertCircle, Trash2 } from '@lucide/svelte';
 
   let { data } = $props();
@@ -575,6 +576,15 @@
     <!-- Form content -->
     <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <div class="rounded-xl border border-border bg-surface p-6 shadow-sm animate-fade-in">
+        {#if draftApplication && draftApplication.status === 'CLARIFICATION_REQUESTED'}
+          <div class="mb-6 rounded-2xl border border-primary/20 bg-primary-light/10 p-4 text-sm text-primary flex items-start gap-3">
+            <AlertCircle class="h-5 w-5 shrink-0 mt-0.5" />
+            <div>
+              <p class="font-extrabold">Correction Resubmission (Free of Cost)</p>
+              <p class="text-xs mt-0.5 opacity-90">This application was returned for correction. You can update any fields or documents as requested and submit it without any fee.</p>
+            </div>
+          </div>
+        {/if}
         <!-- Step 0: Eligibility -->
         {#if currentStep === 0}
           <h2 class="mb-4 text-base font-black text-text">{t('service.eligibility')}</h2>
@@ -817,6 +827,7 @@
                     {#if doc.digilockerAvailable}
                       <button
                         onclick={() => {
+                          triggerFeatureNotice('MeitY DigiLocker Integration');
                           const dummyBlob = new Blob(
                             ["%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R >>\nendobj\n4 0 obj\n<< /Length 40 >>\nstream\nBT /F1 24 Tf 100 700 Td (DigiLocker Document Verified) Tj ET\nendstream\nendobj\nxref\n0 5\n0000000000 65535 f\n0000000009 00000 n\n0000000056 00000 n\n0000000111 00000 n\n0000000212 00000 n\ntrailer\n<< /Size 5 /Root 1 0 R >>\nstartxref\n303\n%%EOF"],
                             { type: "application/pdf" }

@@ -1,17 +1,21 @@
 <script>
-
   import { Mail, Phone, MapPin, Send, CheckCircle2, Clock, MessageSquare, Globe, Headphones } from '@lucide/svelte';
   import { t } from '$lib/i18n';
 
-let name = $state('');
-let email = $state('');
-let message = $state('');
-let sent = $state(false);
-let errorMessage = $state('');
-let isSubmitting = $state(false);
-async function handleSubmit() {
-    if (!name.trim() || !message.trim() || isSubmitting)
+  let name = $state('');
+  let email = $state('');
+  let message = $state('');
+  let sent = $state(false);
+  let errorMessage = $state('');
+  let isSubmitting = $state(false);
+
+  async function handleSubmit() {
+    if (!name.trim() || !email.trim() || !message.trim() || isSubmitting)
         return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+        errorMessage = 'Please enter a valid email address.';
+        return;
+    }
     isSubmitting = true;
     errorMessage = '';
     try {
@@ -44,13 +48,14 @@ async function handleSubmit() {
     finally {
         isSubmitting = false;
     }
-}
-const stats = [
+  }
+
+  const stats = [
     { label: 'Support Hours', value: '24/7', icon: Clock },
     { label: 'Response Time', value: '<24 hrs', icon: MessageSquare },
     { label: 'Languages', value: 'EN / தமிழ்', icon: Globe },
     { label: 'Support Channels', value: '3+', icon: Headphones }
-];
+  ];
 </script>
 
 <svelte:head>
@@ -137,8 +142,8 @@ const stats = [
                   <input id="contactName" type="text" bind:value={name} required placeholder="Meena Lakshmi" class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text placeholder:text-text-faint outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" />
                 </div>
                 <div>
-                  <label for="contactEmail" class="block text-xs font-bold text-text mb-1.5">{t('contact.emailLabel')}</label>
-                  <input id="contactEmail" type="email" bind:value={email} placeholder="meena@example.com" class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text placeholder:text-text-faint outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" />
+                  <label for="contactEmail" class="block text-xs font-bold text-text mb-1.5">{t('contact.emailLabel')} *</label>
+                  <input id="contactEmail" type="email" bind:value={email} required placeholder="meena@example.com" class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text placeholder:text-text-faint outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" />
                 </div>
               </div>
 
@@ -151,7 +156,7 @@ const stats = [
               {/if}
 
               <div class="flex justify-end">
-                <button type="submit" disabled={isSubmitting} class="flex items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-bold text-white shadow hover:bg-primary-hover transition disabled:cursor-not-allowed disabled:opacity-50">
+                <button type="submit" disabled={isSubmitting || !name.trim() || !email.trim() || !message.trim()} class="flex items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-bold text-white shadow hover:bg-primary-hover transition disabled:cursor-not-allowed disabled:opacity-50">
                   <Send class="h-4 w-4" /> {isSubmitting ? 'Sending...' : t('contact.sendBtn')}
                 </button>
               </div>
