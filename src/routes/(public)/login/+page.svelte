@@ -31,8 +31,8 @@ let officialAuthUser = null;
 let demoCredentials = $state([]);
 const demoRoleByTab = {
     citizen: 'citizen',
-    operator: 'officer',
-    department: 'department_user',
+    operator: 'operator',
+    department: 'officer',
     admin: 'tnhub_admin'
 };
 const demoAccount = $derived(demoCredentials.find((credential) => credential.role === demoRoleByTab[activeTab]) ?? null);
