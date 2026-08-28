@@ -44,8 +44,8 @@
 
 <aside class="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col gap-6 border-r border-white/10 bg-[var(--color-sidebar-bg)] px-4 py-6 text-[var(--color-sidebar-text)] transition-transform duration-300 ease-in-out md:translate-x-0 {isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}">
   <!-- Brand Header -->
-  <a href="/admin" class="flex items-center gap-3 px-2 hover:opacity-90 transition">
-    <BrandLogo showWordmark={true} subtitle={t('admin.portal')} sizeClass="h-10 w-10" wordmarkClass="text-sm text-[var(--color-sidebar-text)]" subtitleClass="text-[10px] text-[var(--color-sidebar-text-muted)]" />
+  <a href="/admin" class="flex w-full items-center justify-center px-2 py-1 hover:opacity-90 transition">
+    <BrandLogo showWordmark={true} subtitle={t('admin.portal')} sizeClass="w-full max-w-[236px] max-h-[84px]" wordmarkClass="text-sm text-[var(--color-sidebar-text)]" subtitleClass="text-[10px] text-[var(--color-sidebar-text-muted)]" />
   </a>
 
   <!-- Navigation Links -->

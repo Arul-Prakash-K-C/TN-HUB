@@ -10,10 +10,10 @@ const user = $derived($currentUser);
 const guard = $derived(canAccessRoute(user, '/department/profile'));
 const t = $derived($tt);
 const currentLocale = $derived($locale);
-let isDark = $state(true);
+let isDark = $state(false);
 $effect(() => {
     if (typeof window !== 'undefined') {
-        isDark = localStorage.getItem('theme-mode') !== 'light';
+        isDark = localStorage.getItem('theme-mode') === 'dark';
     }
 });
 </script>

@@ -97,6 +97,10 @@
   --color-warning-soft: #f7efdf;
   --color-danger: #a63b3b;
   --color-danger-soft: #f7e6e6;
+  --role-badge-bg: #ebf1e9;
+  --role-badge-border: #d8e4d3;
+  --role-badge-text: #171916;
+  --role-badge-accent: #5a8a45;
   --shadow-vazhi-1: 0 2px 8px #0000000a;
   --shadow-vazhi-2: 0 10px 24px #00000014;
 
@@ -174,6 +178,10 @@
   --color-warning-soft: #2c2519;
   --color-danger: #e08b8b;
   --color-danger-soft: #2e1f1f;
+  --role-badge-bg: rgba(90, 138, 69, 0.14);
+  --role-badge-border: rgba(139, 163, 127, 0.28);
+  --role-badge-text: #ffffff;
+  --role-badge-accent: #5a8a45;
   --shadow-vazhi-1: 0 2px 8px #00000066;
   --shadow-vazhi-2: 0 10px 24px #00000080;
 }

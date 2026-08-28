@@ -2,6 +2,7 @@
   import { tt, locale } from "$lib/i18n";
   import { currentUser, isAuthenticated, userRole } from "$lib/stores/auth";
   import { departments } from "$lib/data/departments";
+  import RequestedRoleBadge from "$lib/components/ui/RequestedRoleBadge.svelte";
   import {
     UserCheck,
     UserX,
@@ -115,16 +116,6 @@
     return role;
   }
 
-  function getRoleBadgeClass(role) {
-    if (role === "operator") {
-      return "bg-status-review-bg text-status-review-text border-border dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-800/50";
-    }
-    if (role === "department_user") {
-      return "bg-primary-soft text-primary-soft-text border-primary/15 dark:bg-primary/10 dark:text-primary-foreground dark:border-primary/30";
-    }
-    return "bg-surface-container-low text-text-muted border-border dark:bg-slate-900/40 dark:text-slate-300 dark:border-slate-700";
-  }
-
   function getRegistrationStatus(user) {
     if (
       user.registrationStatus === "APPROVED" ||
@@ -137,10 +128,10 @@
 
   function getStatusBadge(status) {
     if (status === "APPROVED")
-      return "bg-status-approved-bg text-status-approved-text border-border dark:bg-emerald-950/20 dark:text-emerald-300 dark:border-emerald-800/45";
+      return "bg-status-approved-bg text-status-approved-text border-border";
     if (status === "REJECTED")
-      return "bg-status-rejected-bg text-status-rejected-text border-border dark:bg-rose-950/20 dark:text-rose-300 dark:border-rose-800/45";
-    return "bg-status-pending-bg text-status-pending-text border-border dark:bg-amber-950/20 dark:text-amber-300 dark:border-amber-800/45";
+      return "bg-status-rejected-bg text-status-rejected-text border-border";
+    return "bg-status-pending-bg text-status-pending-text border-border";
   }
 
   function getStatusLabel(status) {
@@ -257,7 +248,7 @@
       class="w-full max-w-md rounded-3xl border border-border bg-surface p-8 text-center shadow-xl mt-10"
     >
       <div
-        class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-950/40 text-amber-600"
+        class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-warning-soft text-warning"
       >
         <Shield class="h-7 w-7" />
       </div>
@@ -266,11 +257,11 @@
     </div>
   </div>
 {:else}
-  <div class="min-h-screen bg-[#f7f7f1] text-text dark:bg-background">
+  <div class="min-h-screen bg-background text-text">
     <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       {#if error}
         <div
-          class="mb-6 flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-bold text-rose-700 shadow-sm dark:border-rose-800/40 dark:bg-rose-950/20 dark:text-rose-300"
+          class="mb-6 flex items-center gap-2 rounded-2xl border border-danger/25 bg-danger-soft px-4 py-3 text-xs font-bold text-danger shadow-sm"
         >
           <AlertTriangle class="h-4 w-4 shrink-0" />
           {error}
@@ -286,10 +277,10 @@
         </div>
       {:else}
         <div
-          class="rounded-[28px] border border-black/10 bg-white shadow-[0_16px_48px_rgba(0,0,0,0.06)] dark:border-border dark:bg-surface dark:shadow-vazhi-2"
+          class="rounded-[28px] border border-border bg-surface shadow-vazhi-2"
         >
           <div
-            class="flex flex-col gap-4 border-b border-black/10 px-6 py-6 sm:px-8 lg:flex-row lg:items-start lg:justify-between dark:border-border"
+            class="flex flex-col gap-4 border-b border-border px-6 py-6 sm:px-8 lg:flex-row lg:items-start lg:justify-between"
           >
             <div class="space-y-1">
               <h1
@@ -306,7 +297,7 @@
               <button
                 type="button"
                 onclick={() => (showFilters = !showFilters)}
-                class="inline-flex items-center gap-2 rounded-2xl border border-black/20 bg-white px-4 py-2.5 text-xs font-bold text-text shadow-sm transition hover:border-primary/30 hover:bg-primary-soft hover:text-primary dark:border-border dark:bg-surface dark:text-text-muted dark:hover:bg-primary/10 dark:hover:text-primary"
+                class="inline-flex items-center gap-2 rounded-2xl border border-border bg-muted px-4 py-2.5 text-xs font-bold text-text-muted shadow-sm transition hover:border-primary/30 hover:bg-primary-soft hover:text-primary"
               >
                 <Filter class="h-4 w-4" />
                 Filter
@@ -314,7 +305,7 @@
               <button
                 type="button"
                 onclick={exportCurrentView}
-                class="inline-flex items-center gap-2 rounded-2xl border border-black/20 bg-white px-4 py-2.5 text-xs font-bold text-text shadow-sm transition hover:border-primary/30 hover:bg-primary-soft hover:text-primary dark:border-border dark:bg-surface dark:text-text-muted dark:hover:bg-primary/10 dark:hover:text-primary"
+                class="inline-flex items-center gap-2 rounded-2xl border border-border bg-muted px-4 py-2.5 text-xs font-bold text-text-muted shadow-sm transition hover:border-primary/30 hover:bg-primary-soft hover:text-primary"
               >
                 <Download class="h-4 w-4" />
                 Export
@@ -324,7 +315,7 @@
 
           {#if showFilters}
             <div
-              class="flex flex-col gap-4 border-b border-black/10 px-6 py-5 sm:px-8 dark:border-border"
+              class="flex flex-col gap-4 border-b border-border px-6 py-5 sm:px-8"
             >
               <div class="relative max-w-md">
                 <Search
@@ -334,7 +325,7 @@
                   bind:value={searchQuery}
                   oninput={() => (currentPage = 1)}
                   placeholder="Search by name, email, or role..."
-                  class="w-full rounded-2xl border border-black/15 bg-[#fbfbf7] py-3 pl-10 pr-4 text-sm font-medium text-text outline-none shadow-sm transition placeholder:text-text-faint focus:border-primary focus:ring-2 focus:ring-primary/10 dark:border-border dark:bg-surface dark:placeholder:text-text-faint"
+                  class="w-full rounded-2xl border border-border bg-muted py-3 pl-10 pr-4 text-sm font-medium text-text outline-none shadow-sm transition placeholder:text-text-faint focus:border-primary focus:ring-2 focus:ring-primary/10"
                 />
               </div>
 
@@ -349,7 +340,7 @@
                     class="rounded-full border px-4 py-2 text-xs font-bold transition-all duration-200 {statusFilter ===
                     filter.status
                       ? 'border-primary bg-primary text-white shadow-sm'
-                      : 'border-black/15 bg-white text-text-muted hover:border-primary/30 hover:bg-primary-soft hover:text-primary dark:border-border dark:bg-surface dark:hover:bg-primary/10'}"
+                      : 'border-border bg-muted text-text-muted hover:border-primary/30 hover:bg-primary-soft hover:text-primary'}"
                   >
                     {filter.label} ({filter.count})
                   </button>
@@ -375,7 +366,7 @@
               <table class="min-w-full border-collapse text-left">
                 <thead>
                   <tr
-                    class="border-b border-black/10 bg-[#f2f2e9] text-[10px] font-black uppercase tracking-[0.18em] text-text-muted dark:border-border dark:bg-surface-container-low"
+                    class="border-b border-border bg-table-header-bg text-[10px] font-black uppercase tracking-[0.18em] text-text-muted"
                   >
                     <th class="py-4 px-6">Name</th>
                     <th class="py-4 px-6">Email Address</th>
@@ -386,11 +377,11 @@
                   </tr>
                 </thead>
                 <tbody
-                  class="divide-y divide-black/5 text-sm text-text dark:divide-border/70"
+                  class="divide-y divide-border text-sm text-text"
                 >
                   {#each paginatedRegistrations as user (user.uid)}
                     <tr
-                      class="bg-white transition-colors hover:bg-[#fafaf3] dark:bg-surface dark:hover:bg-primary-soft/10"
+                      class="bg-surface transition-colors hover:bg-primary-soft/40"
                     >
                       <td class="py-4 px-6">
                         <div class="flex items-center gap-3">
@@ -412,16 +403,7 @@
                         {user.email || "N/A"}
                       </td>
                       <td class="py-4 px-6">
-                        <span
-                          class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-bold shadow-sm {getRoleBadgeClass(
-                            user.role || user.desiredRole || 'operator',
-                          )}"
-                        >
-                          <Shield class="h-3 w-3 fill-current" />
-                          {getRoleBadge(
-                            user.role || user.desiredRole || "operator",
-                          )}
-                        </span>
+                        <RequestedRoleBadge role={user.role || user.desiredRole || "operator"} />
                       </td>
                       <td class="py-4 px-6 text-text-muted">
                         {getDeptName(user.departmentId)}
@@ -478,7 +460,7 @@
               </table>
             </div>
             <div
-              class="flex flex-col items-start justify-between gap-4 border-t border-black/10 px-6 py-4 text-xs text-text-muted sm:flex-row sm:items-center sm:px-8 dark:border-border"
+              class="flex flex-col items-start justify-between gap-4 border-t border-border px-6 py-4 text-xs text-text-muted sm:flex-row sm:items-center sm:px-8"
             >
               <p class="font-medium">
                 Showing {showingFrom} to {showingTo} of {filteredRegistrations.length}
@@ -486,7 +468,7 @@
               </p>
 
               <div
-                class="flex items-center gap-1 rounded-2xl border border-black/10 bg-[#fbfbf7] p-1 shadow-sm dark:border-border dark:bg-surface"
+                class="flex items-center gap-1 rounded-2xl border border-border bg-muted p-1 shadow-sm"
               >
                 <button
                   type="button"
@@ -541,7 +523,7 @@
 <!-- Confirmation Modal -->
 {#if confirmAction}
   <div
-    class="fixed inset-0 z-50 flex items-center justify-center bg-[#071A28]/60 p-4 backdrop-blur-sm"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-background/78 p-4 backdrop-blur-sm"
   >
     <div
       class="w-full max-w-sm rounded-3xl bg-surface border border-border/40 p-6 shadow-2xl space-y-4 animate-scale-up"

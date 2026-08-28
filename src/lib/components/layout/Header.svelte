@@ -91,7 +91,7 @@ function handleProtectedNav(targetPath, title, e) {
       
       <!-- Brand Logo / Wordmark -->
       <a href={authenticated ? getDashboardUrl() : "/"} class="flex items-center gap-3 shrink-0 group">
-        <BrandLogo showWordmark={true} subtitle="One Center. Every Government Service." sizeClass="h-10 w-10" wordmarkClass="text-sm" subtitleClass="text-[9px]" />
+        <BrandLogo showWordmark={true} subtitle="One Center. Every Government Service." sizeClass="h-11 w-40" wordmarkClass="text-sm" subtitleClass="text-[9px]" />
       </a>
       
       <!-- Desktop Navigation -->

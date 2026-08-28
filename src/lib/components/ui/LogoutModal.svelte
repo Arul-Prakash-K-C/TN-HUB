@@ -11,13 +11,13 @@
   <div class="fixed inset-0 z-[100] flex items-center justify-center p-4">
     <!-- Backdrop with custom backdrop-blur and animation -->
     <div
-      class="absolute inset-0 bg-black/45 backdrop-blur-md transition-opacity duration-300 animate-fade-in"
+      class="absolute inset-0 bg-background/78 backdrop-blur-md transition-opacity duration-300 animate-fade-in"
       onclick={() => (isOpen = false)}
     ></div>
 
     <!-- Modal Container -->
     <div
-      class="relative bg-surface border border-border/40 dark:border-border-strong/40 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+      class="relative w-full max-w-sm overflow-hidden rounded-3xl border border-border bg-surface shadow-vazhi-2 animate-in fade-in zoom-in-95 duration-200"
     >
       <div class="p-6">
         <!-- Icon Container with Animated Glow and Rings -->
@@ -44,7 +44,7 @@
         <div class="flex items-center gap-3 w-full">
           <button
             onclick={() => (isOpen = false)}
-            class="flex-1 py-3 px-4 bg-surface-container text-text-muted hover:text-text font-bold text-xs uppercase tracking-wider rounded-2xl hover:bg-surface-container-high active:scale-95 transition-all duration-200 cursor-pointer border border-border/30"
+            class="flex-1 rounded-2xl border border-border bg-muted px-4 py-3 text-xs font-bold uppercase tracking-wider text-text-muted transition-all duration-200 hover:bg-surface-container-high hover:text-text active:scale-95 cursor-pointer"
           >
             {t("cancel")}
           </button>
@@ -53,7 +53,7 @@
               isOpen = false;
               onConfirm();
             }}
-            class="flex-1 py-3 px-4 bg-danger text-white font-bold text-xs uppercase tracking-wider rounded-2xl hover:bg-danger/95 shadow-md shadow-danger/10 hover:shadow-lg hover:shadow-danger/20 active:scale-95 transition-all duration-200 cursor-pointer transform hover:-translate-y-0.5"
+            class="flex-1 rounded-2xl bg-danger px-4 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-danger/10 transition-all duration-200 hover:bg-danger/90 hover:shadow-lg hover:shadow-danger/20 active:scale-95 cursor-pointer"
           >
             {t("logout.confirmBtn")}
           </button>
@@ -63,7 +63,7 @@
       <!-- Close icon button -->
       <button
         onclick={() => (isOpen = false)}
-        class="absolute top-4 right-4 text-text-faint hover:text-text rounded-lg p-1 hover:bg-surface-container/50 transition-colors cursor-pointer"
+        class="absolute top-4 right-4 rounded-lg p-1 text-text-faint transition-colors hover:bg-muted hover:text-text cursor-pointer"
       >
         <X class="w-4 h-4" />
       </button>

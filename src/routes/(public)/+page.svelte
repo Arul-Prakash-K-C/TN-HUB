@@ -42,7 +42,7 @@ const conceptSteps = [
       </div>
 
       <div class="mb-6 flex justify-center">
-        <BrandLogo sizeClass="h-20 w-20" />
+        <BrandLogo showWordmark={true} sizeClass="h-24 w-72" />
       </div>
 
       <h1 class="text-4xl font-black tracking-tight text-white sm:text-6xl lg:text-7xl leading-[1.1]">

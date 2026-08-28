@@ -163,7 +163,7 @@ async function handleAuthentication() {
       <!-- Top Branding Header -->
       <div class="public-banner px-6 py-8 text-center sm:px-8">
         <div class="mx-auto mb-3 flex justify-center">
-          <BrandLogo sizeClass="h-14 w-14" />
+          <BrandLogo showWordmark={true} sizeClass="h-16 w-56" />
         </div>
         <h1 class="text-2xl font-extrabold tracking-tight text-white">{t('auth.portalTitle')}</h1>
         <p class="public-banner-subtitle mt-1.5 text-xs font-semibold uppercase tracking-wider">{t('auth.portalDesc')}</p>
