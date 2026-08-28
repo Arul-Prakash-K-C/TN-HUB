@@ -69,7 +69,7 @@ const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id ==
 </script>
 
 <svelte:head>
-  <title>Thozhan AI — Operator Portal — TN Hub</title>
+  <title>Thozhan AI — Operator Portal — TN Kuviyam</title>
 </svelte:head>
 
 <div class="flex-grow w-full bg-background text-text min-h-screen font-sans">
@@ -82,7 +82,7 @@ const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id ==
         </div>
       </div>
       <h1 class="text-2xl font-black tracking-tight leading-tight">Thozhan AI</h1>
-      <p class="public-banner-subtitle mt-1 max-w-2xl text-sm leading-relaxed">Choose guided options to find services, start applications, track status, and get TN HUB help.</p>
+      <p class="public-banner-subtitle mt-1 max-w-2xl text-sm leading-relaxed">Choose guided options to find services, start applications, track status, and get TN Kuviyam help.</p>
     </div>
   </div>
 
@@ -130,7 +130,7 @@ const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id ==
                 <ShieldCheck class="w-[12px] h-[12px]" /> Selection Only
               </span>
             </div>
-            <p class="text-[15px] text-text-muted mt-1">{history.length > 1 ? resolveText(screen.description) : 'Choose guided options to find services, start applications, track status, review document requirements, and get TN HUB help.'}</p>
+            <p class="text-[15px] text-text-muted mt-1">{history.length > 1 ? resolveText(screen.description) : 'Choose guided options to find services, start applications, track status, review document requirements, and get TN Kuviyam help.'}</p>
           </div>
           
           {#if history.length > 1}
@@ -215,7 +215,7 @@ const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id ==
             </div>
             <div>
               <h3 class="text-[18px] font-bold text-text mb-1">What would you like help with?</h3>
-              <p class="text-[15px] text-text-muted">Thozhan AI guides you only through approved TN HUB options. It does not accept free-text questions.</p>
+              <p class="text-[15px] text-text-muted">Thozhan AI guides you only through approved TN Kuviyam options. It does not accept free-text questions.</p>
             </div>
           </div>
         {/if}
@@ -297,11 +297,11 @@ const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id ==
           <div class="flex flex-col gap-3">
             <div class="bg-muted p-3 rounded-lg">
               <h5 class="text-[11px] font-bold text-text uppercase mb-1">Selection-Only</h5>
-              <p class="text-[12px] text-text">Every step uses predefined TN HUB options. Free-text chat is disabled.</p>
+              <p class="text-[12px] text-text">Every step uses predefined TN Kuviyam options. Free-text chat is disabled.</p>
             </div>
             <div class="bg-muted p-3 rounded-lg">
-              <h5 class="text-[11px] font-bold text-text uppercase mb-1">Real TN Hub Data</h5>
-              <p class="text-[12px] text-text">Services, departments, applications, and document requirements are loaded from the existing TN HUB data sources.</p>
+              <h5 class="text-[11px] font-bold text-text uppercase mb-1">Real TN Kuviyam Data</h5>
+              <p class="text-[12px] text-text">Services, departments, applications, and document requirements are loaded from the existing TN Kuviyam data sources.</p>
             </div>
             <div class="bg-muted p-3 rounded-lg">
               <h5 class="text-[11px] font-bold text-text uppercase mb-1">Operator Context</h5>

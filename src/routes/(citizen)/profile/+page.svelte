@@ -11,11 +11,11 @@ const user = $derived($currentUser);
 const authenticated = $derived($isAuthenticated);
 let savedNotice = $state(false);
 let profilePhone = $state('');
-let isDark = $state(true);
+let isDark = $state(false);
 $effect(() => {
     profilePhone = user?.phone ?? '';
     if (typeof window !== 'undefined') {
-        isDark = localStorage.getItem('theme-mode') !== 'light';
+        isDark = localStorage.getItem('theme-mode') === 'dark';
     }
 });
 async function saveProfile() {
@@ -33,7 +33,7 @@ async function saveProfile() {
 </script>
 
 <svelte:head>
-  <title>{t('profile.title')} — TN Hub</title>
+  <title>{t('profile.title')} — TN Kuviyam</title>
 </svelte:head>
 
 <div class="min-h-screen bg-background pb-12 text-text">

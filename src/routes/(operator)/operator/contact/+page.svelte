@@ -84,7 +84,7 @@
             <h3 class="text-sm font-bold text-text">{t('contact.headquarters')}</h3>
           </div>
           <p class="text-xs text-text-muted leading-relaxed">
-            TN Hub Citizen Platform,<br />
+            TN Kuviyam Citizen Platform,<br />
             BuildWhatMovesIndia Hackathon Hub,<br />
             Chennai, Tamil Nadu.
           </p>

@@ -2,22 +2,23 @@
   let {
     showWordmark = false,
     subtitle = '',
-    sizeClass = 'h-10 w-10',
-    wordmarkClass = 'text-sm',
-    subtitleClass = 'text-[9px]'
+    sizeClass = '',
+    subtitleClass = 'text-[9px]',
+    subtitleOffsetClass = ''
   } = $props();
+
+  const imageSizeClass = $derived(sizeClass || (showWordmark ? 'w-full max-w-[236px] max-h-[84px]' : 'w-10 max-w-10 max-h-10'));
 </script>
 
-<div class="flex items-center gap-3">
-  <div class={`overflow-hidden rounded-2xl border border-border bg-white shadow-sm ${sizeClass}`}>
-    <img src="/logo.png" alt="TN Hub logo" class="h-full w-full object-contain p-1.5" />
+<div class="flex min-w-0 flex-col items-center justify-center gap-2">
+  <div class={`shrink-0 bg-transparent ${imageSizeClass}`}>
+    <img src="/logo.png" alt="TN Kuviyam logo" class="block h-full w-full rounded-lg object-contain" />
   </div>
 
-  {#if showWordmark}
-    <div class="flex flex-col overflow-hidden">
-      <div class={`font-extrabold tracking-tight leading-none text-primary ${wordmarkClass}`}>TN Hub</div>
+  {#if showWordmark && subtitle}
+    <div class="flex min-w-0 flex-col text-center">
       {#if subtitle}
-        <div class={`mt-0.5 font-bold uppercase tracking-wider text-primary/90 leading-tight ${subtitleClass}`}>
+        <div class={`font-bold uppercase tracking-wider text-[var(--color-sidebar-text-muted)] leading-tight ${subtitleOffsetClass} ${subtitleClass}`}>
           {subtitle}
         </div>
       {/if}

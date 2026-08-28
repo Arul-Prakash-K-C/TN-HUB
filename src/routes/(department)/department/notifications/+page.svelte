@@ -4,6 +4,7 @@
   import { canAccessRoute } from '$lib/utils/authGuard';
   import { tt } from '$lib/i18n';
   import { Bell, Shield, Building2, CheckCircle2, AlertTriangle, Info, Clock, Check } from '@lucide/svelte';
+  import { markAllNotificationsReadLocally, markNotificationReadLocally, setNotificationsForUser } from '$lib/stores/notifications';
 
 let { data } = $props();
 const user = $derived($currentUser);
@@ -13,6 +14,7 @@ let activeFilter = $state('ALL');
 let notificationsList = $state([]);
 $effect(() => {
     notificationsList = data.notifications;
+    setNotificationsForUser(user, data.notifications);
 });
 const filteredNotifs = $derived(notificationsList.filter(n => {
     if (activeFilter === 'CRITICAL')
@@ -26,12 +28,14 @@ async function markAllRead() {
     if (!response.ok)
         return;
     notificationsList = notificationsList.map(n => ({ ...n, isRead: true }));
+    markAllNotificationsReadLocally();
 }
 async function markRead(id) {
     const response = await fetch(`/api/notifications/${id}`, { method: 'PATCH', credentials: 'same-origin' });
     if (!response.ok)
         return;
     notificationsList = notificationsList.map(n => n.id === id ? { ...n, isRead: true } : n);
+    markNotificationReadLocally(id);
 }
 </script>
 

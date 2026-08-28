@@ -16,7 +16,7 @@ function saveSettings() {
 </script>
 
 <svelte:head>
-  <title>Operator Settings — TN Hub</title>
+  <title>Operator Settings — TN Kuviyam</title>
 </svelte:head>
 
 <div class="bg-background text-text min-h-screen pb-12 flex flex-col w-full">

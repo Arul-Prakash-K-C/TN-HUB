@@ -153,13 +153,13 @@
 </script>
 
 <svelte:head>
-  <title>Help Desk & Grievance Desk — TN Hub Admin</title>
+  <title>Help Desk & Grievance Desk — TN Kuviyam Admin</title>
 </svelte:head>
 
 {#if !authenticated || role !== 'admin'}
   <div class="flex min-h-[60vh] flex-col items-center justify-center p-4 bg-background">
     <div class="w-full max-w-md rounded-3xl border border-border bg-surface p-8 text-center shadow-xl mt-10">
-      <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-950/40 text-amber-600">
+      <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-warning-soft text-warning">
         <Shield class="h-7 w-7" />
       </div>
       <h2 class="text-xl font-bold text-text">Access Denied</h2>
@@ -195,7 +195,7 @@
       </div>
 
       {#if error}
-        <div class="mb-6 rounded-2xl border border-rose-300 bg-rose-500/10 px-4 py-3 text-xs font-bold text-rose-500 flex items-center gap-2">
+        <div class="mb-6 rounded-2xl border border-danger/25 bg-danger-soft px-4 py-3 text-xs font-bold text-danger flex items-center gap-2">
           <AlertTriangle class="h-4 w-4 shrink-0" />
           {error}
         </div>

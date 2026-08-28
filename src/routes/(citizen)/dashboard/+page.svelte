@@ -43,7 +43,7 @@ function getStatusBadge(status) {
 </script>
 
 <svelte:head>
-  <title>Citizen Dashboard — TN Hub</title>
+  <title>Citizen Dashboard — TN Kuviyam</title>
 </svelte:head>
 
 {#if !restored}

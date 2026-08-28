@@ -1,12 +1,13 @@
 <script>
 
   import { goto } from '$app/navigation';
+  import { dev } from '$app/environment';
   import { page } from '$app/stores';
   import { get } from 'svelte/store';
+  import { onMount } from 'svelte';
   import { auth, currentUser, isAuthenticated, userRole } from '$lib/stores/auth';
   import { getPortalRedirectForRole } from '$lib/utils/authGuard';
   import { departments } from '$lib/data/departments';
-  import { demoCredentials } from '$lib/data/users';
   import { tt, locale } from '$lib/i18n';
   import { User, Building2, Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, UserPlus, Monitor } from '@lucide/svelte';
 
@@ -27,6 +28,7 @@ let loading = $state(false);
 let desiredDeptId = $state('dept-revenue');
 let registrationSuccess = $state(false);
 let officialAuthUser = null;
+let demoCredentials = $state([]);
 const demoRoleByTab = {
     citizen: 'citizen',
     operator: 'operator',
@@ -35,6 +37,12 @@ const demoRoleByTab = {
 };
 const demoAccount = $derived(demoCredentials.find((credential) => credential.role === demoRoleByTab[activeTab]) ?? null);
 const authenticated = $derived($isAuthenticated);
+
+onMount(async () => {
+    const module = await import('$lib/data/users');
+    demoCredentials = module.demoCredentials;
+});
+
 function getLoginRedirectTarget() {
     const redirectParam = $page.url.searchParams.get('redirect');
     const role = get(currentUser)?.role ?? get(userRole);
@@ -54,7 +62,7 @@ function selectTab(tab) {
     email = '';
     password = '';
 }
-function applyDemoCredentials() {
+async function applyDemoCredentials() {
     if (!demoAccount)
         return;
     authMode = 'login';
@@ -62,6 +70,7 @@ function applyDemoCredentials() {
     error = '';
     email = demoAccount.email;
     password = demoAccount.password;
+    await handleAuthentication();
 }
 async function handleAuthentication() {
     if (!email || !password) {
@@ -151,7 +160,7 @@ async function handleAuthentication() {
 </script>
 
 <svelte:head>
-  <title>Single Sign-On — TN Hub</title>
+  <title>Single Sign-On — TN Kuviyam</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </svelte:head>
 
@@ -163,7 +172,7 @@ async function handleAuthentication() {
       <!-- Top Branding Header -->
       <div class="public-banner px-6 py-8 text-center sm:px-8">
         <div class="mx-auto mb-3 flex justify-center">
-          <BrandLogo sizeClass="h-14 w-14" />
+          <BrandLogo showWordmark={true} sizeClass="h-16 w-56" />
         </div>
         <h1 class="text-2xl font-extrabold tracking-tight text-white">{t('auth.portalTitle')}</h1>
         <p class="public-banner-subtitle mt-1.5 text-xs font-semibold uppercase tracking-wider">{t('auth.portalDesc')}</p>
@@ -236,9 +245,9 @@ async function handleAuthentication() {
               <button
                 type="button"
                 onclick={applyDemoCredentials}
-                class="shrink-0 rounded-xl border border-primary/30 bg-surface px-3 py-2 text-[11px] font-bold text-primary transition hover:bg-primary-soft"
+                class="shrink-0 rounded-xl border border-primary/30 bg-surface px-3.5 py-2 text-[11px] font-bold text-primary transition hover:bg-primary/10"
               >
-                Use
+                Go
               </button>
             </div>
           </div>

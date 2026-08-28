@@ -45,7 +45,7 @@ export const services = [
         ],
         faqs: [
             { question: 'What is the validity of an Income Certificate?', questionTA: 'வருமான சான்றிதழின் செல்லுபடியாகும் காலம் என்ன?', answer: 'The Income Certificate is generally valid for 1 year from the date of issue.', answerTA: 'வருமான சான்றிதழ் பொதுவாக வழங்கப்பட்ட நாளிலிருந்து 1 ஆண்டு செல்லும்.' },
-            { question: 'Can I apply online?', questionTA: 'ஆன்லைனில் விண்ணப்பிக்க முடியுமா?', answer: 'Yes, you can apply through TN Hub. The application will be processed by the Revenue Department.', answerTA: 'ஆம், TN Hub மூலம் விண்ணப்பிக்கலாம். விண்ணப்பம் வருவாய் துறையால் செயலாக்கப்படும்.' },
+            { question: 'Can I apply online?', questionTA: 'ஆன்லைனில் விண்ணப்பிக்க முடியுமா?', answer: 'Yes, you can apply through TN Kuviyam. The application will be processed by the Revenue Department.', answerTA: 'ஆம், TN Kuviyam மூலம் விண்ணப்பிக்கலாம். விண்ணப்பம் வருவாய் துறையால் செயலாக்கப்படும்.' },
             { question: 'Is there any fee?', questionTA: 'ஏதாவது கட்டணம் உள்ளதா?', answer: 'No, the Income Certificate is issued free of charge.', answerTA: 'இல்லை, வருமான சான்றிதழ் இலவசமாக வழங்கப்படுகிறது.' }
         ],
         workflowId: 'wf-income-cert',

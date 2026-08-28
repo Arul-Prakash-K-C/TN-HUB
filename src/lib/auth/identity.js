@@ -24,7 +24,7 @@ export function createAuthenticatedUser(input) {
     const claims = input.claims ?? {};
     const role = normalizeUserRole(claims.role);
     const email = input.email ?? '';
-    const displayName = input.displayName?.trim() || claimString(claims.displayName) || email.split('@')[0] || 'TN Hub user';
+    const displayName = input.displayName?.trim() || claimString(claims.displayName) || email.split('@')[0] || 'TN Kuviyam user';
     const preferredLanguage = claims.preferredLanguage === 'ta' ? 'ta' : 'en';
     const createdAt = new Date((input.issuedAt ?? Math.floor(Date.now() / 1000)) * 1000).toISOString();
     const departmentId = role === 'department_user' ? claimString(claims.departmentId) : undefined;

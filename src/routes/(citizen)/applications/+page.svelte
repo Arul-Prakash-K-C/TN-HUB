@@ -80,7 +80,7 @@ async function deleteDraft() {
 </script>
 
 <svelte:head>
-  <title>{t('applications.title')} — TN Hub</title>
+  <title>{t('applications.title')} — TN Kuviyam</title>
 </svelte:head>
 
 <div class="flex min-h-screen w-full flex-col bg-background pb-12 text-text">

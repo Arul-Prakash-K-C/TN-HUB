@@ -16,7 +16,7 @@ const t = $derived($tt);
     <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
       <div class="space-y-3">
         <div class="flex items-center gap-3">
-          <BrandLogo showWordmark={true} subtitle={t('app.tagline')} sizeClass="h-10 w-10" wordmarkClass="text-sm text-white" subtitleClass="text-xs text-primary/90" />
+          <BrandLogo showWordmark={true} subtitle={t('app.tagline')} sizeClass="h-12 w-44" wordmarkClass="text-sm text-white" subtitleClass="text-xs text-primary/90" />
         </div>
         <p class="text-xs leading-relaxed text-white/68">
           One Center. Every Government Service. Engineered for speed, clarity, and zero-paper citizen workflow orchestration.

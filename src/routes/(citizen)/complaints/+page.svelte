@@ -79,7 +79,7 @@ async function submitGrievance() {
 </script>
 
 <svelte:head>
-  <title>{t('complaints.title')} — TN Hub</title>
+  <title>{t('complaints.title')} — TN Kuviyam</title>
 </svelte:head>
 
 <div class="bg-background text-text min-h-screen pb-12">

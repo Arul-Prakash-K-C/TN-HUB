@@ -17,7 +17,7 @@ if (
 const server = await createServer({ server: { middlewareMode: true }, appType: 'custom' });
 
 try {
-  const { seedDemoFirestore } = await server.ssrLoadModule('/src/lib/server/seed/demo.ts');
+  const { seedDemoFirestore } = await server.ssrLoadModule('/src/lib/server/seed/demo.js');
   const result = await seedDemoFirestore();
   console.log('Demo Firestore seed completed.');
   console.table(result);

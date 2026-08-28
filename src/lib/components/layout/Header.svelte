@@ -21,6 +21,7 @@
   import { getPortalRedirectForRole } from '$lib/utils/authGuard';
   import { applyThemeMode, getPreferredThemeMode } from '$lib/utils/theme';
   import BrandLogo from '$lib/components/ui/BrandLogo.svelte';
+  import { notificationUnreadCount } from '$lib/stores/notifications';
 
 let mobileMenuOpen = $state(false);
 let profileMenuOpen = $state(false);
@@ -31,28 +32,9 @@ const authenticated = $derived($isAuthenticated);
 const role = $derived($userRole);
 const currentPath = $derived($page.url.pathname);
 let themeMode = $state('dark');
-let unreadCount = $state(0);
+const unreadCount = $derived($notificationUnreadCount);
 $effect(() => {
     themeMode = getPreferredThemeMode();
-});
-$effect(() => {
-    const activeUser = user;
-    if (!activeUser) {
-        unreadCount = 0;
-        return;
-    }
-    let cancelled = false;
-    void fetch('/api/notifications/unread-count', { credentials: 'same-origin' })
-        .then((response) => response.ok ? response.json() : null)
-        .then((body) => {
-        if (!cancelled)
-            unreadCount = typeof body?.count === 'number' ? body.count : 0;
-    })
-        .catch(() => {
-        if (!cancelled)
-            unreadCount = 0;
-    });
-    return () => { cancelled = true; };
 });
 function toggleLanguage() {
     locale.toggle();
@@ -91,7 +73,7 @@ function handleProtectedNav(targetPath, title, e) {
       
       <!-- Brand Logo / Wordmark -->
       <a href={authenticated ? getDashboardUrl() : "/"} class="flex items-center gap-3 shrink-0 group">
-        <BrandLogo showWordmark={true} subtitle="One Center. Every Government Service." sizeClass="h-10 w-10" wordmarkClass="text-sm" subtitleClass="text-[9px]" />
+        <BrandLogo showWordmark={true} sizeClass="h-12 w-44 sm:w-52" wordmarkClass="text-sm" subtitleClass="text-[9px]" />
       </a>
       
       <!-- Desktop Navigation -->

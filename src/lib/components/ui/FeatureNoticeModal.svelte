@@ -64,7 +64,7 @@
       <!-- Formal Message -->
       <div class="space-y-3">
         <p class="text-xs text-text leading-relaxed font-semibold">
-          Thank you for exploring TN Hub. The requested feature <span class="text-primary font-black">"{state.featureName}"</span> is currently undergoing technical implementation and compliance clearance.
+          Thank you for exploring TN Kuviyam. The requested feature <span class="text-primary font-black">"{state.featureName}"</span> is currently undergoing technical implementation and compliance clearance.
         </p>
         <p class="text-xs text-text-muted leading-relaxed font-medium">
           As a citizen-first prototype, live integrations are mock-enabled for demonstration purposes. Full connectivity will be introduced in subsequent releases.

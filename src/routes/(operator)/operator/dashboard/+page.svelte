@@ -47,7 +47,7 @@ async function createAssistedDraft(serviceId) {
 </script>
 
 <svelte:head>
-  <title>{t('operator.kioskPortal')} — TN Hub</title>
+  <title>{t('operator.kioskPortal')} — TN Kuviyam</title>
 </svelte:head>
 
 {#if !restored}

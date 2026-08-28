@@ -10,11 +10,11 @@ const currentLocale = $derived($locale);
 const authenticated = $derived($isAuthenticated);
 const role = $derived($userRole);
 const user = $derived($currentUser);
-let isDark = $state(true);
+let isDark = $state(false);
 $effect(() => {
     if (typeof window !== 'undefined') {
         const updateTheme = () => {
-            isDark = document.documentElement.classList.contains('dark') || localStorage.getItem('theme-mode') !== 'light';
+            isDark = document.documentElement.classList.contains('dark') || localStorage.getItem('theme-mode') === 'dark';
         };
         updateTheme();
         const observer = new MutationObserver(updateTheme);
@@ -25,7 +25,7 @@ $effect(() => {
 </script>
 
 <svelte:head>
-  <title>Admin Profile — TN Hub</title>
+  <title>Admin Profile — TN Kuviyam</title>
 </svelte:head>
 
 {#if !authenticated || role !== 'admin'}
@@ -46,12 +46,12 @@ $effect(() => {
     <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div class="rounded-3xl border border-border bg-surface dark:bg-surface-container shadow-sm overflow-hidden">
         <!-- Avatar Banner -->
-        <div class="px-8 py-10 text-center transition-all duration-300 {isDark ? 'bg-gradient-to-r from-[#071A28] to-[#143520]' : 'bg-gradient-to-r from-primary-soft via-surface-container-low to-accent-soft border-b border-border'}">
-          <div class="mx-auto w-20 h-20 rounded-2xl font-black text-2xl flex items-center justify-center shadow-xl transition-all duration-300 {isDark ? 'bg-white/10 backdrop-blur border border-white/20 text-white' : 'bg-primary-soft text-primary-soft-text border border-primary/15'}">
+        <div class="border-b border-border px-8 py-10 text-center transition-all duration-300 {isDark ? 'bg-surface-container-high' : 'bg-primary-soft'}">
+          <div class="mx-auto w-20 h-20 rounded-2xl font-black text-2xl flex items-center justify-center shadow-xl transition-all duration-300 bg-surface border border-border text-primary">
             {(user?.displayName || user?.email || 'A')[0].toUpperCase()}
           </div>
-          <h2 class="mt-3 text-lg font-bold transition-all duration-300 {isDark ? 'text-white' : 'text-text'}">{user?.displayName || 'System Administrator'}</h2>
-          <span class="inline-flex items-center gap-1.5 mt-1 rounded-full px-3 py-1 text-[10px] font-bold transition-all duration-300 {isDark ? 'bg-green-100/10 text-green-300 uppercase' : 'bg-primary-soft text-primary-soft-text uppercase border border-primary/10'}">
+          <h2 class="mt-3 text-lg font-bold transition-all duration-300 text-text">{user?.displayName || 'System Administrator'}</h2>
+          <span class="inline-flex items-center gap-1.5 mt-1 rounded-full px-3 py-1 text-[10px] font-bold transition-all duration-300 uppercase bg-success-soft text-success border border-success/20">
             <Shield class="h-3 w-3" />
             Platform Administrator
           </span>

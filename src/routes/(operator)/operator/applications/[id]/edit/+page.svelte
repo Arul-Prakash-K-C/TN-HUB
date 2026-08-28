@@ -256,7 +256,7 @@ async function deleteDraft() {
 </script>
 
 <svelte:head>
-  <title>{t('operator.editDraft')} — TN Hub</title>
+  <title>{t('operator.editDraft')} — TN Kuviyam</title>
 </svelte:head>
 
 <div class="operator-application-editor min-h-screen bg-background pb-16 text-text">

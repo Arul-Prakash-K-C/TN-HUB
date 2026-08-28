@@ -20,7 +20,7 @@ function toggleFaq(index) {
 </script>
 
 <svelte:head>
-  <title>{service ? (currentLocale === 'ta' ? service.nameTA : service.name) : 'Service'} — TN Hub</title>
+  <title>{service ? (currentLocale === 'ta' ? service.nameTA : service.name) : 'Service'} — TN Kuviyam</title>
 </svelte:head>
 
 {#if service}

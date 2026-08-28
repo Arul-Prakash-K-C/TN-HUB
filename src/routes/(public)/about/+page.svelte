@@ -17,7 +17,7 @@ const initiatives = [
     {
         title: 'National e-Governance Plan (NeGP)',
         icon: Network,
-        content: 'Tamil Nadu has progressively aligned its e-Governance strategies in consonance with NeGP since its formulation in May 2006. TN Hub extends this vision into a modern, unified citizen interface layer.'
+        content: 'Tamil Nadu has progressively aligned its e-Governance strategies in consonance with NeGP since its formulation in May 2006. TN Kuviyam extends this vision into a modern, unified citizen interface layer.'
     },
     {
         title: 'Common Service Centres (CSCs / e-Sevai)',
@@ -80,7 +80,7 @@ const initiatives = [
           <ul class="mt-3 space-y-2 text-xs font-medium text-text">
             <li class="flex items-start gap-2">
               <CheckCircle2 class="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-              <span>Simple and unified front-end delivery interfaces (TN Hub)</span>
+              <span>Simple and unified front-end delivery interfaces (TN Kuviyam)</span>
             </li>
             <li class="flex items-start gap-2">
               <CheckCircle2 class="mt-0.5 h-4 w-4 shrink-0 text-primary" />
