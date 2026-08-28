@@ -49,7 +49,7 @@ const tutorials = $derived([
     },
     {
         id: 'digilocker',
-        title: currentLocale === 'ta' ? 'டிஜிலாக்கர் கணக்கை இணைப்பது எப்படி' : 'How to Link DigiLocker to TN Hub',
+        title: currentLocale === 'ta' ? 'டிஜிலாக்கர் கணக்கை இணைப்பது எப்படி' : 'How to Link DigiLocker to TN Kuviyam',
         desc: currentLocale === 'ta' ? 'ஆவணங்களை உடனடியாகச் சரிபார்க்க உங்கள் டிஜிலாக்கர் கணக்கை எவ்வாறு இணைப்பது.' : 'Learn how to securely link DigiLocker to instantly retrieve verified identity, address, and academic certificates.',
         duration: '5 mins',
         youtubeId: 'Q8T2tP5vD_Q',
@@ -72,7 +72,7 @@ function getTutorialThumbnailClass(id) {
 </script>
 
 <svelte:head>
-  <title>{currentLocale === 'ta' ? 'சேவை வீடியோ பயிற்சிகள்' : 'Service Video Tutorials'} — TN Hub</title>
+  <title>{currentLocale === 'ta' ? 'சேவை வீடியோ பயிற்சிகள்' : 'Service Video Tutorials'} — TN Kuviyam</title>
 </svelte:head>
 
 <div class="min-h-screen bg-background pb-20 text-text">
@@ -87,7 +87,7 @@ function getTutorialThumbnailClass(id) {
           <p class="public-banner-subtitle mt-2 max-w-2xl text-sm leading-relaxed">
             {currentLocale === 'ta' 
               ? 'அரசு சேவைகளுக்கு ஆன்லைனில் எவ்வாறு எளிதாக விண்ணப்பிப்பது என்பதை விளக்கும் அதிகாரப்பூர்வ மற்றும் கல்வி சார்ந்த வீடியோக்கள்.'
-              : 'Official and educational video tutorials showing you step-by-step how to apply for various government services on the TN Hub portal.'}
+              : 'Official and educational video tutorials showing you step-by-step how to apply for various government services on the TN Kuviyam portal.'}
           </p>
         </div>
       </div>

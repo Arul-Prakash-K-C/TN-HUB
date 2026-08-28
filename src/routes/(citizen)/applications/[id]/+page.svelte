@@ -156,7 +156,7 @@ async function downloadDocument(documentId) {
 </script>
 
 <svelte:head>
-  <title>{application ? application.applicationNumber : 'Application'} — TN Hub</title>
+  <title>{application ? application.applicationNumber : 'Application'} — TN Kuviyam</title>
 </svelte:head>
 
 {#if !application}

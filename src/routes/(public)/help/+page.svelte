@@ -60,8 +60,8 @@ async function handleQuestionSubmit() {
 }
 const faqs = [
     {
-        q: 'What is TN Hub?',
-        a: 'TN Hub is Tamil Nadu\'s unified citizen service portal integrating government services, DigiLocker document vaults, grievance redressal, and e-Adangal land extracts into one seamless digital platform.'
+        q: 'What is TN Kuviyam?',
+        a: 'TN Kuviyam is Tamil Nadu\'s unified citizen service portal integrating government services, DigiLocker document vaults, grievance redressal, and e-Adangal land extracts into one seamless digital platform.'
     },
     {
         q: 'How do I track my submitted application?',
@@ -73,10 +73,10 @@ const faqs = [
     },
     {
         q: 'Is there any fee for submitting applications?',
-        a: 'Most revenue and certificate services (Income, Community, Nativity) on TN Hub are completely free of government fees. Some services like Transport or Licences may have nominal fees displayed on the service detail page.'
+        a: 'Most revenue and certificate services (Income, Community, Nativity) on TN Kuviyam are completely free of government fees. Some services like Transport or Licences may have nominal fees displayed on the service detail page.'
     },
     {
-        q: 'How do I create an account on TN Hub?',
+        q: 'How do I create an account on TN Kuviyam?',
         a: 'Click the "Login" button on the top right corner, then select "Create Account". You can register using your email address, mobile number, or link an existing Google account. Aadhaar-based verification may be used for enhanced services.'
     },
     {
@@ -93,7 +93,7 @@ const faqs = [
     },
     {
         q: 'What is DigiLocker integration?',
-        a: 'DigiLocker is a Government of India initiative that provides a digital document wallet. When connected to TN Hub, you can directly fetch verified certificates without re-uploading physical documents.'
+        a: 'DigiLocker is a Government of India initiative that provides a digital document wallet. When connected to TN Kuviyam, you can directly fetch verified certificates without re-uploading physical documents.'
     },
     {
         q: 'How do I file a grievance or complaint?',
@@ -104,16 +104,16 @@ const faqs = [
         a: 'If your application is rejected, you will receive a notification with the specific reason. You can address the issue (e.g., upload missing documents, correct information) and resubmit. If you disagree with the decision, you can file a grievance.'
     },
     {
-        q: 'Is TN Hub available in Tamil?',
-        a: 'Yes. TN Hub fully supports both Tamil (தமிழ்) and English. You can switch languages at any time using the language toggle button in the header. All forms, notifications, and service information are available in both languages.'
+        q: 'Is TN Kuviyam available in Tamil?',
+        a: 'Yes. TN Kuviyam fully supports both Tamil (தமிழ்) and English. You can switch languages at any time using the language toggle button in the header. All forms, notifications, and service information are available in both languages.'
     },
     {
-        q: 'Which departments are connected to TN Hub?',
-        a: 'TN Hub connects services from Revenue, Civil Supplies, Transport, Health, Education, Social Welfare, Labour, Agriculture, Local Government, and more. The full list is available on the Services page filtered by department.'
+        q: 'Which departments are connected to TN Kuviyam?',
+        a: 'TN Kuviyam connects services from Revenue, Civil Supplies, Transport, Health, Education, Social Welfare, Labour, Agriculture, Local Government, and more. The full list is available on the Services page filtered by department.'
     },
     {
-        q: 'How secure is my personal data on TN Hub?',
-        a: 'TN Hub uses Firebase Authentication with encrypted sessions, server-side role-based authorization, and Firestore security rules. Your personal data is only accessible to you and authorized government officers processing your application.'
+        q: 'How secure is my personal data on TN Kuviyam?',
+        a: 'TN Kuviyam uses Firebase Authentication with encrypted sessions, server-side role-based authorization, and Firestore security rules. Your personal data is only accessible to you and authorized government officers processing your application.'
     },
     {
         q: 'Can I download approved certificates digitally?',
@@ -129,7 +129,7 @@ const policies = [
     {
         title: 'Terms of Service',
         icon: Scale,
-        desc: 'By using TN Hub, you agree to provide accurate information for government service applications. Misrepresentation may result in application rejection and legal action under applicable Indian Penal Code provisions.'
+        desc: 'By using TN Kuviyam, you agree to provide accurate information for government service applications. Misrepresentation may result in application rejection and legal action under applicable Indian Penal Code provisions.'
     },
     {
         title: 'Grievance Redressal Policy',
@@ -139,7 +139,7 @@ const policies = [
     {
         title: 'Accessibility Statement',
         icon: FileText,
-        desc: 'TN Hub is designed to meet WCAG 2.1 AA accessibility standards. We support screen readers, keyboard navigation, high-contrast modes, and bilingual Tamil/English content to ensure inclusive access.'
+        desc: 'TN Kuviyam is designed to meet WCAG 2.1 AA accessibility standards. We support screen readers, keyboard navigation, high-contrast modes, and bilingual Tamil/English content to ensure inclusive access.'
     }
 ];
 </script>
@@ -222,7 +222,7 @@ const policies = [
           </div>
           <div>
             <h2 class="text-lg font-bold text-text">Didn't find your answer?</h2>
-            <p class="text-xs text-text-muted">Send your question to the TN Hub Help Desk. We'll respond within 24 hours.</p>
+            <p class="text-xs text-text-muted">Send your question to the TN Kuviyam Help Desk. We'll respond within 24 hours.</p>
           </div>
         </div>
 
@@ -232,7 +232,7 @@ const policies = [
               <CheckCircle2 class="h-8 w-8" />
             </div>
             <h3 class="text-lg font-bold text-text">Question Submitted</h3>
-            <p class="mt-2 max-w-md text-sm text-text-muted">Your question has been sent to the TN Hub Help Desk. You will receive a response via email within 24 working hours.</p>
+            <p class="mt-2 max-w-md text-sm text-text-muted">Your question has been sent to the TN Kuviyam Help Desk. You will receive a response via email within 24 working hours.</p>
             <button
               onclick={() => questionSubmitted = false}
               class="mt-6 text-sm font-bold text-primary transition hover:text-primary-hover"
@@ -273,7 +273,7 @@ const policies = [
                 bind:value={questionText}
                 required
                 rows={4}
-                placeholder="Describe your question about TN Hub services, processes, or documents..."
+                placeholder="Describe your question about TN Kuviyam services, processes, or documents..."
                 class="w-full resize-none rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text outline-none transition placeholder:text-text-faint focus:border-primary focus:ring-2 focus:ring-primary/15"
               ></textarea>
             </div>
@@ -324,7 +324,7 @@ const policies = [
           <div>
             <h4 class="text-sm font-bold text-warning">Important Notice</h4>
             <p class="mt-1 text-xs leading-relaxed text-warning">
-              TN Hub is a hackathon prototype developed for the BuildWhatMovesIndia initiative. 
+              TN Kuviyam is a hackathon prototype developed for the BuildWhatMovesIndia initiative. 
               The policies listed above represent the intended governance framework. Actual government 
               service policies are governed by the Government of Tamil Nadu and relevant departments.
             </p>

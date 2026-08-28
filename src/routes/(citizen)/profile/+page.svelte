@@ -33,7 +33,7 @@ async function saveProfile() {
 </script>
 
 <svelte:head>
-  <title>{t('profile.title')} — TN Hub</title>
+  <title>{t('profile.title')} — TN Kuviyam</title>
 </svelte:head>
 
 <div class="min-h-screen bg-background pb-12 text-text">

@@ -13,7 +13,7 @@ function readSmtpConfig() {
   const secure = env.SMTP_SECURE === 'true' || port === 465;
   const user = env.SMTP_USER?.trim() || '';
   const password = env.SMTP_PASSWORD ?? '';
-  const name = env.SMTP_NAME?.trim() || 'TN Hub';
+  const name = env.SMTP_NAME?.trim() || 'TN Kuviyam';
 
   return { host, port, secure, user, password, from, name };
 }

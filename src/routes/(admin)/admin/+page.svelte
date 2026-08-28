@@ -75,7 +75,7 @@
 </script>
 
 <svelte:head>
-  <title>{t('admin.title')} — TN Hub</title>
+  <title>{t('admin.title')} — TN Kuviyam</title>
 </svelte:head>
 
 {#if !authenticated || role !== 'admin'}

@@ -2,13 +2,17 @@
 
   import { tt, locale } from '$lib/i18n';
   import { Bell, CheckCircle, Check, ArrowRight } from '@lucide/svelte';
+  import { markAllNotificationsReadLocally, markNotificationReadLocally, setNotificationsForUser } from '$lib/stores/notifications';
+  import { currentUser } from '$lib/stores/auth';
 
 let { data } = $props();
 const t = $derived($tt);
 const currentLocale = $derived($locale);
+const user = $derived($currentUser);
 let notificationsList = $state([]);
 $effect(() => {
     notificationsList = data.notifications;
+    setNotificationsForUser(user, data.notifications);
 });
 async function markAllRead() {
     const response = await fetch('/api/notifications/read-all', {
@@ -18,6 +22,7 @@ async function markAllRead() {
     if (!response.ok)
         return;
     notificationsList = notificationsList.map(n => ({ ...n, isRead: true }));
+    markAllNotificationsReadLocally();
 }
 async function markSingleRead(id) {
     const response = await fetch(`/api/notifications/${id}`, {
@@ -27,11 +32,12 @@ async function markSingleRead(id) {
     if (!response.ok)
         return;
     notificationsList = notificationsList.map(n => n.id === id ? { ...n, isRead: true } : n);
+    markNotificationReadLocally(id);
 }
 </script>
 
 <svelte:head>
-  <title>{t('notifications.title')} — TN Hub</title>
+  <title>{t('notifications.title')} — TN Kuviyam</title>
 </svelte:head>
 
 <div class="bg-slate-50 min-h-screen pb-12">

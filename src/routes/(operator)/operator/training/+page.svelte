@@ -5,7 +5,7 @@
 
 const modules = [
     {
-        title: 'TN Hub Service Navigation',
+        title: 'TN Kuviyam Service Navigation',
         module: 'Module 1',
         duration: '20 mins',
         level: 'Beginner',
@@ -86,7 +86,7 @@ function getAccentColor(color) {
 </script>
 
 <svelte:head>
-  <title>Operator Training Portal — TN Hub</title>
+  <title>Operator Training Portal — TN Kuviyam</title>
 </svelte:head>
 
 <div class="bg-background text-text min-h-screen pb-20 flex flex-col w-full">

@@ -1,6 +1,8 @@
 <script>
   import '../app.css';
   import { auth } from '$lib/stores/auth';
+  import { currentUser } from '$lib/stores/auth';
+  import { refreshNotifications, resetNotifications } from '$lib/stores/notifications';
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { loadSavedTheme } from '$lib/utils/theme';
@@ -14,6 +16,8 @@
   let { data, children } = $props();
   let AiChatWidgetComponent = $state(null);
   const currentLocale = $derived($locale);
+  const user = $derived($currentUser);
+  let lastNotificationUserKey = $state(null);
 
   onMount(() => {
     auth.setInitialUser(data.user);
@@ -25,35 +29,54 @@
       AiChatWidgetComponent = module.default;
     });
 
-    // Poll for real-time in-app notifications
+  });
+
+  $effect(() => {
+    const activeUser = user;
+    const userKey = activeUser?.uid || activeUser?.email || activeUser?.id || null;
+
+    if (!userKey) {
+      lastNotificationUserKey = null;
+      resetNotifications();
+      return;
+    }
+
+    lastNotificationUserKey = userKey;
     let lastFetchedTime = Date.now();
-    const interval = setInterval(async () => {
-      // Only poll if user is authenticated and session is active
-      if (!data.user) return;
+    let cancelled = false;
+
+    const poll = async () => {
       try {
-        const res = await fetch('/api/notifications', { credentials: 'same-origin' });
-        if (!res.ok) return;
-        const body = await res.json();
-        const notifications = body.notifications || [];
-        
-        // Filter for unread notifications that arrived after layout mount/last check
-        const newUnread = notifications.filter(n => !n.isRead && new Date(n.createdAt).getTime() > lastFetchedTime);
+        const notifications = await refreshNotifications(activeUser);
+        if (cancelled || lastNotificationUserKey !== userKey) return;
+
+        const newUnread = notifications.filter(
+          (notification) =>
+            !notification.isRead && new Date(notification.createdAt).getTime() > lastFetchedTime
+        );
+
         if (newUnread.length > 0) {
-          lastFetchedTime = Math.max(...newUnread.map(n => new Date(n.createdAt).getTime()));
-          newUnread.reverse().forEach(n => {
+          lastFetchedTime = Math.max(...newUnread.map((notification) => new Date(notification.createdAt).getTime()));
+          newUnread.reverse().forEach((notification) => {
             showToast(
-              currentLocale === 'ta' ? n.titleTA : n.title,
-              currentLocale === 'ta' ? n.messageTA : n.message,
+              currentLocale === 'ta' ? notification.titleTA : notification.title,
+              currentLocale === 'ta' ? notification.messageTA : notification.message,
               'info'
             );
           });
         }
-      } catch (err) {
-        // fail silently
+      } catch {
+        // Notification failures are recorded in the shared store; avoid interrupting navigation.
       }
-    }, 10000);
+    };
 
-    return () => clearInterval(interval);
+    void refreshNotifications(activeUser).catch(() => {});
+    const interval = setInterval(poll, 10000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
   });
 </script>
 

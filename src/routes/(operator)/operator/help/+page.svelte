@@ -22,7 +22,7 @@ let activeFaqIndex = $state(null);
 </script>
 
 <svelte:head>
-  <title>Operator Help & Support — TN Hub</title>
+  <title>Operator Help & Support — TN Kuviyam</title>
 </svelte:head>
 
 <div class="bg-background text-text min-h-screen pb-12 flex flex-col w-full">

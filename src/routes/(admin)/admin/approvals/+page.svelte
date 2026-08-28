@@ -237,7 +237,7 @@
 </script>
 
 <svelte:head>
-  <title>User Verification & Approvals — TN Hub Admin</title>
+  <title>User Verification & Approvals — TN Kuviyam Admin</title>
 </svelte:head>
 
 {#if !authenticated || role !== "admin"}

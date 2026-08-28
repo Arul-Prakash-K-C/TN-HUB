@@ -174,7 +174,7 @@
       const phone = normalizePhone(formData.phone);
       formData.phone = phone;
       if (phone.length !== 10) {
-          stepError = 'Enter a valid 10-digit number first.';
+          stepError = t('apply.validation.phoneInvalid');
           return;
       }
       otpLoading = true;
@@ -187,7 +187,7 @@
   async function verifyOtp() {
       stepError = '';
       if (!/^\d{4}$/.test(otpInput)) {
-          stepError = 'Please enter the 4-digit dummy OTP.';
+          stepError = t('apply.otp.invalid');
           return;
       }
       
@@ -200,7 +200,7 @@
               otpInput = '';
           }
           else {
-              stepError = 'Invalid OTP. Use 1234 for this demo.';
+              stepError = t('apply.otp.invalid');
           }
           otpLoading = false;
       }, 250);
@@ -480,7 +480,7 @@
 </script>
 
 <svelte:head>
-  <title>{t('apply.title', { service: service ? (currentLocale === 'ta' ? service.nameTA : service.name) : '' })} — TN Hub</title>
+  <title>{t('apply.title', { service: service ? (currentLocale === 'ta' ? service.nameTA : service.name) : '' })} — TN Kuviyam</title>
 </svelte:head>
 
 {#if !authenticated}
@@ -1046,24 +1046,28 @@
   {#if showOtpModal}
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
       <div class="w-full max-w-sm rounded-2xl border border-border bg-surface p-6 shadow-xl animate-scale-up">
-        <h3 class="mb-2 text-lg font-black text-text">Verify Mobile</h3>
-        <p class="text-sm text-text-muted mb-6">Enter any 4 digits for +91 {formData.phone}.</p>
+        <h3 class="mb-2 text-lg font-black text-text">{t('apply.otp.title')}</h3>
+        <p class="text-sm text-text-muted mb-6">{t('apply.otp.subtitle', { phone: formData.phone })}</p>
         
         <input type="text" bind:value={otpInput} placeholder="1234" maxlength="4" class="w-full text-center tracking-[0.5em] text-2xl font-bold rounded-lg border border-border bg-surface dark:bg-surface-container-highest dark:text-text py-3 px-4 outline-none focus:border-primary focus:ring-1 focus:ring-primary mb-6" />
 
+        {#if stepError}
+          <p class="text-sm text-danger mb-6 text-center font-medium animate-pulse">{stepError}</p>
+        {/if}
+
         <div class="flex items-center justify-end gap-3">
           <button
-            onclick={() => { showOtpModal = false; otpInput = ''; }}
+            onclick={() => { showOtpModal = false; otpInput = ''; stepError = ''; }}
             class="rounded-lg px-4 py-2 text-sm font-medium text-text-muted hover:bg-muted transition"
           >
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             onclick={verifyOtp}
             disabled={otpLoading || !/^\d{4}$/.test(otpInput)}
             class="rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-white hover:bg-primary-hover transition disabled:opacity-50"
           >
-            {otpLoading ? 'Verifying...' : 'Verify OTP'}
+            {otpLoading ? t('common.loading') : t('auth.verifyOtp')}
           </button>
         </div>
       </div>

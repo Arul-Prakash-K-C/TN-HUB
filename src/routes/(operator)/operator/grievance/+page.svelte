@@ -75,7 +75,7 @@
 </script>
 
 <svelte:head>
-  <title>Operator Grievances — TN Hub</title>
+  <title>Operator Grievances — TN Kuviyam</title>
 </svelte:head>
 
 <div class="bg-background text-text min-h-screen pb-12 flex flex-col w-full">

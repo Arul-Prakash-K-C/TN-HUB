@@ -25,7 +25,7 @@ $effect(() => {
 </script>
 
 <svelte:head>
-  <title>Admin Profile — TN Hub</title>
+  <title>Admin Profile — TN Kuviyam</title>
 </svelte:head>
 
 {#if !authenticated || role !== 'admin'}

@@ -50,7 +50,7 @@ function printCertificate() {
     <!-- Watermark -->
     <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
       <div class="w-96 h-96 rounded-full border-8 border-[#062206] flex items-center justify-center">
-        <span class="text-6xl font-black text-[#062206] tracking-tighter transform -rotate-45">TN HUB</span>
+        <span class="text-6xl font-black text-[#062206] tracking-tighter transform -rotate-45">TN Kuviyam</span>
       </div>
     </div>
 

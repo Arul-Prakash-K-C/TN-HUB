@@ -64,7 +64,7 @@
 </script>
 
 <svelte:head>
-  <title>{t('documents.title')} — TN Hub</title>
+  <title>{t('documents.title')} — TN Kuviyam</title>
 </svelte:head>
 
 <div class="bg-background min-h-screen pb-12 flex flex-col w-full">
@@ -249,7 +249,7 @@
       </div>
 
       <p class="text-xs text-text-muted leading-relaxed">
-        By clicking Allow, you permit TN Hub to securely access your Aadhaar and educational certificates from DigiLocker for instant service verification.
+        By clicking Allow, you permit TN Kuviyam to securely access your Aadhaar and educational certificates from DigiLocker for instant service verification.
       </p>
 
       <div class="mt-6 flex justify-end gap-3">

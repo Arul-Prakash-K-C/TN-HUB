@@ -157,7 +157,7 @@
 </script>
 
 <svelte:head>
-  <title>Application Review — {appState ? appState.applicationNumber : 'TN Hub'}</title>
+  <title>Application Review — {appState ? appState.applicationNumber : 'TN Kuviyam'}</title>
 </svelte:head>
 
 <div class="min-h-screen bg-background text-text font-sans pb-24">

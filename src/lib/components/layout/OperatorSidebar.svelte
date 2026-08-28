@@ -34,10 +34,10 @@ $effect(() => {
   <div class="fixed inset-0 z-30 bg-background/70 backdrop-blur-xs transition-opacity md:hidden" onclick={() => isOpen = false} aria-hidden="true"></div>
 {/if}
 
-<aside class="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col gap-6 border-r border-white/10 bg-[var(--color-sidebar-bg)] px-4 py-6 text-[var(--color-sidebar-text)] transition-transform duration-300 ease-in-out md:translate-x-0 {isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}">
+<aside class="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col gap-5 border-r border-white/10 bg-[var(--color-sidebar-bg)] px-4 py-5 text-[var(--color-sidebar-text)] transition-transform duration-300 ease-in-out md:translate-x-0 {isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}">
   <!-- Brand Header -->
-  <a href="/operator/dashboard" class="flex w-full items-center justify-center px-2 py-1 hover:opacity-90 transition">
-    <BrandLogo showWordmark={true} subtitle={t('operator.portal')} sizeClass="w-full max-w-[236px] max-h-[84px]" wordmarkClass="text-sm text-[var(--color-sidebar-text)]" subtitleClass="text-[10px] text-[var(--color-sidebar-text-muted)]" />
+  <a href="/operator/dashboard" class="flex w-full items-center justify-center px-1 py-1 hover:opacity-90 transition">
+    <BrandLogo showWordmark={true} subtitle={t('operator.portal')} sizeClass="h-[86px] w-full max-w-[236px]" wordmarkClass="text-sm text-[var(--color-sidebar-text)]" subtitleOffsetClass="-mt-2" subtitleClass="text-[10px] text-[var(--color-sidebar-text-muted)]" />
   </a>
 
   <!-- Navigation Links -->

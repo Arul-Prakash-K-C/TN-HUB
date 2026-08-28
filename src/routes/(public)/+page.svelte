@@ -26,7 +26,7 @@ const conceptSteps = [
 </script>
 
 <svelte:head>
-  <title>TN Hub — One Center. Every Government Service.</title>
+  <title>TN Kuviyam — One Center. Every Government Service.</title>
   <meta name="description" content="Discover, apply, track and manage government services from one unified platform." />
 </svelte:head>
 
@@ -46,7 +46,7 @@ const conceptSteps = [
       </div>
 
       <h1 class="text-4xl font-black tracking-tight text-white sm:text-6xl lg:text-7xl leading-[1.1]">
-        TN HUB
+        TN Kuviyam
       </h1>
       <h2 class="mt-4 text-xl font-bold text-white/85 sm:text-2xl tracking-wide">
         One Center. Every Government Service.
@@ -94,7 +94,7 @@ const conceptSteps = [
 <section class="bg-background py-20 sm:py-24 border-y border-border">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-16">
-      <h2 class="text-3xl font-black text-text tracking-tight sm:text-4xl">The TN Hub Concept</h2>
+      <h2 class="text-3xl font-black text-text tracking-tight sm:text-4xl">The TN Kuviyam Concept</h2>
       <p class="mt-4 text-sm font-medium text-text-muted max-w-2xl mx-auto">
         A unified, predictable experience across every department. No more navigating dozens of disconnected government portals.
       </p>

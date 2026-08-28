@@ -4,31 +4,13 @@
   import { auth, isAuthenticated, currentUser } from '$lib/stores/auth';
   import { t } from '$lib/i18n';
   import BrandLogo from '$lib/components/ui/BrandLogo.svelte';
+  import { notificationUnreadCount } from '$lib/stores/notifications';
 
 const authenticated = $derived($isAuthenticated);
 const user = $derived($currentUser);
 let { isOpen = $bindable(false), portal = 'citizen' } = $props();
 const isDept = $derived(portal === 'department');
-let unreadCount = $state(0);
-$effect(() => {
-    const activeUser = user;
-    if (!activeUser) {
-        unreadCount = 0;
-        return;
-    }
-    let cancelled = false;
-    void fetch('/api/notifications/unread-count', { credentials: 'same-origin' })
-        .then((response) => response.ok ? response.json() : null)
-        .then((body) => {
-        if (!cancelled)
-            unreadCount = typeof body?.count === 'number' ? body.count : 0;
-    })
-        .catch(() => {
-        if (!cancelled)
-            unreadCount = 0;
-    });
-    return () => { cancelled = true; };
-});
+const unreadCount = $derived($notificationUnreadCount);
 </script>
 
 <header class="sticky top-0 z-30 flex w-full items-center justify-between border-b px-4 py-3.5 text-white shadow-xs md:hidden {portal === 'operator' || portal === 'admin' || isDept ? 'border-border bg-[var(--color-sidebar-bg)]' : 'border-border bg-[var(--color-sidebar-bg)]'}">
@@ -40,7 +22,7 @@ $effect(() => {
       <BrandLogo sizeClass="h-7 w-7" />
       <div>
         <div class="flex items-center gap-1.5">
-          <h1 class="text-xs font-black tracking-tight uppercase leading-none">{isDept ? (user?.departmentName || 'Revenue Dept') : 'TN HUB'}</h1>
+          <h1 class="text-xs font-black tracking-tight uppercase leading-none">{isDept ? (user?.departmentName || 'Revenue Dept') : 'TN Kuviyam'}</h1>
         </div>
         <p class="mt-0.5 text-[9px] font-bold leading-none tracking-wider text-primary/90">{isDept ? 'Officer Portal' : portal === 'operator' ? t('operator.portal') : portal === 'admin' ? t('admin.portal') : 'Citizen Platform'}</p>
       </div>

@@ -66,7 +66,7 @@ const categoryOptions = $derived([
 </script>
 
 <svelte:head>
-  <title>{t('services.title')} — TN Hub</title>
+  <title>{t('services.title')} — TN Kuviyam</title>
 </svelte:head>
 
 <div class="bg-background min-h-screen pb-16 flex flex-col w-full font-sans text-text">

@@ -33,7 +33,7 @@ async function saveProfile() {
 </script>
 
 <svelte:head>
-  <title>Operator Profile — TN Hub</title>
+  <title>Operator Profile — TN Kuviyam</title>
 </svelte:head>
 
 <div class="bg-background text-text min-h-screen pb-12 flex flex-col w-full">

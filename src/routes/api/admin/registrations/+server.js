@@ -90,18 +90,18 @@ export const PATCH = async ({ request, locals, url }) => {
             });
             const mailResult = await sendMail({
                 to: data.email,
-                subject: 'TN Hub registration approved',
+                subject: 'TN Kuviyam registration approved',
                 text: [
-                    `Hello ${data.displayName || data.email || 'TN Hub user'},`,
+                    `Hello ${data.displayName || data.email || 'TN Kuviyam user'},`,
                     '',
-                    'Your TN Hub registration has been approved by the administrator.',
+                    'Your TN Kuviyam registration has been approved by the administrator.',
                     `You can now sign in at ${new URL('/login', url.origin).toString()}.`,
                     '',
                     `Role: ${resolvedRole === 'department_user' ? 'Department Officer' : 'Operator'}`,
                     `Department: ${resolveDepartmentName(resolvedDepartmentId)}`,
                     '',
                     'Thank you,',
-                    'TN Hub Team'
+                    'TN Kuviyam Team'
                 ].join('\n')
             }).catch((cause) => {
                 emailIssues.push(cause instanceof Error ? cause.message : 'Unable to send approval email.');

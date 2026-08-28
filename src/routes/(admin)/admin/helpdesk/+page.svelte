@@ -153,7 +153,7 @@
 </script>
 
 <svelte:head>
-  <title>Help Desk & Grievance Desk — TN Hub Admin</title>
+  <title>Help Desk & Grievance Desk — TN Kuviyam Admin</title>
 </svelte:head>
 
 {#if !authenticated || role !== 'admin'}

@@ -124,7 +124,7 @@ async function toggleOpen() {
         </div>
         <div>
           <h3 class="text-[20px] font-bold leading-tight text-text">Thozhan AI</h3>
-          <p class="text-[12px] font-medium text-text-muted">TN HUB Citizen Assistant</p>
+          <p class="text-[12px] font-medium text-text-muted">TN Kuviyam Citizen Assistant</p>
         </div>
       </div>
       <button 
@@ -198,7 +198,7 @@ async function toggleOpen() {
               {history.length > 1 ? resolveText(screen.title) : 'What would you like help with?'}
             </h2>
             <p class="mt-2 text-[13px] leading-relaxed text-text-muted">
-              {history.length > 1 ? resolveText(screen.description) : 'Thozhan AI guides you through approved TN HUB options.'}
+              {history.length > 1 ? resolveText(screen.description) : 'Thozhan AI guides you through approved TN Kuviyam options.'}
             </p>
           </div>
 

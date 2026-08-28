@@ -24,9 +24,9 @@ const server = await createServer({ server: { middlewareMode: true }, appType: '
 
 try {
   const [adminModule, userModule, identityModule] = await Promise.all([
-    server.ssrLoadModule('/src/lib/server/firebase/admin.ts'),
-    server.ssrLoadModule('/src/lib/data/users.ts'),
-    server.ssrLoadModule('/src/lib/auth/identity.ts')
+    server.ssrLoadModule('/src/lib/server/firebase/admin.js'),
+    server.ssrLoadModule('/src/lib/data/users.js'),
+    server.ssrLoadModule('/src/lib/auth/identity.js')
   ]);
   const { getFirebaseAdminAuth, getFirebaseAdminFirestore } = adminModule;
   const { normalizeUserRole } = identityModule;
