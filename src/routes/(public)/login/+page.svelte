@@ -39,7 +39,6 @@ const demoAccount = $derived(demoCredentials.find((credential) => credential.rol
 const authenticated = $derived($isAuthenticated);
 
 onMount(async () => {
-    if (!dev) return;
     const module = await import('$lib/data/users');
     demoCredentials = module.demoCredentials;
 });
@@ -63,7 +62,7 @@ function selectTab(tab) {
     email = '';
     password = '';
 }
-function applyDemoCredentials() {
+async function applyDemoCredentials() {
     if (!demoAccount)
         return;
     authMode = 'login';
@@ -71,6 +70,7 @@ function applyDemoCredentials() {
     error = '';
     email = demoAccount.email;
     password = demoAccount.password;
+    await handleAuthentication();
 }
 async function handleAuthentication() {
     if (!email || !password) {
@@ -245,9 +245,9 @@ async function handleAuthentication() {
               <button
                 type="button"
                 onclick={applyDemoCredentials}
-                class="shrink-0 rounded-xl border border-primary/30 bg-surface px-3 py-2 text-[11px] font-bold text-primary transition hover:bg-primary-soft"
+                class="shrink-0 rounded-xl border border-primary/30 bg-surface px-3.5 py-2 text-[11px] font-bold text-primary transition hover:bg-primary/10"
               >
-                Use
+                Go
               </button>
             </div>
           </div>
