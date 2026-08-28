@@ -31,7 +31,7 @@ let officialAuthUser = null;
 let demoCredentials = $state([]);
 const demoRoleByTab = {
     citizen: 'citizen',
-    operator: 'operator',
+    operator: 'officer',
     department: 'department_user',
     admin: 'tnhub_admin'
 };
