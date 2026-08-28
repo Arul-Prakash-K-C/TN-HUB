@@ -1,8 +1,12 @@
+import { dev } from '$app/environment';
 import { getFirebaseAdminFirestore } from '$lib/server/firebase/admin';
 import { workflows as fallbackWorkflows } from '$lib/data/workflows';
 
 function localized(en, ta) {
     return { en, ta };
+}
+function canUseFixtureFallback() {
+    return dev || process.env.TN_KUVIYAM_ALLOW_FIXTURE_FALLBACK === 'true';
 }
 
 function toWorkflowDefinition(workflow) {
@@ -57,8 +61,13 @@ export async function getWorkflowDefinition(workflowId) {
         }
     }
     catch (cause) {
+        if (!canUseFixtureFallback()) {
+            throw cause;
+        }
         console.warn(`[workflow] Firestore workflow lookup unavailable; using bundled fallback. ${cause instanceof Error ? cause.message : String(cause)}`);
     }
+    if (!canUseFixtureFallback())
+        return null;
     const fallback = fallbackWorkflows.find((workflow) => workflow.id === workflowId);
     return fallback ? toWorkflowDefinition(fallback) : null;
 }

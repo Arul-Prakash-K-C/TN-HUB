@@ -32,5 +32,10 @@ export default defineConfig({
         hmr: {
             timeout: 30000
         }
+    },
+    test: {
+        environment: 'node',
+        include: ['tests/**/*.test.js', 'src/**/*.test.js'],
+        globals: false
     }
 });

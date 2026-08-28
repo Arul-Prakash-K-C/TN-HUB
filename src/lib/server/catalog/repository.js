@@ -1,9 +1,13 @@
 import { Timestamp } from 'firebase-admin/firestore';
+import { dev } from '$app/environment';
 import { services as fallbackServices } from '$lib/data/services';
 import { departments as fallbackDepartments } from '$lib/data/departments';
 import { getFirebaseAdminFirestore } from '$lib/server/firebase/admin';
 function localized(en, ta) {
     return { en, ta };
+}
+function canUseFixtureFallback() {
+    return dev || process.env.TN_KUVIYAM_ALLOW_FIXTURE_FALLBACK === 'true';
 }
 export function toCatalogDepartment(department) {
     return {
@@ -88,8 +92,13 @@ export async function getCatalogService(serviceId) {
         }
     }
     catch (cause) {
-        warnCatalogFallback('service lookup', cause);
+        if (!canUseFixtureFallback()) {
+            throw cause;
+        }
+        warnAboutFallback('service lookup', cause);
     }
+    if (!canUseFixtureFallback())
+        return null;
     const fallback = fallbackServices.find((service) => service.id === serviceId && service.isActive);
     return fallback ? toCatalogService(fallback) : null;
 }
@@ -106,8 +115,13 @@ export async function getCatalogDepartment(departmentId) {
         }
     }
     catch (cause) {
-        warnCatalogFallback('department lookup', cause);
+        if (!canUseFixtureFallback()) {
+            throw cause;
+        }
+        warnAboutFallback('department lookup', cause);
     }
+    if (!canUseFixtureFallback())
+        return null;
     const fallback = fallbackDepartments.find((department) => department.id === departmentId && department.isActive);
     return fallback ? toCatalogDepartment(fallback) : null;
 }
@@ -220,6 +234,9 @@ function cachePublicCatalog(data, source) {
 }
 
 function getFallbackCatalog() {
+    if (!canUseFixtureFallback()) {
+        throw new Error('Bundled catalog fixture fallback is disabled in production.');
+    }
     return {
         services: fallbackServices.filter((service) => service.isActive),
         departments: fallbackDepartments.filter((department) => department.isActive)
@@ -279,6 +296,9 @@ export async function loadPublicCatalog() {
         return cachePublicCatalog(data, 'firestore');
     }
     catch (error) {
+        if (!canUseFixtureFallback()) {
+            throw error;
+        }
         warnAboutFallback('catalog', error);
         return cachePublicCatalog(getFallbackCatalog(), 'fallback');
     }
@@ -309,6 +329,9 @@ export async function loadPublicServiceBySlug(slug) {
         return service.isActive ? service : null;
     }
     catch (error) {
+        if (!canUseFixtureFallback()) {
+            throw error;
+        }
         warnAboutFallback('service detail', error);
         return fallbackServices.find((service) => service.slug === slug && service.isActive) ?? null;
     }
@@ -325,6 +348,9 @@ export async function loadPublicServiceById(id) {
         return service.isActive ? service : null;
     }
     catch (error) {
+        if (!canUseFixtureFallback()) {
+            throw error;
+        }
         warnAboutFallback('service detail', error);
         return fallbackServices.find((service) => service.id === id && service.isActive) ?? null;
     }

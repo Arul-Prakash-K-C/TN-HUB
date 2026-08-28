@@ -1,15 +1,8 @@
 import { error, json } from '@sveltejs/kit';
 import { normalizeUserRole } from '$lib/auth/identity';
 import { createCitizenApplication } from '$lib/server/applications/repository';
-function isFormData(value) {
-    if (!value || typeof value !== 'object' || Array.isArray(value))
-        return false;
-    const entries = Object.entries(value);
-    return entries.length <= 100 && entries.every(([key, entry]) => key.length <= 100 &&
-        (typeof entry === 'string' || typeof entry === 'number' || typeof entry === 'boolean' || entry === null || typeof entry === 'undefined') &&
-        (typeof entry !== 'string' || entry.length <= 5000) &&
-        (typeof entry !== 'number' || Number.isFinite(entry)));
-}
+import { checkRateLimit } from '$lib/server/security/rateLimit';
+import { isSafeFormData } from '$lib/server/security/validation';
 function isAuthenticatedCitizen(user) {
     return !!user?.uid && (normalizeUserRole(user.role) === 'citizen' || normalizeUserRole(user.role) === 'operator');
 }
@@ -19,6 +12,10 @@ export const POST = async ({ request, locals }) => {
     }
     if (!isAuthenticatedCitizen(locals.user)) {
         throw error(403, 'Only citizens and operators can create applications.');
+    }
+    const rateLimit = checkRateLimit(request, `application-create:${locals.user.uid}`, { limit: 12, windowMs: 60_000 });
+    if (!rateLimit.allowed) {
+        throw error(429, `Too many application requests. Try again in ${rateLimit.retryAfterSeconds} seconds.`);
     }
     let body;
     try {
@@ -30,7 +27,7 @@ export const POST = async ({ request, locals }) => {
     if (typeof body.serviceId !== 'string' || body.serviceId.length === 0 || body.serviceId.length > 120) {
         throw error(400, 'A valid service is required.');
     }
-    if (!isFormData(body.formData)) {
+    if (!isSafeFormData(body.formData)) {
         throw error(400, 'Application form data is invalid.');
     }
     // Submission must use the workflow endpoint after required documents are

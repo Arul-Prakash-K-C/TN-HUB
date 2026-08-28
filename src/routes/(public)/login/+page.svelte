@@ -39,6 +39,8 @@ const demoAccount = $derived(demoCredentials.find((credential) => credential.rol
 const authenticated = $derived($isAuthenticated);
 
 onMount(async () => {
+    if (!dev)
+        return;
     const module = await import('$lib/data/users');
     demoCredentials = module.demoCredentials;
 });
@@ -106,9 +108,13 @@ async function handleAuthentication() {
                 if (displayName.trim()) {
                     await updateProfile(credential.user, { displayName: displayName.trim() });
                 }
+                const idToken = await credential.user.getIdToken();
                 const registerRes = await fetch('/api/auth/register-official', {
                     method: 'POST',
-                    headers: { 'content-type': 'application/json' },
+                    headers: {
+                        'content-type': 'application/json',
+                        authorization: `Bearer ${idToken}`
+                    },
                     body: JSON.stringify({
                         uid: credential.user.uid,
                         email: credential.user.email,

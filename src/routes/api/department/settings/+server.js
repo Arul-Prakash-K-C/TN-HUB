@@ -2,6 +2,7 @@ import { error, json } from '@sveltejs/kit';
 import { getFirebaseAdminFirestore } from '$lib/server/firebase/admin';
 import { normalizeUserRole } from '$lib/auth/identity';
 import { recordAuditEvent } from '$lib/server/audit/repository';
+import { isSafeId } from '$lib/server/security/validation';
 const DEFAULT_SETTINGS = {
     slaThresholdDays: '3',
     autoAssign: true,
@@ -18,7 +19,7 @@ function getAuthorizedDepartmentId(user, requestedDepartmentId) {
     }
     if (role === 'admin') {
         const departmentId = requestedDepartmentId?.trim();
-        if (!departmentId)
+        if (!departmentId || !isSafeId(departmentId, 120))
             throw error(400, 'Department ID is required for admin settings access.');
         return departmentId;
     }

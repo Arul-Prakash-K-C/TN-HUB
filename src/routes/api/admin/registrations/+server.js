@@ -3,6 +3,9 @@ import { getFirebaseAdminFirestore } from '$lib/server/firebase/admin';
 import { getFirebaseAdminAuth } from '$lib/server/firebase/admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import { sendMail } from '$lib/server/email';
+import { isSafeId } from '$lib/server/security/validation';
+
+const approvableRoles = new Set(['operator', 'department_user']);
 
 function resolveDepartmentName(departmentId) {
     if (!departmentId) {
@@ -69,6 +72,12 @@ export const PATCH = async ({ request, locals, url }) => {
         if (approved) {
             const resolvedRole = data.role || data.desiredRole || 'operator';
             const resolvedDepartmentId = data.departmentId || null;
+            if (!approvableRoles.has(resolvedRole)) {
+                throw error(400, 'Registration has an invalid requested role.');
+            }
+            if (resolvedRole === 'department_user' && !isSafeId(resolvedDepartmentId, 120)) {
+                throw error(400, 'Officer registrations require a valid department assignment.');
+            }
             const emailIssues = [];
             await profileRef.update({
                 approved: true,
@@ -134,6 +143,9 @@ export const PATCH = async ({ request, locals, url }) => {
         });
     }
     catch (cause) {
+        if (cause?.status) {
+            throw cause;
+        }
         const message = cause instanceof Error ? cause.message : 'Unable to update registration.';
         throw error(500, message);
     }

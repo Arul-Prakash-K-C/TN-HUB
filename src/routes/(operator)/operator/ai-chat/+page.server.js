@@ -1,24 +1,18 @@
 import { loadPublicCatalog } from '$lib/server/catalog/repository';
 import { listApplicationsForUser } from '$lib/server/applications/repository';
 import { listCitizenDocuments } from '$lib/server/documents/repository';
+import { requireRole } from '$lib/server/security/authorize';
 export const load = async ({ locals }) => {
+    const user = requireRole(locals, ['operator', 'admin']);
     const catalog = await loadPublicCatalog();
-    if (!locals.user) {
-        return {
-            catalog,
-            applications: [],
-            documents: [],
-            user: null
-        };
-    }
     const [applications, documents] = await Promise.all([
-        listApplicationsForUser(locals.user),
-        listCitizenDocuments(locals.user)
+        listApplicationsForUser(user),
+        listCitizenDocuments(user)
     ]);
     return {
         catalog,
         applications,
         documents,
-        user: locals.user
+        user
     };
 };

@@ -1,6 +1,6 @@
 import { listNotificationsForUser } from '$lib/server/notifications/repository';
+import { requireDepartmentUser } from '$lib/server/security/authorize';
 export const load = async ({ locals }) => {
-    if (!locals.user)
-        return { notifications: [] };
-    return { notifications: await listNotificationsForUser(locals.user) };
+    const user = requireDepartmentUser(locals);
+    return { notifications: await listNotificationsForUser(user) };
 };

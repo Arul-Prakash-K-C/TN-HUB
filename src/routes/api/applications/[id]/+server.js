@@ -1,5 +1,6 @@
 import { error, json } from '@sveltejs/kit';
 import { deleteApplicationDraft, updateApplicationDraft } from '$lib/server/applications/repository';
+import { isSafeFormData } from '$lib/server/security/validation';
 export const PUT = async ({ params, request, locals }) => {
     if (!locals.user)
         throw error(401, 'Authentication required.');
@@ -10,7 +11,7 @@ export const PUT = async ({ params, request, locals }) => {
     catch {
         throw error(400, 'Invalid update request.');
     }
-    if (!body.formData || typeof body.formData !== 'object' || Array.isArray(body.formData)) {
+    if (!isSafeFormData(body.formData)) {
         throw error(400, 'Invalid form data.');
     }
     const id = params.id;
