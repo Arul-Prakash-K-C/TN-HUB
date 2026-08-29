@@ -1,8 +1,10 @@
 <script>
 
   import { currentUser } from '$lib/stores/auth';
-  import { canAccessRoute } from '$lib/utils/authGuard';
-  import { t } from '$lib/i18n';
+  
+const t = $derived($tt);
+import { canAccessRoute } from '$lib/utils/authGuard';
+  import { tt } from '$lib/i18n';
   import {
     TrendingUp,
     Clock,
@@ -70,7 +72,7 @@ function downloadCSV() {
       <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-danger-soft text-danger">
         <Shield class="h-7 w-7" />
       </div>
-      <h2 class="text-lg font-bold text-text">Access Restricted</h2>
+      <h2 class="text-lg font-bold text-text">{t('ui.routes.department.department.reports.799029bc')}</h2>
       <p class="mt-2 text-xs text-text-muted">{guard.reason || 'Unauthorized access'}</p>
     </div>
   </div>
@@ -90,16 +92,16 @@ function downloadCSV() {
             bind:value={timeRange}
             class="rounded-lg border border-white/25 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white outline-none transition hover:bg-white/15 focus:ring-2 focus:ring-white/20"
           >
-            <option value="7_DAYS" class="text-text">Last 7 Days</option>
-            <option value="30_DAYS" class="text-text">Last 30 Days</option>
-            <option value="90_DAYS" class="text-text">Quarter to Date</option>
+            <option value="7_DAYS" class="text-text">{t('ui.routes.department.department.reports.b201db45')}</option>
+            <option value="30_DAYS" class="text-text">{t('ui.routes.department.department.reports.76132289')}</option>
+            <option value="90_DAYS" class="text-text">{t('ui.routes.department.department.reports.eb935771')}</option>
           </select>
           <button 
             onclick={downloadCSV}
             class="adaptive-action-button flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition"
           >
             <Download class="h-3.5 w-3.5" />
-            <span>Export CSV</span>
+            <span>{t('ui.routes.department.department.reports.b3131955')}</span>
           </button>
         </div>
       </div>
@@ -111,38 +113,38 @@ function downloadCSV() {
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div class="bg-surface dark:bg-surface-container border border-border rounded-xl p-5 shadow-2xs">
           <div class="flex items-center justify-between text-text-muted">
-            <span class="text-[11px] font-bold uppercase tracking-wider">Avg Resolution Time</span>
+            <span class="text-[11px] font-bold uppercase tracking-wider">{t('ui.routes.department.department.reports.3f4ae21b')}</span>
             <Clock class="h-4 w-4 text-primary" />
           </div>
           <div class="text-2xl font-extrabold text-text mt-2">{avgResolutionTime()}</div>
-          <div class="text-[10px] text-text-muted font-bold mt-1">Target: 3.0 day SLA limit</div>
+          <div class="text-[10px] text-text-muted font-bold mt-1">{t('ui.routes.department.department.reports.376c9f80')}</div>
         </div>
 
         <div class="bg-surface dark:bg-surface-container border border-border rounded-xl p-5 shadow-2xs">
           <div class="flex items-center justify-between text-text-muted">
-            <span class="text-[11px] font-bold uppercase tracking-wider">SLA Compliance</span>
+            <span class="text-[11px] font-bold uppercase tracking-wider">{t('ui.routes.department.department.reports.d552dfcb')}</span>
             <TrendingUp class="h-4 w-4 text-success" />
           </div>
           <div class="text-2xl font-extrabold text-success mt-2">{slaCompliance()}</div>
-          <div class="text-[10px] text-text-muted font-medium mt-1">Target: 95.0% compliance threshold</div>
+          <div class="text-[10px] text-text-muted font-medium mt-1">{t('ui.routes.department.department.reports.7f33a274')}</div>
         </div>
 
         <div class="bg-surface dark:bg-surface-container border border-border rounded-xl p-5 shadow-2xs">
           <div class="flex items-center justify-between text-text-muted">
-            <span class="text-[11px] font-bold uppercase tracking-wider">Certificates Issued</span>
+            <span class="text-[11px] font-bold uppercase tracking-wider">{t('ui.routes.department.department.reports.cf13f3bf')}</span>
             <CheckCircle2 class="h-4 w-4 text-success" />
           </div>
           <div class="text-2xl font-extrabold text-text mt-2">{metrics.approved}</div>
-          <div class="text-[10px] text-text-muted font-medium mt-1">Digital certificates generated</div>
+          <div class="text-[10px] text-text-muted font-medium mt-1">{t('ui.routes.department.department.reports.4dd24b6e')}</div>
         </div>
 
         <div class="bg-surface dark:bg-surface-container border border-border rounded-xl p-5 shadow-2xs">
           <div class="flex items-center justify-between text-text-muted">
-            <span class="text-[11px] font-bold uppercase tracking-wider">SLA Breaches</span>
+            <span class="text-[11px] font-bold uppercase tracking-wider">{t('ui.routes.department.department.reports.2b8e438d')}</span>
             <AlertTriangle class="h-4 w-4 text-danger" />
           </div>
           <div class="text-2xl font-extrabold text-danger mt-2">{metrics.slaBreached}</div>
-          <div class="text-[10px] text-danger font-bold mt-1">Overdue resolution count</div>
+          <div class="text-[10px] text-danger font-bold mt-1">{t('ui.routes.department.department.reports.3093e703')}</div>
         </div>
       </div>
 

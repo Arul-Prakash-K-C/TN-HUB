@@ -153,7 +153,7 @@
 </script>
 
 <svelte:head>
-  <title>Help Desk & Grievance Desk — TN Kuviyam Admin</title>
+  <title>{t('ui.routes.admin.admin.helpdesk.e54e3cf3')}</title>
 </svelte:head>
 
 {#if !authenticated || role !== 'admin'}
@@ -162,8 +162,8 @@
       <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-warning-soft text-warning">
         <Shield class="h-7 w-7" />
       </div>
-      <h2 class="text-xl font-bold text-text">Access Denied</h2>
-      <p class="mt-2 text-xs text-text-muted">Admin access only.</p>
+      <h2 class="text-xl font-bold text-text">{t('ui.routes.admin.admin.helpdesk.eaed53f0')}</h2>
+      <p class="mt-2 text-xs text-text-muted">{t('ui.routes.admin.admin.helpdesk.35bf9f5b')}</p>
     </div>
   </div>
 {:else}
@@ -171,8 +171,8 @@
     <!-- Header Banner -->
     <div class="public-banner border-b border-border">
       <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <h1 class="text-h1 text-white">Help Desk & Grievance Panel</h1>
-        <p class="text-xs text-white/70">Manage user inquiries and resolve public grievances separately in their respective databases.</p>
+        <h1 class="text-h1 text-white">{t('ui.routes.admin.admin.helpdesk.279c5a33')}</h1>
+        <p class="text-xs text-white/70">{t('ui.routes.admin.admin.helpdesk.eabaf8fc')}</p>
       </div>
     </div>
 
@@ -204,7 +204,7 @@
       {#if loading}
         <div class="flex items-center justify-center py-20">
           <Loader2 class="h-8 w-8 animate-spin text-primary" />
-          <span class="ml-3 text-sm text-text-muted font-bold">Loading administration database...</span>
+          <span class="ml-3 text-sm text-text-muted font-bold">{t('ui.routes.admin.admin.helpdesk.d431092f')}</span>
         </div>
       {:else}
         <!-- ============================================== -->
@@ -215,15 +215,15 @@
           <div class="grid grid-cols-1 gap-4 mb-8 sm:grid-cols-3">
             <div class="rounded-3xl border border-border bg-surface dark:bg-surface-container p-6 shadow-sm text-center">
               <div class="text-3xl font-black text-primary">{questions.length}</div>
-              <div class="text-[10px] font-bold text-text-muted uppercase tracking-wider mt-1.5">Total Inquiries</div>
+              <div class="text-[10px] font-bold text-text-muted uppercase tracking-wider mt-1.5">{t('ui.routes.admin.admin.helpdesk.eead4a05')}</div>
             </div>
             <div class="rounded-3xl border border-border bg-surface dark:bg-surface-container p-6 shadow-sm text-center">
               <div class="text-3xl font-black text-warning">{questions.filter(q => !q.reply).length}</div>
-              <div class="text-[10px] font-bold text-text-muted uppercase tracking-wider mt-1.5">Pending Action</div>
+              <div class="text-[10px] font-bold text-text-muted uppercase tracking-wider mt-1.5">{t('ui.routes.admin.admin.helpdesk.61507932')}</div>
             </div>
             <div class="rounded-3xl border border-border bg-surface dark:bg-surface-container p-6 shadow-sm text-center">
               <div class="text-3xl font-black text-success">{questions.filter(q => q.reply).length}</div>
-              <div class="text-[10px] font-bold text-text-muted uppercase tracking-wider mt-1.5">Replied</div>
+              <div class="text-[10px] font-bold text-text-muted uppercase tracking-wider mt-1.5">{t('ui.routes.admin.admin.helpdesk.7c812b9c')}</div>
             </div>
           </div>
 
@@ -244,7 +244,7 @@
               <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-success-soft text-success">
                 <CheckCircle class="h-8 w-8" />
               </div>
-              <h2 class="text-lg font-bold text-text">No Inquiries</h2>
+              <h2 class="text-lg font-bold text-text">{t('ui.routes.admin.admin.helpdesk.0841c43f')}</h2>
               <p class="mt-2 text-xs text-text-muted">
                 {filterTab === 'pending' ? 'All user inquiries have been resolved.' : 'No help desk queries found.'}
               </p>
@@ -255,11 +255,11 @@
               <table class="w-full text-left border-collapse">
                 <thead>
                   <tr class="border-b border-border bg-muted/50 text-[10px] font-black uppercase tracking-wider text-text-muted font-tamil">
-                    <th class="py-3.5 px-6">User Details</th>
-                    <th class="py-3.5 px-6">Subject</th>
-                    <th class="py-3.5 px-6">Submitted At</th>
-                    <th class="py-3.5 px-6">Status</th>
-                    <th class="py-3.5 px-6 text-right">Actions</th>
+                    <th class="py-3.5 px-6">{t('ui.routes.admin.admin.helpdesk.854b955d')}</th>
+                    <th class="py-3.5 px-6">{t('ui.routes.admin.admin.helpdesk.5a27996b')}</th>
+                    <th class="py-3.5 px-6">{t('ui.routes.admin.admin.helpdesk.7eee4522')}</th>
+                    <th class="py-3.5 px-6">{t('ui.routes.admin.admin.helpdesk.f1f186df')}</th>
+                    <th class="py-3.5 px-6 text-right">{t('ui.routes.admin.admin.helpdesk.b312c087')}</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-border text-xs font-semibold text-text">
@@ -289,11 +289,11 @@
                       <td class="py-4 px-6">
                         {#if q.reply}
                           <span class="inline-flex items-center gap-1 rounded-full bg-success-soft text-success px-2.5 py-0.5 text-[9px] font-bold border border-success/15">
-                            <CheckCircle class="h-2.5 w-2.5" /> Replied
+                            <CheckCircle class="h-2.5 w-2.5" /> {t('ui.routes.admin.admin.helpdesk.7c812b9c')}
                           </span>
                         {:else}
                           <span class="inline-flex items-center gap-1 rounded-full bg-warning-soft text-warning px-2.5 py-0.5 text-[9px] font-bold border border-warning/15">
-                            <Clock class="h-2.5 w-2.5" /> Pending
+                            <Clock class="h-2.5 w-2.5" /> {t('chatbot.value.checkPending')}
                           </span>
                         {/if}
                       </td>
@@ -318,7 +318,7 @@
                         <td colspan="5" class="bg-surface-container/30 px-6 py-6 border-b border-border">
                           <div class="max-w-3xl space-y-4">
                             <div class="bg-surface dark:bg-surface-container border border-border p-5 rounded-2xl shadow-inner text-xs leading-relaxed">
-                              <span class="text-[10px] font-black text-text-muted uppercase tracking-wider block mb-1">User Inquiry:</span>
+                              <span class="text-[10px] font-black text-text-muted uppercase tracking-wider block mb-1">{t('ui.routes.admin.admin.helpdesk.5973d4a3')}</span>
                               <p class="whitespace-pre-wrap font-medium text-text">{q.question}</p>
                             </div>
 
@@ -326,7 +326,7 @@
                               <div class="bg-primary-soft/30 border border-primary/25 p-5 rounded-2xl text-xs leading-relaxed">
                                 <div class="flex items-center gap-2 mb-1.5 text-primary">
                                   <Reply class="h-4 w-4" />
-                                  <span class="font-extrabold uppercase text-[10px] tracking-wider">Admin Response:</span>
+                                  <span class="font-extrabold uppercase text-[10px] tracking-wider">{t('ui.routes.admin.admin.helpdesk.006a61fb')}</span>
                                 </div>
                                 <p class="font-semibold text-text whitespace-pre-wrap">{q.reply}</p>
                                 {#if q.repliedAt}
@@ -336,12 +336,12 @@
                             {:else}
                               <div class="space-y-2">
                                 <label for="reply-box" class="block text-[11px] font-black uppercase tracking-wider text-text-muted font-tamil">
-                                  Response Message
+                                  {t('ui.response.message')}
                                 </label>
                                 <textarea
                                   id="reply-box"
                                   bind:value={replyText}
-                                  placeholder="Type your reply to this inquiry..."
+                                  placeholder={t('ui.type.your.reply.to.this.inquiry')}
                                   rows="4"
                                   class="w-full rounded-2xl border border-border bg-surface dark:bg-surface-container px-4 py-3 text-xs font-semibold text-text outline-none focus:border-primary transition-all"
                                 ></textarea>
@@ -381,15 +381,15 @@
           <div class="grid grid-cols-1 gap-4 mb-8 sm:grid-cols-3">
             <div class="rounded-3xl border border-border bg-surface dark:bg-surface-container p-6 shadow-sm text-center">
               <div class="text-3xl font-black text-primary">{complaints.length}</div>
-              <div class="text-[10px] font-bold text-text-muted uppercase tracking-wider mt-1.5">Total Grievances</div>
+              <div class="text-[10px] font-bold text-text-muted uppercase tracking-wider mt-1.5">{t('ui.routes.admin.admin.helpdesk.f1a6d61a')}</div>
             </div>
             <div class="rounded-3xl border border-border bg-surface dark:bg-surface-container p-6 shadow-sm text-center">
               <div class="text-3xl font-black text-warning">{complaints.filter(c => c.status !== 'RESOLVED').length}</div>
-              <div class="text-[10px] font-bold text-text-muted uppercase tracking-wider mt-1.5">Unresolved</div>
+              <div class="text-[10px] font-bold text-text-muted uppercase tracking-wider mt-1.5">{t('ui.routes.admin.admin.helpdesk.011f62cd')}</div>
             </div>
             <div class="rounded-3xl border border-border bg-surface dark:bg-surface-container p-6 shadow-sm text-center">
               <div class="text-3xl font-black text-success">{complaints.filter(c => c.status === 'RESOLVED').length}</div>
-              <div class="text-[10px] font-bold text-text-muted uppercase tracking-wider mt-1.5">Resolved</div>
+              <div class="text-[10px] font-bold text-text-muted uppercase tracking-wider mt-1.5">{t('ui.routes.admin.admin.helpdesk.11c9254d')}</div>
             </div>
           </div>
 
@@ -410,7 +410,7 @@
               <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-success-soft text-success">
                 <CheckCircle class="h-8 w-8" />
               </div>
-              <h2 class="text-lg font-bold text-text">No Grievances</h2>
+              <h2 class="text-lg font-bold text-text">{t('ui.routes.admin.admin.helpdesk.66583d41')}</h2>
               <p class="mt-2 text-xs text-text-muted">
                 {filterTab === 'pending' ? 'All citizen complaints have been resolved.' : 'No public complaints registered.'}
               </p>
@@ -421,12 +421,12 @@
               <table class="w-full text-left border-collapse">
                 <thead>
                   <tr class="border-b border-border bg-muted/50 text-[10px] font-black uppercase tracking-wider text-text-muted font-tamil">
-                    <th class="py-3.5 px-6">Grievance ID / Citizen</th>
-                    <th class="py-3.5 px-6">Department & Category</th>
-                    <th class="py-3.5 px-6">Subject</th>
-                    <th class="py-3.5 px-6">Created At</th>
-                    <th class="py-3.5 px-6">Status</th>
-                    <th class="py-3.5 px-6 text-right">Actions</th>
+                    <th class="py-3.5 px-6">{t('ui.routes.admin.admin.helpdesk.24e28502')}</th>
+                    <th class="py-3.5 px-6">{t('ui.routes.admin.admin.helpdesk.f2244649')}</th>
+                    <th class="py-3.5 px-6">{t('ui.routes.admin.admin.helpdesk.5a27996b')}</th>
+                    <th class="py-3.5 px-6">{t('ui.routes.admin.admin.helpdesk.dc0bd803')}</th>
+                    <th class="py-3.5 px-6">{t('ui.routes.admin.admin.helpdesk.f1f186df')}</th>
+                    <th class="py-3.5 px-6 text-right">{t('ui.routes.admin.admin.helpdesk.b312c087')}</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-border text-xs font-semibold text-text">
@@ -456,11 +456,11 @@
                       <td class="py-4 px-6">
                         {#if c.status === 'RESOLVED'}
                           <span class="inline-flex items-center gap-1 rounded-full bg-success-soft text-success px-2.5 py-0.5 text-[9px] font-bold border border-success/15">
-                            <CheckCircle class="h-2.5 w-2.5" /> Resolved
+                            <CheckCircle class="h-2.5 w-2.5" /> {t('complaint.status.RESOLUTION')}
                           </span>
                         {:else}
                           <span class="inline-flex items-center gap-1 rounded-full bg-warning-soft text-warning px-2.5 py-0.5 text-[9px] font-bold border border-warning/15">
-                            <Clock class="h-2.5 w-2.5" /> Pending
+                            <Clock class="h-2.5 w-2.5" /> {t('chatbot.value.checkPending')}
                           </span>
                         {/if}
                       </td>
@@ -487,12 +487,12 @@
                             <!-- Full Details -->
                             <div class="grid grid-cols-2 gap-4 bg-surface dark:bg-surface-container border border-border p-5 rounded-2xl">
                               <div class="col-span-2">
-                                <span class="text-[10px] font-black text-text-muted uppercase tracking-wider block mb-1">Grievance Description:</span>
+                                <span class="text-[10px] font-black text-text-muted uppercase tracking-wider block mb-1">{t('ui.routes.admin.admin.helpdesk.ad664bce')}</span>
                                 <p class="text-xs font-semibold text-text whitespace-pre-wrap leading-relaxed">{c.description}</p>
                               </div>
                               {#if c.location}
                                 <div>
-                                  <span class="text-[10px] font-black text-text-muted uppercase tracking-wider block mb-0.5">Location / Address:</span>
+                                  <span class="text-[10px] font-black text-text-muted uppercase tracking-wider block mb-0.5">{t('ui.routes.admin.admin.helpdesk.860ad96b')}</span>
                                   <span class="text-xs font-bold text-text">{c.location}</span>
                                 </div>
                               {/if}
@@ -503,7 +503,7 @@
                               <div class="bg-success-soft/30 border border-success/25 p-5 rounded-2xl text-xs leading-relaxed">
                                 <div class="flex items-center gap-2 mb-1.5 text-success">
                                   <Check class="h-4 w-4" />
-                                  <span class="font-extrabold uppercase text-[10px] tracking-wider">Resolution Remark:</span>
+                                  <span class="font-extrabold uppercase text-[10px] tracking-wider">{t('ui.routes.admin.admin.helpdesk.3be49d49')}</span>
                                 </div>
                                 <p class="font-semibold text-text whitespace-pre-wrap">
                                   {c.history?.find(h => h.status === 'RESOLVED')?.description || 'Grievance resolved successfully.'}
@@ -515,12 +515,12 @@
                             {:else}
                               <div class="space-y-2">
                                 <label for="resolve-remark" class="block text-[11px] font-black uppercase tracking-wider text-text-muted font-tamil">
-                                  Action Remark / Resolution Note
+                                  {t('ui.action.remark.resolution.note')}
                                 </label>
                                 <textarea
                                   id="resolve-remark"
                                   bind:value={grievanceRemark}
-                                  placeholder="Write a resolution remark or status update..."
+                                  placeholder={t('ui.write.a.resolution.remark.or.status.update')}
                                   rows="4"
                                   class="w-full rounded-2xl border border-border bg-surface dark:bg-surface-container px-4 py-3 text-xs font-semibold text-text outline-none focus:border-primary transition-all"
                                 ></textarea>

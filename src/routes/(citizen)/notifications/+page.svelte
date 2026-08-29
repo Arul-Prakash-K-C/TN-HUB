@@ -103,7 +103,7 @@ async function markSingleRead(id) {
                   onclick={() => markSingleRead(notif.id)}
                   class="inline-flex items-center gap-1 text-xs font-semibold text-primary-600 hover:underline"
                 >
-                  View
+                  {t('ui.routes.citizen.applications.id.07708181')}
                   <ArrowRight class="h-3 w-3" />
                 </a>
               {/if}

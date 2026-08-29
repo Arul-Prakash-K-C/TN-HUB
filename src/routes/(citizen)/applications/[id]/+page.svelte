@@ -24,6 +24,40 @@ const currentLocale = $derived($locale);
 const application = $derived(data.application);
 const timelineEntries = $derived([...(application?.history ?? [])].sort((left, right) => left.timestamp.localeCompare(right.timestamp)));
 
+function getTimelineDescription(entry) {
+  if (currentLocale === 'ta' && entry.descriptionTA) return entry.descriptionTA;
+  const normalizedDescription = String(entry.description ?? '').trim().toLowerCase();
+  const normalizedStatus = String(entry.status ?? '').toUpperCase();
+  const keyByDescription = {
+    'application saved as draft': 'timeline.applicationSavedAsDraft',
+    'application submitted': 'timeline.applicationSubmitted',
+    'document verified': 'timeline.documentVerified',
+    'payment successful': 'timeline.paymentSuccessful',
+    'payment failed': 'timeline.paymentFailed',
+    'correction requested': 'timeline.correctionRequested',
+    'application approved': 'timeline.applicationApproved',
+    'application rejected': 'timeline.applicationRejected',
+    'application completed': 'timeline.applicationCompleted'
+  };
+  const key = keyByDescription[normalizedDescription] ?? `timeline.status.${normalizedStatus}`;
+  const translated = t(key);
+  return translated === key ? (entry.description || getTimelineTitle(entry.status)) : translated;
+}
+
+function getActorRoleLabel(role) {
+  const normalized = String(role ?? '').toLowerCase();
+  const key = `role.${normalized}`;
+  const translated = t(key);
+  return translated === key ? role : translated;
+}
+
+function getDocumentStatusLabel(status) {
+  const normalized = String(status ?? '').toLowerCase();
+  const key = `status.${normalized}`;
+  const translated = t(key);
+  return translated === key ? status : translated;
+}
+
 const getFieldMeta = (key) => {
   switch (key) {
     case 'fullName':
@@ -124,7 +158,7 @@ function getTimelineTextClass(status) {
 async function deleteDraft() {
     if (!application)
         return;
-    const confirmed = window.confirm('Delete this draft application?');
+    const confirmed = window.confirm(t('confirm.deleteDraftApplication'));
     if (!confirmed)
         return;
     try {
@@ -134,11 +168,11 @@ async function deleteDraft() {
         });
         const body = await response.json().catch(() => null);
         if (!response.ok)
-            throw new Error(body?.message ?? 'Unable to delete this draft.');
+            throw new Error(body?.message ?? t('errors.deleteDraft'));
         window.location.href = '/applications';
     }
     catch (cause) {
-        alert(cause instanceof Error ? cause.message : 'Unable to delete this draft.');
+        alert(cause instanceof Error ? cause.message : t('errors.deleteDraft'));
     }
 }
 async function downloadDocument(documentId) {
@@ -146,26 +180,26 @@ async function downloadDocument(documentId) {
         const response = await fetch(`/api/documents/${documentId}/download`, { credentials: 'same-origin' });
         const body = await response.json().catch(() => null);
         if (!response.ok || !body?.url)
-            throw new Error(body?.message ?? 'Unable to access this document.');
+            throw new Error(body?.message ?? t('errors.accessDocument'));
         window.open(body.url, '_blank', 'noopener,noreferrer');
     }
     catch (cause) {
-        alert(cause instanceof Error ? cause.message : 'Unable to access this document.');
+        alert(cause instanceof Error ? cause.message : t('errors.accessDocument'));
     }
 }
 </script>
 
 <svelte:head>
-  <title>{application ? application.applicationNumber : 'Application'} — TN Kuviyam</title>
+  <title>{application ? application.applicationNumber : t('application.title')} — TN Kuviyam</title>
 </svelte:head>
 
 {#if !application}
   <div class="flex min-h-[60vh] flex-col items-center justify-center p-4">
     <AlertCircle class="h-12 w-12 text-error/60" />
-    <h2 class="mt-4 text-h2 text-text">Application Not Found</h2>
-    <p class="mt-1 text-sm text-text-muted">The requested application ID does not exist.</p>
+    <h2 class="mt-4 text-h2 text-text">{t('ui.routes.citizen.applications.id.6e6cb5b6')}</h2>
+    <p class="mt-1 text-sm text-text-muted">{t('ui.routes.citizen.applications.id.4238230d')}</p>
     <a href="/applications" class="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white">
-      <ArrowLeft class="h-4 w-4" /> Back to Applications
+      <ArrowLeft class="h-4 w-4" /> {t('ui.back.to.applications')}
     </a>
   </div>
 {:else}
@@ -175,7 +209,7 @@ async function downloadDocument(documentId) {
       <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <a href="/applications" class="mb-3 inline-flex items-center gap-1.5 text-xs font-semibold text-white/75 transition hover:text-white">
           <ArrowLeft class="h-3.5 w-3.5" />
-          {t('common.back')} to Applications
+          {t('ui.back.to.applications')}
         </a>
 
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -202,21 +236,21 @@ async function downloadDocument(documentId) {
                 href={`/services/${application.serviceSlug}/apply?draft=${application.id}`}
                 class="inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-text shadow transition hover:bg-surface-container"
               >
-                {application.status === 'CLARIFICATION_REQUESTED' ? 'Edit & Resubmit' : 'Edit Draft'}
+                {application.status === 'CLARIFICATION_REQUESTED' ? t('application.editAndResubmit') : t('operator.editDraft')}
               </a>
               {#if application.status === 'DRAFT'}
                 <a
                   href={`/services/${application.serviceSlug}/apply?draft=${application.id}&step=5`}
                   class="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-primary-hover"
                 >
-                  Submit
+                  {t('apply.step.submit')}
                 </a>
                 <button
                   type="button"
                   onclick={deleteDraft}
                   class="inline-flex items-center gap-2 rounded-xl border border-rose-300 bg-rose-500/10 px-4 py-2.5 text-sm font-semibold text-rose-300 shadow transition hover:bg-rose-500/20"
                 >
-                  Delete Draft
+                  {t('ui.delete.draft')}
                 </button>
               {/if}
             </div>
@@ -241,13 +275,13 @@ async function downloadDocument(documentId) {
             <AlertCircle class="h-6 w-6" />
           </div>
           <div class="flex-1">
-            <h3 class="text-base font-black text-text">Correction Required / Change Requested</h3>
+            <h3 class="text-base font-black text-text">{t('ui.routes.citizen.applications.id.4348c977')}</h3>
             <p class="mt-1.5 text-xs text-text-muted leading-relaxed font-medium">
-              The reviewing officer has requested corrections. Please review the official comments below, make the necessary changes to your application, and resubmit it. <strong class="text-primary font-bold">Resubmission is completely free of cost.</strong>
+              {t('ui.the.reviewing.officer.has.requested.corrections.please.review.the.official.comme')} <strong class="text-primary font-bold">{t('ui.routes.citizen.applications.id.f10411fd')}</strong>
             </p>
             {#if application.history.length > 0 && application.history.find(h => h.status === 'CLARIFICATION_REQUESTED')?.remarks}
               <div class="mt-4 bg-surface dark:bg-surface-container border border-warning/20 p-4 rounded-2xl">
-                <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block mb-1">Officer's Remarks:</span>
+                <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block mb-1">{t('ui.routes.citizen.applications.id.b9fff40d')}</span>
                 <p class="text-xs font-bold text-warning italic">
                   "{application.history.find(h => h.status === 'CLARIFICATION_REQUESTED')?.remarks}"
                 </p>
@@ -258,7 +292,7 @@ async function downloadDocument(documentId) {
                 href={`/services/${application.serviceSlug}/apply?draft=${application.id}`}
                 class="inline-flex items-center gap-2 rounded-xl bg-warning px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-warning/90"
               >
-                Respond & Edit Application
+                {t('ui.respond.and.edit.application')}
               </a>
             </div>
           </div>
@@ -290,11 +324,11 @@ async function downloadDocument(documentId) {
                     </div>
 
                     <p class="mt-1 text-sm font-semibold text-text">
-                      {currentLocale === 'ta' ? entry.descriptionTA : entry.description}
+                      {getTimelineDescription(entry)}
                     </p>
 
                     <div class="mt-3 flex flex-col gap-2 border-t border-border/70 pt-3 text-xs text-text-muted sm:flex-row sm:items-center sm:justify-between">
-                      <span>Actor: <strong class="text-text">{entry.actorName}</strong> ({entry.actorRole})</span>
+                      <span>{t('ui.routes.citizen.applications.id.153b0e9b')} <strong class="text-text">{entry.actorName}</strong> ({getActorRoleLabel(entry.actorRole)})</span>
                       {#if entry.remarks}
                         <span class="max-w-full italic text-text-faint sm:text-right">"{entry.remarks}"</span>
                       {/if}
@@ -369,15 +403,15 @@ async function downloadDocument(documentId) {
                     </div>
                     <div>
                       <div class="text-sm font-semibold text-text">{doc.name}</div>
-                      <div class="text-xs text-text-muted">{doc.fileName} • {(doc.fileSize / 1024).toFixed(0)} KB • Source: {doc.source}</div>
+                      <div class="text-xs text-text-muted">{doc.fileName} • {(doc.fileSize / 1024).toFixed(0)} KB • {t('documents.source')}: {getDocumentStatusLabel(doc.source)}</div>
                     </div>
                   </div>
 
                   <div class="flex items-center gap-3">
                     <span class="rounded-full border border-border bg-white/8 px-3 py-1 text-xs font-semibold text-text-muted">
-                      {doc.status}
+                      {getDocumentStatusLabel(doc.status)}
                     </span>
-                    <button onclick={() => downloadDocument(doc.id)} class="text-xs font-bold text-primary hover:underline">View</button>
+                    <button onclick={() => downloadDocument(doc.id)} class="text-xs font-bold text-primary hover:underline">{t('ui.routes.citizen.applications.id.07708181')}</button>
                   </div>
                 </div>
               {/each}
@@ -388,11 +422,11 @@ async function downloadDocument(documentId) {
         <!-- Sidebar: Status -->
         <div class="space-y-6">
           <div class="rounded-2xl border border-border bg-surface p-6 shadow-sm">
-            <h3 class="text-sm font-bold text-text mb-3">Expected SLA</h3>
+            <h3 class="text-sm font-bold text-text mb-3">{t('ui.routes.citizen.applications.id.70844372')}</h3>
             <div class="text-xs text-text-muted leading-relaxed">
-              Target completion date:
+              {t('ui.target.completion.date')}
               <strong class="text-text block text-sm mt-1">
-                {application.expectedCompletionDate ? new Date(application.expectedCompletionDate).toLocaleDateString() : '7 Days'}
+                {application.expectedCompletionDate ? new Date(application.expectedCompletionDate).toLocaleDateString() : t('application.expectedDuration.default')}
               </strong>
             </div>
           </div>

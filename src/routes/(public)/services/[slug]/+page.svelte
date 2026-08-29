@@ -106,7 +106,7 @@ function toggleFaq(index) {
                     </div>
                     <div class="flex items-center gap-2">
                       {#if doc.digilockerAvailable}
-                        <span class="rounded-full bg-info-light px-2 py-0.5 text-[10px] font-medium text-info-dark">DigiLocker</span>
+                        <span class="rounded-full bg-info-light px-2 py-0.5 text-[10px] font-medium text-info-dark">{t('nav.digilocker')}</span>
                       {/if}
                       <span class="rounded-full px-2 py-0.5 text-[10px] font-medium {doc.mandatory ? 'bg-error-light text-error-dark' : 'bg-surface text-text-muted'}">
                         {doc.mandatory ? t('service.mandatory') : t('service.optional')}
@@ -220,9 +220,9 @@ function toggleFaq(index) {
 {:else}
   <div class="flex min-h-[60vh] items-center justify-center">
     <div class="text-center">
-      <h1 class="text-h2 text-text">Service not found</h1>
+      <h1 class="text-h2 text-text">{t('ui.routes.public.services.slug.e9171145')}</h1>
       <a href="/services" class="mt-4 inline-flex items-center gap-2 text-primary hover:underline">
-        <ArrowLeft class="h-4 w-4" /> Back to services
+        <ArrowLeft class="h-4 w-4" /> {t('ui.back.to.services')}
       </a>
     </div>
   </div>

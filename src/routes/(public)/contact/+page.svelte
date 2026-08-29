@@ -1,6 +1,8 @@
 <script>
   import { Mail, Phone, MapPin, Send, CheckCircle2, Clock, MessageSquare, Globe, Headphones } from '@lucide/svelte';
-  import { t } from '$lib/i18n';
+  
+const t = $derived($tt);
+import { tt } from '$lib/i18n';
 
   let name = $state('');
   let email = $state('');
@@ -13,7 +15,7 @@
   async function handleSubmit() {
     if (!name.trim() || !email.trim() || !message.trim() || isSubmitting) return;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      errorMessage = 'Please enter a valid email address.';
+      errorMessage = t('apply.validation.emailInvalid');
       return;
     }
     
@@ -42,11 +44,11 @@
           message = '';
         }, 3000);
       } else {
-        throw new Error(body?.error ?? 'Unable to submit your message.');
+        throw new Error(body?.error ?? t('errors.submitMessage'));
       }
     } catch (error) {
       console.error('Error submitting form:', error);
-      errorMessage = error instanceof Error ? error.message : 'Unable to submit your message.';
+      errorMessage = error instanceof Error ? error.message : t('errors.submitMessage');
     } finally {
       isSubmitting = false;
     }
@@ -86,9 +88,9 @@
             <h3 class="text-sm font-bold text-text">{t('contact.headquarters')}</h3>
           </div>
           <p class="text-xs leading-relaxed text-text-muted">
-            TN Kuviyam Citizen Platform,<br />
-            BuildWhatMovesIndia Hackathon Hub,<br />
-            Chennai, Tamil Nadu.
+            {t('ui.tn.kuviyam.citizen.platform')}<br />
+            {t('ui.buildwhatmovesindia.hackathon.hub')}<br />
+            {t('ui.chennai.tamil.nadu')}
           </p>
         </div>
 
@@ -99,8 +101,8 @@
             </div>
             <h3 class="text-sm font-bold text-text">{t('contact.tollFree')}</h3>
           </div>
-          <p class="font-mono text-sm font-bold text-text">1800-XXX-XXXX</p>
-          <p class="mt-1 text-[11px] text-text-faint">Mon–Sat, 9 AM – 6 PM IST</p>
+          <p class="font-mono text-sm font-bold text-text">{t('ui.routes.public.contact.29eacec0')}</p>
+          <p class="mt-1 text-[11px] text-text-faint">{t('ui.routes.public.contact.ee45cdc3')}</p>
         </div>
 
         <div class="rounded-3xl border border-border bg-surface p-6 shadow-sm transition hover:shadow-md">
@@ -110,8 +112,8 @@
             </div>
             <h3 class="text-sm font-bold text-text">{t('contact.emailSupport')}</h3>
           </div>
-          <p class="font-mono text-sm font-bold text-text">support@tnhub.org</p>
-          <p class="mt-1 text-[11px] text-text-faint">Average response within 24 hours</p>
+          <p class="font-mono text-sm font-bold text-text">{t('ui.routes.public.contact.89d8cda7')}</p>
+          <p class="mt-1 text-[11px] text-text-faint">{t('ui.routes.public.contact.bc31c264')}</p>
         </div>
       </div>
 
@@ -124,7 +126,7 @@
             </div>
             <div>
               <h2 class="text-lg font-bold text-text">{t('contact.sendMessage')}</h2>
-              <p class="text-xs text-text-muted">Fill in the form and our team will respond promptly.</p>
+              <p class="text-xs text-text-muted">{t('ui.routes.public.contact.e4f23bc5')}</p>
             </div>
           </div>
 
@@ -133,7 +135,7 @@
               <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary-soft text-primary">
                 <CheckCircle2 class="h-8 w-8" />
               </div>
-              <h3 class="text-lg font-bold text-text">Message Sent!</h3>
+              <h3 class="text-lg font-bold text-text">{t('ui.routes.public.contact.cd7afdd8')}</h3>
               <p class="mt-2 max-w-md text-sm text-text-muted">{t('contact.successMsg')}</p>
             </div>
           {:else}
@@ -141,17 +143,17 @@
               <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label for="contactName" class="mb-1.5 block text-xs font-bold text-text">{t('contact.nameLabel')}</label>
-                  <input id="contactName" type="text" bind:value={name} required placeholder="Meena Lakshmi" class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text outline-none transition placeholder:text-text-faint focus:border-primary focus:ring-2 focus:ring-primary/15" />
+                  <input id="contactName" type="text" bind:value={name} required placeholder={t('ui.meena.lakshmi')} class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text outline-none transition placeholder:text-text-faint focus:border-primary focus:ring-2 focus:ring-primary/15" />
                 </div>
                 <div>
                   <label for="contactEmail" class="mb-1.5 block text-xs font-bold text-text">{t('contact.emailLabel')} *</label>
-                  <input id="contactEmail" type="email" bind:value={email} required placeholder="meena@example.com" class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text outline-none transition placeholder:text-text-faint focus:border-primary focus:ring-2 focus:ring-primary/15" />
+                  <input id="contactEmail" type="email" bind:value={email} required placeholder={t('ui.meena.example.com')} class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text outline-none transition placeholder:text-text-faint focus:border-primary focus:ring-2 focus:ring-primary/15" />
                 </div>
               </div>
 
               <div>
                 <label for="contactMessage" class="mb-1.5 block text-xs font-bold text-text">{t('contact.messageLabel')}</label>
-                <textarea id="contactMessage" bind:value={message} required rows={5} placeholder="How can we help you?" class="w-full resize-none rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text outline-none transition placeholder:text-text-faint focus:border-primary focus:ring-2 focus:ring-primary/15"></textarea>
+                <textarea id="contactMessage" bind:value={message} required rows={5} placeholder={t('ui.how.can.we.help.you')} class="w-full resize-none rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text outline-none transition placeholder:text-text-faint focus:border-primary focus:ring-2 focus:ring-primary/15"></textarea>
               </div>
               {#if errorMessage}
                 <p class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-bold text-rose-700">{errorMessage}</p>

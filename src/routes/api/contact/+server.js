@@ -1,6 +1,8 @@
 import { json } from '@sveltejs/kit';
 import { FieldValue } from 'firebase-admin/firestore';
 import { getFirebaseAdminFirestore } from '$lib/server/firebase/admin';
+import { checkRateLimit } from '$lib/server/security/rateLimit';
+import { cleanString, isEmail } from '$lib/server/security/validation';
 
 const ALLOWED_SOURCES = new Set([
     'contact_page',
@@ -9,11 +11,19 @@ const ALLOWED_SOURCES = new Set([
     'department_contact'
 ]);
 
-function cleanString(value, maxLength) {
-    return typeof value === 'string' ? value.trim().slice(0, maxLength) : '';
-}
-
 export const POST = async ({ request, locals }) => {
+    const contentLength = Number(request.headers.get('content-length') ?? 0);
+    if (Number.isFinite(contentLength) && contentLength > 16_384) {
+        return json({ success: false, error: 'Message payload is too large.' }, { status: 413 });
+    }
+    const rateLimit = checkRateLimit(request, 'contact', { limit: 8, windowMs: 60_000 });
+    if (!rateLimit.allowed) {
+        return json({ success: false, error: 'Too many messages. Please try again shortly.' }, {
+            status: 429,
+            headers: { 'retry-after': String(rateLimit.retryAfterSeconds) }
+        });
+    }
+
     try {
         const body = await request.json();
         const name = cleanString(body.name, 120);
@@ -24,7 +34,7 @@ export const POST = async ({ request, locals }) => {
         if (!name || !email || !message) {
             return json({ success: false, error: 'Name, email, and message are required.' }, { status: 400 });
         }
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        if (!isEmail(email)) {
             return json({ success: false, error: 'Enter a valid email address.' }, { status: 400 });
         }
 
@@ -48,6 +58,9 @@ export const POST = async ({ request, locals }) => {
         return json({ success: true, ticketId: ref.id }, { status: 201 });
     }
     catch (cause) {
+        if (cause instanceof Error && cause.message.includes('characters or fewer')) {
+            return json({ success: false, error: cause.message }, { status: 400 });
+        }
         console.error('Error saving support ticket:', cause);
         return json({ success: false, error: 'Failed to submit message.' }, { status: 500 });
     }

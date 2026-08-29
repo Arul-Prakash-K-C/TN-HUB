@@ -2,7 +2,7 @@
 
   import { currentUser, isRestored } from '$lib/stores/auth';
   import { canAccessRoute } from '$lib/utils/authGuard';
-  import { locale } from '$lib/i18n';
+  import { t, locale } from '$lib/i18n';
   import {
     AlertTriangle,
     CheckCircle2,
@@ -62,10 +62,10 @@ function exportReport() {
       <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-danger-soft text-danger">
         <Shield class="h-7 w-7" />
       </div>
-      <h2 class="text-lg font-bold text-text">Access Restricted</h2>
+      <h2 class="text-lg font-bold text-text">{t('ui.routes.department.department.dashboard.f20903f6')}</h2>
       <p class="mt-2 text-xs text-text-muted">{guard.reason || 'You are not authorized to view this department workspace.'}</p>
       <a href={guard.redirectTo || '/login'} class="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-primary py-3 text-xs font-bold text-white shadow-sm hover:bg-primary-hover">
-        Go to Login
+        {t('common.goToLogin')}
       </a>
     </div>
   </div>
@@ -84,8 +84,8 @@ function exportReport() {
     <div class="p-6 w-full max-w-7xl mx-auto space-y-6">
       <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-4 mb-2">
         <div>
-          <h2 class="text-xl font-bold text-text tracking-tight">Application Processing Dashboard</h2>
-          <p class="text-xs text-text-muted mt-0.5">Real-time overview of departmental metrics and operational queue.</p>
+          <h2 class="text-xl font-bold text-text tracking-tight">{t('ui.routes.department.department.dashboard.6f89f6e2')}</h2>
+          <p class="text-xs text-text-muted mt-0.5">{t('ui.routes.department.department.dashboard.c01ccff2')}</p>
         </div>
         <div class="flex gap-2">
           <button 
@@ -93,7 +93,7 @@ function exportReport() {
             class="flex items-center gap-2 rounded-lg border border-border bg-surface px-3.5 py-2 text-xs font-bold text-text transition-colors shadow-sm hover:bg-surface-container"
           >
             <Download class="h-3.5 w-3.5" />
-            <span>Export Report</span>
+            <span>{t('ui.routes.department.department.dashboard.312107a1')}</span>
           </button>
         </div>
       </div>
@@ -102,62 +102,62 @@ function exportReport() {
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <!-- Total -->
         <div class="bg-surface border border-border rounded-xl p-4 flex flex-col justify-between shadow-sm">
-          <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider">Total Queue</span>
+          <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider">{t('ui.routes.department.department.dashboard.b23e748b')}</span>
           <span class="text-2xl font-extrabold text-text mt-3">{metrics.total}</span>
           <div class="flex items-center gap-1 mt-2 text-primary text-[11px] font-bold">
             <TrendingUp class="h-3.5 w-3.5" />
-            <span>+12% vs last wk</span>
+            <span>{t('ui.routes.department.department.dashboard.68a8d6f5')}</span>
           </div>
         </div>
 
         <!-- New -->
         <div class="bg-surface border border-border rounded-xl p-4 flex flex-col justify-between shadow-sm">
           <div class="flex justify-between items-start">
-            <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider">New</span>
+            <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider">{t('ui.routes.department.department.dashboard.2f0d7285')}</span>
             <span class="w-2 h-2 rounded-full bg-primary"></span>
           </div>
           <span class="text-2xl font-extrabold text-text mt-3">{metrics.newApplications}</span>
-          <span class="text-[10px] text-text-faint font-medium mt-2">Unassigned/New</span>
+          <span class="text-[10px] text-text-faint font-medium mt-2">{t('ui.routes.department.department.dashboard.6d14dec6')}</span>
         </div>
 
         <!-- Pending -->
         <div class="bg-surface border border-border rounded-xl p-4 flex flex-col justify-between shadow-sm">
           <div class="flex justify-between items-start">
-            <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider">Pending</span>
+            <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider">{t('ui.routes.department.department.dashboard.b4af13ca')}</span>
             <span class="w-2 h-2 rounded-full bg-warning"></span>
           </div>
           <span class="text-2xl font-extrabold text-warning mt-3">{metrics.underReview + metrics.pendingVerification}</span>
-          <span class="text-[10px] text-text-faint font-medium mt-2">Officer Action Req</span>
+          <span class="text-[10px] text-text-faint font-medium mt-2">{t('ui.routes.department.department.dashboard.c7765a8c')}</span>
         </div>
 
         <!-- Correction -->
         <div class="bg-surface border border-border rounded-xl p-4 flex flex-col justify-between shadow-sm">
           <div class="flex justify-between items-start">
-            <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider">Correction</span>
+            <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider">{t('ui.routes.department.department.dashboard.840022e8')}</span>
             <span class="w-2 h-2 rounded-full bg-danger"></span>
           </div>
           <span class="text-2xl font-extrabold text-danger mt-3">{metrics.correctionRequired}</span>
-          <span class="text-[10px] text-text-faint font-medium mt-2">Returned to Citizen</span>
+          <span class="text-[10px] text-text-faint font-medium mt-2">{t('ui.routes.department.department.dashboard.a8c51480')}</span>
         </div>
 
         <!-- Approved -->
         <div class="bg-surface border border-border rounded-xl p-4 flex flex-col justify-between shadow-sm">
           <div class="flex justify-between items-start">
-            <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider">Approved</span>
+            <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider">{t('ui.routes.department.department.dashboard.14bf7695')}</span>
             <span class="w-2 h-2 rounded-full bg-success"></span>
           </div>
           <span class="text-2xl font-extrabold text-success mt-3">{metrics.approved}</span>
-          <span class="text-[10px] text-text-faint font-medium mt-2">Certificates Issued</span>
+          <span class="text-[10px] text-text-faint font-medium mt-2">{t('ui.routes.department.department.dashboard.f7abf2d0')}</span>
         </div>
 
         <!-- SLA Breached -->
         <div class="bg-surface border border-border rounded-xl p-4 flex flex-col justify-between shadow-sm">
           <div class="flex justify-between items-start">
-            <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider">SLA Risk</span>
+            <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider">{t('ui.routes.department.department.dashboard.3398a37c')}</span>
             <span class="w-2 h-2 rounded-full bg-danger"></span>
           </div>
           <span class="text-2xl font-extrabold text-danger mt-3">{metrics.slaBreached}</span>
-          <span class="text-[10px] text-danger font-bold mt-2">Breached Deadline</span>
+          <span class="text-[10px] text-danger font-bold mt-2">{t('ui.routes.department.department.dashboard.b8118798')}</span>
         </div>
       </div>
 
@@ -167,11 +167,11 @@ function exportReport() {
           <div class="flex items-center gap-3">
             <AlertTriangle class="h-5 w-5 text-danger shrink-0" />
             <div>
-              <strong>Critical SLA Alert:</strong> {metrics.slaBreached} application(s) in {user?.departmentName || 'your department'} have breached their SLA guaranteed resolution date.
+              <strong>{t('ui.routes.department.department.dashboard.7cbffc3d')}</strong> {metrics.slaBreached} application(s) in {user?.departmentName || 'your department'} have breached their SLA guaranteed resolution date.
             </div>
           </div>
           <a href="/department/applications?filter=sla_breached" class="underline font-bold hover:text-danger shrink-0">
-            View SLA Breaches →
+            {t('ui.view.sla.breaches')}
           </a>
         </div>
       {/if}
@@ -180,8 +180,8 @@ function exportReport() {
       <div class="bg-surface border border-border rounded-xl shadow-sm overflow-hidden">
         <div class="p-5 border-b border-border flex items-center justify-between">
           <div>
-            <h3 class="text-sm font-bold text-text">Urgent Processing Queue</h3>
-            <p class="text-xs text-text-muted mt-0.5">Assigned applications requiring officer review or document verification.</p>
+            <h3 class="text-sm font-bold text-text">{t('ui.routes.department.department.dashboard.bc875705')}</h3>
+            <p class="text-xs text-text-muted mt-0.5">{t('ui.routes.department.department.dashboard.d8a858aa')}</p>
           </div>
           <a href="/department/applications" class="text-xs font-bold text-primary hover:underline">
             View All Applications ({applications.length}) →
@@ -191,20 +191,20 @@ function exportReport() {
         {#if filteredUrgent.length === 0}
           <div class="p-12 text-center">
             <CheckCircle2 class="mx-auto h-10 w-10 text-success/60" />
-            <h4 class="mt-3 text-sm font-bold text-text">All Caught Up</h4>
-            <p class="mt-1 text-xs text-text-muted">There are no urgent applications currently pending officer action in this view.</p>
+            <h4 class="mt-3 text-sm font-bold text-text">{t('ui.routes.department.department.dashboard.20a9a45c')}</h4>
+            <p class="mt-1 text-xs text-text-muted">{t('ui.routes.department.department.dashboard.7683a990')}</p>
           </div>
         {:else}
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
               <thead class="bg-surface-container text-text-muted uppercase font-bold text-[10px] tracking-wider border-b border-border">
                 <tr>
-                  <th class="py-3 px-4">Application No</th>
-                  <th class="py-3 px-4">Service</th>
-                  <th class="py-3 px-4">Applicant</th>
-                  <th class="py-3 px-4">Submitted</th>
-                  <th class="py-3 px-4">Status</th>
-                  <th class="py-3 px-4 text-right">Action</th>
+                  <th class="py-3 px-4">{t('ui.routes.department.department.dashboard.e07e1237')}</th>
+                  <th class="py-3 px-4">{t('ui.routes.department.department.dashboard.2b09438f')}</th>
+                  <th class="py-3 px-4">{t('ui.routes.department.department.dashboard.0910f711')}</th>
+                  <th class="py-3 px-4">{t('ui.routes.department.department.dashboard.9378965a')}</th>
+                  <th class="py-3 px-4">{t('ui.routes.department.department.dashboard.da459b77')}</th>
+                  <th class="py-3 px-4 text-right">{t('ui.routes.department.department.dashboard.b37b0c34')}</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-border">
@@ -224,11 +224,11 @@ function exportReport() {
                     </td>
                     <td class="py-3.5 px-4">
                       {#if app.status === 'SUBMITTED'}
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-soft text-primary-soft-text border border-primary/20">New</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-soft text-primary-soft-text border border-primary/20">{t('ui.routes.department.department.dashboard.2f0d7285')}</span>
                       {:else if app.status === 'DOCUMENT_VERIFICATION'}
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-warning-soft text-warning border border-warning/25">Doc Verify</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-warning-soft text-warning border border-warning/25">{t('ui.routes.department.department.dashboard.ff9612e6')}</span>
                       {:else if app.status === 'OFFICER_REVIEW'}
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-soft text-primary-soft-text border border-primary/20">In Review</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-soft text-primary-soft-text border border-primary/20">{t('ui.routes.department.department.dashboard.0a363edc')}</span>
                       {:else}
                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-muted text-text-muted border border-border">{app.status}</span>
                       {/if}
@@ -238,7 +238,7 @@ function exportReport() {
                         href="/department/applications/{app.id}"
                         class="adaptive-action-button inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold text-[11px] transition"
                       >
-                        <span>Review</span>
+                        <span>{t('ui.routes.department.department.dashboard.12adf1b1')}</span>
                         <ArrowRight class="h-3 w-3" />
                       </a>
                     </td>

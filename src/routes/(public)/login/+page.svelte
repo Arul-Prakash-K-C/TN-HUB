@@ -1,13 +1,12 @@
 <script>
 
   import { goto } from '$app/navigation';
-  import { dev } from '$app/environment';
   import { page } from '$app/stores';
   import { get } from 'svelte/store';
-  import { onMount } from 'svelte';
   import { auth, currentUser, isAuthenticated, userRole } from '$lib/stores/auth';
   import { getPortalRedirectForRole } from '$lib/utils/authGuard';
   import { departments } from '$lib/data/departments';
+  import { demoCredentials as loginDemoCredentials } from '$lib/data/users';
   import { tt, locale } from '$lib/i18n';
   import { User, Building2, Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, UserPlus, Monitor } from '@lucide/svelte';
 
@@ -28,7 +27,7 @@ let loading = $state(false);
 let desiredDeptId = $state('dept-revenue');
 let registrationSuccess = $state(false);
 let officialAuthUser = null;
-let demoCredentials = $state([]);
+const demoCredentials = loginDemoCredentials;
 const demoRoleByTab = {
     citizen: 'citizen',
     operator: 'operator',
@@ -37,11 +36,6 @@ const demoRoleByTab = {
 };
 const demoAccount = $derived(demoCredentials.find((credential) => credential.role === demoRoleByTab[activeTab]) ?? null);
 const authenticated = $derived($isAuthenticated);
-
-onMount(async () => {
-    const module = await import('$lib/data/users');
-    demoCredentials = module.demoCredentials;
-});
 
 function getLoginRedirectTarget() {
     const redirectParam = $page.url.searchParams.get('redirect');
@@ -74,11 +68,11 @@ async function applyDemoCredentials() {
 }
 async function handleAuthentication() {
     if (!email || !password) {
-        error = 'Please enter email and password';
+        error = t('validation.emailPasswordRequired');
         return;
     }
     if (authMode === 'register' && (!displayName.trim() || password !== confirmPassword)) {
-        error = 'Please fill all fields and match passwords.';
+        error = t('validation.registrationFields');
         return;
     }
     loading = true;
@@ -92,7 +86,7 @@ async function handleAuthentication() {
                     await goto(getLoginRedirectTarget(), { replaceState: true });
                 }
                 else {
-                    error = 'Registration failed. Email might already be registered.';
+                    error = t('auth.registrationFailed');
                 }
             }
             else {
@@ -106,9 +100,13 @@ async function handleAuthentication() {
                 if (displayName.trim()) {
                     await updateProfile(credential.user, { displayName: displayName.trim() });
                 }
+                const idToken = await credential.user.getIdToken();
                 const registerRes = await fetch('/api/auth/register-official', {
                     method: 'POST',
-                    headers: { 'content-type': 'application/json' },
+                    headers: {
+                        'content-type': 'application/json',
+                        authorization: `Bearer ${idToken}`
+                    },
                     body: JSON.stringify({
                         uid: credential.user.uid,
                         email: credential.user.email,
@@ -160,7 +158,7 @@ async function handleAuthentication() {
 </script>
 
 <svelte:head>
-  <title>Single Sign-On — TN Kuviyam</title>
+  <title>{t('ui.routes.public.login.0ea01120')}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </svelte:head>
 
@@ -224,7 +222,7 @@ async function handleAuthentication() {
 
         {#if registrationSuccess}
           <div class="mb-4 rounded-2xl border border-success/30 bg-success-soft px-4 py-3 text-xs font-bold text-success">
-            Official account registration request submitted. Your account is now pending administrator verification and you will receive an email once it is approved.
+            {t('ui.official.account.registration.request.submitted.your.account.is.now.pending.admi')}
           </div>
         {/if}
 
@@ -239,15 +237,15 @@ async function handleAuthentication() {
             <div class="flex items-start justify-between gap-3">
               <div class="space-y-1">
                 <p class="font-bold text-primary">{t('auth.demoNote')}</p>
-                <p><span class="font-semibold">Email:</span> {demoAccount.email}</p>
-                <p><span class="font-semibold">Password:</span> {demoAccount.password}</p>
+                <p><span class="font-semibold">{t('ui.routes.public.login.0682c7a9')}</span> {demoAccount.email}</p>
+                <p><span class="font-semibold">{t('ui.routes.public.login.b560d4e8')}</span> {demoAccount.password}</p>
               </div>
               <button
                 type="button"
                 onclick={applyDemoCredentials}
                 class="shrink-0 rounded-xl border border-primary/30 bg-surface px-3.5 py-2 text-[11px] font-bold text-primary transition hover:bg-primary/10"
               >
-                Go
+                {t('ui.go')}
               </button>
             </div>
           </div>
@@ -288,7 +286,7 @@ async function handleAuthentication() {
               
               {#if activeTab === 'department'}
                 <div class="mt-4">
-                  <label for="dept-select" class="mb-1.5 block text-xs font-bold text-text">Select Assigned Department *</label>
+                  <label for="dept-select" class="mb-1.5 block text-xs font-bold text-text">{t('ui.routes.public.login.d919105b')}</label>
                   <select id="dept-select" bind:value={desiredDeptId} required class="w-full rounded-2xl border border-border bg-muted px-4 py-3 text-xs font-medium text-text outline-none transition focus:border-primary">
                     {#each departments as dept}
                       <option value={dept.id}>{currentLocale === 'ta' ? dept.nameTA : dept.name}</option>

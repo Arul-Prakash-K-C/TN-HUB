@@ -19,7 +19,7 @@ const t = $derived($tt);
           <BrandLogo showWordmark={true} subtitle={t('app.tagline')} sizeClass="h-12 w-44" wordmarkClass="text-sm text-white" subtitleClass="text-xs text-primary/90" />
         </div>
         <p class="text-xs leading-relaxed text-white/68">
-          One Center. Every Government Service. Engineered for speed, clarity, and zero-paper citizen workflow orchestration.
+          {t('ui.one.center.every.government.service.engineered.for.speed.clarity.and.zero.paper.')}
         </p>
       </div>
 

@@ -2,6 +2,7 @@ import { error, json } from '@sveltejs/kit';
 import { getFirebaseAdminFirestore } from '$lib/server/firebase/admin';
 import { normalizeUserRole } from '$lib/auth/identity';
 import { recordAuditEvent } from '$lib/server/audit/repository';
+import { isSafeId } from '$lib/server/security/validation';
 const DEFAULT_SETTINGS = {
     slaThresholdDays: '3',
     autoAssign: true,
@@ -18,7 +19,7 @@ function getAuthorizedDepartmentId(user, requestedDepartmentId) {
     }
     if (role === 'admin') {
         const departmentId = requestedDepartmentId?.trim();
-        if (!departmentId)
+        if (!departmentId || !isSafeId(departmentId, 120))
             throw error(400, 'Department ID is required for admin settings access.');
         return departmentId;
     }
@@ -43,8 +44,8 @@ export const GET = async ({ locals, url }) => {
         return json({ settings: snap.data() });
     }
     catch (cause) {
-        const message = cause instanceof Error ? cause.message : 'Unable to load department settings.';
-        throw error(500, message);
+        console.error('[department settings load]', cause);
+        throw error(500, 'Unable to load department settings.');
     }
 };
 export const POST = async ({ request, locals, url }) => {
@@ -90,7 +91,7 @@ export const POST = async ({ request, locals, url }) => {
         return json({ settings });
     }
     catch (cause) {
-        const message = cause instanceof Error ? cause.message : 'Unable to save department settings.';
-        throw error(500, message);
+        console.error('[department settings save]', cause);
+        throw error(500, 'Unable to save department settings.');
     }
 };

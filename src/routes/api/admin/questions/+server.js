@@ -1,6 +1,8 @@
 import { error, json } from '@sveltejs/kit';
 import { getFirebaseAdminFirestore } from '$lib/server/firebase/admin';
 import { createNotification } from '$lib/server/notifications/repository';
+import { checkRateLimit } from '$lib/server/security/rateLimit';
+import { cleanString, isSafeId } from '$lib/server/security/validation';
 export const GET = async ({ locals }) => {
     if (!locals.user) {
         throw error(401, 'Authentication required.');
@@ -25,13 +27,17 @@ export const GET = async ({ locals }) => {
         return json({ questions: questions.sort((a, b) => b.createdAt.localeCompare(a.createdAt)) });
     }
     catch (cause) {
-        const message = cause instanceof Error ? cause.message : 'Unable to list questions.';
-        throw error(500, message);
+        console.error('[admin questions list]', cause);
+        throw error(500, 'Unable to list questions.');
     }
 };
 export const POST = async ({ request, locals }) => {
     if (!locals.user) {
         throw error(401, 'Authentication required.');
+    }
+    const rateLimit = checkRateLimit(request, `help-question:${locals.user.uid}`, { limit: 10, windowMs: 60_000 });
+    if (!rateLimit.allowed) {
+        throw error(429, `Too many help desk requests. Try again in ${rateLimit.retryAfterSeconds} seconds.`);
     }
     let body;
     try {
@@ -40,8 +46,16 @@ export const POST = async ({ request, locals }) => {
     catch {
         throw error(400, 'Invalid request payload.');
     }
-    const { subject, question } = body;
-    if (typeof subject !== 'string' || !subject || typeof question !== 'string' || !question) {
+    let subject = '';
+    let question = '';
+    try {
+        subject = cleanString(body.subject, 200);
+        question = cleanString(body.question, 3000);
+    }
+    catch (cause) {
+        throw error(400, cause instanceof Error ? cause.message : 'Invalid request payload.');
+    }
+    if (!subject || !question) {
         throw error(400, 'Subject and Question fields are required.');
     }
     const db = getFirebaseAdminFirestore();
@@ -52,8 +66,8 @@ export const POST = async ({ request, locals }) => {
             userId: locals.user.uid,
             userName: locals.user.name,
             userRole: locals.user.role,
-            subject: subject.trim(),
-            question: question.trim(),
+            subject,
+            question,
             reply: null,
             repliedAt: null,
             createdAt: new Date().toISOString()
@@ -62,8 +76,8 @@ export const POST = async ({ request, locals }) => {
         return json({ question: newQuestion }, { status: 201 });
     }
     catch (cause) {
-        const message = cause instanceof Error ? cause.message : 'Unable to submit question.';
-        throw error(500, message);
+        console.error('[admin question create]', cause);
+        throw error(500, 'Unable to submit question.');
     }
 };
 export const PATCH = async ({ request, locals }) => {
@@ -78,7 +92,7 @@ export const PATCH = async ({ request, locals }) => {
         throw error(400, 'Invalid request payload.');
     }
     const { questionId, reply } = body;
-    if (typeof questionId !== 'string' || !questionId || typeof reply !== 'string' || !reply) {
+    if (!isSafeId(questionId, 160) || typeof reply !== 'string' || !reply.trim() || reply.length > 3000) {
         throw error(400, 'Missing or invalid parameters.');
     }
     const db = getFirebaseAdminFirestore();
@@ -110,7 +124,7 @@ export const PATCH = async ({ request, locals }) => {
         return json({ success: true, message: 'Reply sent!' });
     }
     catch (cause) {
-        const message = cause instanceof Error ? cause.message : 'Unable to send reply.';
-        throw error(500, message);
+        console.error('[admin question reply]', cause);
+        throw error(500, 'Unable to send reply.');
     }
 };

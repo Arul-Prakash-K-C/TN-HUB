@@ -5,9 +5,10 @@
   import { auth, isAuthenticated } from '$lib/stores/auth';
   import LogoutModal from '$lib/components/ui/LogoutModal.svelte';
   import BrandLogo from '$lib/components/ui/BrandLogo.svelte';
-import { t } from '$lib/i18n';
+  import { tt } from '$lib/i18n';
 
 const authenticated = $derived($isAuthenticated);
+const t = $derived($tt);
 const navItemClass = 'flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition-all';
 const inactiveNavClass = 'text-[var(--color-sidebar-text-muted)] hover:bg-[var(--color-sidebar-hover)] hover:text-[var(--color-sidebar-text)]';
 const activeNavClass = 'border-l-4 border-primary bg-primary text-white font-bold shadow-sm';
@@ -71,7 +72,7 @@ $effect(() => {
       class="{navItemClass} {isActive('/operator/grievance') ? activeNavClass : inactiveNavClass}"
     >
       <AlertCircle class="h-4 w-4 shrink-0" />
-      <span>Grievance Desk</span>
+      <span>{t('operator.grievanceDesk')}</span>
     </a>
 
     <a 
@@ -79,7 +80,7 @@ $effect(() => {
       class="{navItemClass} {isActive('/operator/ai-chat') ? activeNavClass : inactiveNavClass}"
     >
       <MessageSquare class="h-4 w-4 shrink-0" />
-      <span>Thozhan AI</span>
+      <span>{t('operator.aiChat')}</span>
     </a>
 
   </nav>
@@ -99,7 +100,7 @@ $effect(() => {
       class="{navItemClass} {isActive('/operator/contact') ? activeNavClass : inactiveNavClass}"
     >
       <HelpCircle class="h-4 w-4 shrink-0" />
-      <span>Contact Support</span>
+      <span>{t('operator.contactSupport')}</span>
     </a>
 
     <a 
@@ -107,7 +108,7 @@ $effect(() => {
       class="{navItemClass} {isActive('/operator/help') ? activeNavClass : inactiveNavClass}"
     >
       <HelpCircle class="h-4 w-4 shrink-0" />
-      <span>Help Desk</span>
+      <span>{t('operator.helpDesk')}</span>
     </a>
 
 

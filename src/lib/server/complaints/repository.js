@@ -2,6 +2,7 @@ import { getFirebaseAdminFirestore } from '$lib/server/firebase/admin';
 import { generateComplaintId, generateId } from '$lib/utils/id-generator';
 import { normalizeUserRole } from '$lib/auth/identity';
 import { recordAuditEvent } from '$lib/server/audit/repository';
+const allowedComplaintStatuses = new Set(['SUBMITTED', 'IN_REVIEW', 'RESOLVED', 'REJECTED', 'CLOSED']);
 export async function listComplaints(user) {
     const db = getFirebaseAdminFirestore();
     const role = normalizeUserRole(user.role);
@@ -18,9 +19,11 @@ export async function listComplaints(user) {
             .limit(100)
             .get();
     }
-    else {
-        // Admin or default: fetch all
+    else if (role === 'admin') {
         snapshot = await db.collection('complaints').limit(100).get();
+    }
+    else {
+        return [];
     }
     const results = [];
     snapshot.forEach(doc => {
@@ -72,6 +75,9 @@ export async function createComplaint(user, input) {
     return record;
 }
 export async function updateComplaintStatus(user, complaintId, newStatus, remark) {
+    if (!allowedComplaintStatuses.has(newStatus)) {
+        throw new Error('Invalid grievance status.');
+    }
     const db = getFirebaseAdminFirestore();
     const docRef = db.collection('complaints').doc(complaintId);
     const snap = await docRef.get();
@@ -80,7 +86,7 @@ export async function updateComplaintStatus(user, complaintId, newStatus, remark
     }
     const existing = snap.data();
     const role = normalizeUserRole(user.role);
-    if (role === 'department_user' && existing.departmentId && existing.departmentId !== user.departmentId) {
+    if (role === 'department_user' && (!user.departmentId || existing.departmentId !== user.departmentId)) {
         throw new Error('Unauthorized to update complaints for another department.');
     }
     const now = new Date().toISOString();

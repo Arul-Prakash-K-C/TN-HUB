@@ -50,7 +50,7 @@ $effect(() => {
         </div>
         <div class="overflow-hidden">
           <div class="text-xs font-bold text-[var(--color-sidebar-card-text)] truncate">{user.name}</div>
-          <div class="truncate text-[10px] font-medium text-[var(--color-sidebar-card-muted)]">Citizen Account</div>
+          <div class="truncate text-[10px] font-medium text-[var(--color-sidebar-card-muted)]">{t('ui.lib.components.layout.sidebar.438d5132')}</div>
         </div>
       </div>
     </div>

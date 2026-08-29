@@ -67,11 +67,11 @@ async function deleteDraft() {
         });
         const body = await response.json().catch(() => null);
         if (!response.ok)
-            throw new Error(body?.message ?? 'Unable to delete this draft.');
+            throw new Error(body?.message ?? t('errors.deleteDraft'));
         window.location.reload();
     }
     catch (cause) {
-        deleteError = cause instanceof Error ? cause.message : 'Unable to delete this draft.';
+        deleteError = cause instanceof Error ? cause.message : t('errors.deleteDraft');
     }
     finally {
         deletingDraftId = '';
@@ -104,7 +104,7 @@ async function deleteDraft() {
           <input
             type="text"
             bind:value={searchFilter}
-            placeholder="Search by ID or Service Name..."
+            placeholder={t('ui.search.by.id.or.service.name')}
             class="w-full rounded-2xl border border-border bg-muted py-3.5 pl-14 pr-4 text-sm font-medium text-text outline-none transition-all placeholder:text-text-faint focus:border-primary focus:ring-2 focus:ring-primary/15"
           />
         </div>
@@ -142,9 +142,9 @@ async function deleteDraft() {
         <div class="flex flex-col items-center rounded-2xl border border-border bg-surface p-12 text-center shadow-sm">
           <FileText class="mx-auto mb-4 h-12 w-12 text-text-faint" />
           <h3 class="text-base font-bold text-text">{t('applications.empty')}</h3>
-          <p class="mt-1 text-sm text-text-muted">Explore government services and submit your first application.</p>
+          <p class="mt-1 text-sm text-text-muted">{t('ui.routes.citizen.applications.12f068dc')}</p>
           <a href="/services" class="mt-6 inline-flex rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-primary-hover">
-            Browse Services
+            {t('chatbot.action.browseServices')}
           </a>
         </div>
       {:else}
@@ -158,7 +158,7 @@ async function deleteDraft() {
                   <th class="px-6 py-4">{t('applications.department')}</th>
                   <th class="px-6 py-4">{t('applications.status')}</th>
                   <th class="px-6 py-4">{t('applications.submitted')}</th>
-                  <th class="px-6 py-4 text-right">Actions</th>
+                  <th class="px-6 py-4 text-right">{t('ui.routes.citizen.applications.44bf6b59')}</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-border">
@@ -196,13 +196,13 @@ async function deleteDraft() {
                       <div class="flex justify-end gap-2">
                         {#if app.status === 'DRAFT' && app.serviceSlug}
                           <a href={`/services/${app.serviceSlug}/apply?draft=${app.id}`} class="inline-flex items-center justify-center rounded-xl border border-border bg-surface-container px-4 py-2 text-xs font-bold text-text transition-colors hover:bg-surface-container-high">
-                            Edit
+                            {t('common.edit')}
                           </a>
                           <a href={`/services/${app.serviceSlug}/apply?draft=${app.id}&step=5`} class="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-xs font-bold text-white shadow-vazhi-1 transition-colors hover:bg-primary-hover">
-                            Submit
+                            {t('apply.step.submit')}
                           </a>
                           <button type="button" onclick={() => requestDeleteDraft(app)} disabled={deletingDraftId === app.id} class="inline-flex items-center justify-center rounded-xl border border-danger/30 bg-danger-soft px-4 py-2 text-xs font-bold text-danger transition-colors hover:bg-danger-soft/80 disabled:opacity-50">
-                            {deletingDraftId === app.id ? 'Deleting...' : 'Delete'}
+                            {deletingDraftId === app.id ? t('common.deleting') : t('common.delete')}
                           </button>
                         {:else}
                           <a href="/applications/{app.id}" class="adaptive-action-button group inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all">
@@ -228,7 +228,7 @@ async function deleteDraft() {
     <button
       type="button"
       class="absolute inset-0 bg-background/80 backdrop-blur-sm"
-      aria-label="Close delete confirmation"
+      aria-label={t('ui.close.delete.confirmation')}
       onclick={() => {
         if (!deletingDraftId) {
           draftToDelete = null;
@@ -241,7 +241,7 @@ async function deleteDraft() {
       <button
         type="button"
         class="absolute right-4 top-4 rounded-full p-2 text-text-faint transition hover:bg-muted hover:text-text"
-        aria-label="Close"
+        aria-label={t('common.close')}
         disabled={Boolean(deletingDraftId)}
         onclick={() => {
           draftToDelete = null;
@@ -255,11 +255,11 @@ async function deleteDraft() {
         <AlertTriangle class="h-6 w-6" />
       </div>
 
-      <h2 class="text-lg font-black">Delete draft application?</h2>
+      <h2 class="text-lg font-black">{t('ui.routes.citizen.applications.7f4b1134')}</h2>
       <p class="mt-2 text-sm leading-relaxed text-text-muted">
-        This will permanently delete
+        {t('ui.this.will.permanently.delete')}
         <strong class="text-text">{currentLocale === 'ta' ? draftToDelete.serviceNameTA : draftToDelete.serviceName}</strong>
-        draft <strong class="font-mono text-text">{draftToDelete.applicationNumber}</strong> from the database.
+        {t('ui.draft')} <strong class="font-mono text-text">{draftToDelete.applicationNumber}</strong> {t('ui.from.the.database')}
       </p>
 
       {#if deleteError}
@@ -278,7 +278,7 @@ async function deleteDraft() {
             deleteError = '';
           }}
         >
-          Cancel
+          {t('common.cancel')}
         </button>
         <button
           type="button"
@@ -286,7 +286,7 @@ async function deleteDraft() {
           disabled={Boolean(deletingDraftId)}
           onclick={deleteDraft}
         >
-          {deletingDraftId ? 'Deleting...' : 'Yes, Delete'}
+          {deletingDraftId ? t('common.deleting') : t('common.yesDelete')}
         </button>
       </div>
     </div>

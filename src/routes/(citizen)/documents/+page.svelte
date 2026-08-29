@@ -4,7 +4,6 @@
   import { tt, locale } from '$lib/i18n';
   import { mockDigiLockerDocuments } from '$lib/data/documents';
   import { FileText, Shield, Upload, Download, CheckCircle, RefreshCw, Lock, AlertCircle } from '@lucide/svelte';
-  import { triggerFeatureNotice } from '$lib/stores/featureNotice';
 
   const t = $derived($tt);
   const currentLocale = $derived($locale);
@@ -21,13 +20,34 @@
 
   const citizenDocs = $derived(vaultDocuments);
 
+  function getSourceLabel(source) {
+    const normalized = String(source ?? '').toLowerCase();
+    const key = `status.${normalized}`;
+    const translated = t(key);
+    return translated === key ? source : translated;
+  }
+
   function connectDigiLocker() {
     showConsentModal = true;
   }
 
   function confirmDigiLockerConnect() {
     showConsentModal = false;
-    triggerFeatureNotice('MeitY DigiLocker Integration');
+    isDigiLockerConnected = true;
+  }
+
+  function importDigiLockerDocument(dldoc) {
+    const imported = {
+      ...dldoc,
+      id: `imported-${dldoc.id}`,
+      issuedBy: currentLocale === 'ta' ? dldoc.issuerTA : dldoc.issuer,
+      fileName: `${dldoc.id}.pdf`,
+      uploadedAt: new Date().toISOString()
+    };
+    if (!vaultDocuments.some((doc) => doc.id === imported.id)) {
+      vaultDocuments = [imported, ...vaultDocuments];
+    }
+    alert(t('documents.importedIntoVault', { name: currentLocale === 'ta' ? dldoc.nameTA : dldoc.name }));
   }
 
   async function uploadVaultDocument(event) {
@@ -42,10 +62,10 @@
     try {
       const response = await fetch('/api/documents', { method: 'POST', body: formData, credentials: 'same-origin' });
       const body = await response.json().catch(() => null);
-      if (!response.ok || !body?.document) throw new Error(body?.message ?? 'Unable to upload this document.');
+      if (!response.ok || !body?.document) throw new Error(body?.message ?? t('errors.uploadDocument'));
       vaultDocuments = [body.document, ...vaultDocuments];
     } catch (cause) {
-      alert(cause instanceof Error ? cause.message : 'Unable to upload this document.');
+      alert(cause instanceof Error ? cause.message : t('errors.uploadDocument'));
     } finally {
       input.value = '';
     }
@@ -55,10 +75,10 @@
     try {
       const response = await fetch(`/api/documents/${documentId}/download`, { credentials: 'same-origin' });
       const body = await response.json().catch(() => null);
-      if (!response.ok || !body?.url) throw new Error(body?.message ?? 'Unable to access this document.');
+      if (!response.ok || !body?.url) throw new Error(body?.message ?? t('errors.accessDocument'));
       window.open(body.url, '_blank', 'noopener,noreferrer');
     } catch (cause) {
-      alert(cause instanceof Error ? cause.message : 'Unable to access this document.');
+      alert(cause instanceof Error ? cause.message : t('errors.accessDocument'));
     }
   }
 </script>
@@ -93,7 +113,7 @@
           class="pb-2.5 text-xs font-bold flex items-center gap-2 transition-colors {activeTab === 'vault' ? 'text-white border-b-2 border-white' : 'text-green-200 hover:text-white border-b-2 border-transparent'}"
         >
           <FileText class="h-4 w-4" />
-          My Document Vault ({citizenDocs.length})
+          {t('documents.vault')} ({citizenDocs.length})
         </button>
         <button
           onclick={() => activeTab = 'digilocker'}
@@ -102,7 +122,7 @@
           <Shield class="h-4 w-4" />
           {t('digilocker.title')}
           {#if isDigiLockerConnected}
-            <span class="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold text-white border border-white/20">Connected</span>
+            <span class="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold text-white border border-white/20">{t('ui.routes.citizen.documents.c144def0')}</span>
           {/if}
         </button>
       </div>
@@ -123,11 +143,11 @@
                 </div>
                 {#if doc.verificationStatus === 'verified'}
                   <span class="bg-primary-soft text-primary-soft-text px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                    <CheckCircle class="h-3.5 w-3.5" /> Verified
+                    <CheckCircle class="h-3.5 w-3.5" /> {t('documents.verified')}
                   </span>
                 {:else}
                   <span class="bg-surface-container-highest text-text-muted px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                    <AlertCircle class="h-3.5 w-3.5" /> {doc.verificationStatus}
+                    <AlertCircle class="h-3.5 w-3.5" /> {t(`status.${doc.verificationStatus}`)}
                   </span>
                 {/if}
               </div>
@@ -136,25 +156,25 @@
                 {currentLocale === 'ta' ? doc.nameTA : doc.name}
               </h3>
               <p class="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-4 line-clamp-1">
-                Issued by: {doc.issuedBy || 'Government of TN'}
+                {t('documents.issuedBy')}: {doc.issuedBy || t('documents.governmentOfTamilNadu')}
               </p>
               
               <div class="bg-surface-container-low border border-border p-3 rounded-xl mb-6">
                 <p class="text-[11px] font-bold text-text font-mono text-center">
                   {#if doc.documentNumber}
-                    ID: {doc.documentNumber}
+                    {t('documents.documentId')}: {doc.documentNumber}
                   {:else}
-                    <span class="text-text-faint">ID Not Extracted</span>
+                    <span class="text-text-faint">{t('ui.routes.citizen.documents.cd4c33b0')}</span>
                   {/if}
                 </p>
               </div>
               
               <div class="mt-auto flex justify-between items-center pt-4 border-t border-border">
                 <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider">
-                  {(doc.fileSize / 1024).toFixed(0)} KB • {doc.source}
+                  {(doc.fileSize / 1024).toFixed(0)} KB - {getSourceLabel(doc.source)}
                 </span>
                 <button onclick={() => downloadDocument(doc.id)} class="text-primary hover:text-primary-hover text-xs font-bold flex items-center gap-1 hover:underline">
-                  <Download class="h-4 w-4" /> Download
+                  <Download class="h-4 w-4" /> {t('ui.download')}
                 </button>
               </div>
             </div>
@@ -183,7 +203,7 @@
             <div class="mt-8 border-t border-border pt-6">
               {#if !isDigiLockerConnected}
                 <div class="text-center py-8">
-                  <p class="text-sm text-text-muted mb-6 font-medium">Link your MeitY DigiLocker account to instantly fetch verified identity and academic certificates without manual document upload.</p>
+                  <p class="text-sm text-text-muted mb-6 font-medium">{t('ui.routes.citizen.documents.f97fcfd1')}</p>
                   <button
                     onclick={connectDigiLocker}
                     disabled={isConnecting}
@@ -191,7 +211,7 @@
                   >
                     {#if isConnecting}
                       <RefreshCw class="h-4 w-4 animate-spin" />
-                      Connecting to DigiLocker...
+                      {t('digilocker.connecting')}
                     {:else}
                       <Shield class="h-4 w-4" />
                       {t('digilocker.connect')}
@@ -201,7 +221,7 @@
               {:else}
                 <div>
                   <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-base font-bold text-text">Fetched DigiLocker Documents</h3>
+                    <h3 class="text-base font-bold text-text">{t('ui.routes.citizen.documents.45e28278')}</h3>
                     <button onclick={() => isDigiLockerConnected = false} class="text-xs text-error hover:underline font-bold">
                       {t('digilocker.disconnect')}
                     </button>
@@ -216,15 +236,17 @@
                           </div>
                           <div>
                             <div class="text-sm font-bold text-text">{currentLocale === 'ta' ? dldoc.nameTA : dldoc.name}</div>
-                            <div class="text-xs font-medium text-text-muted">{dldoc.issuer} • Issued {dldoc.issuedDate}</div>
+                            <div class="text-xs font-medium text-text-muted">
+                              {currentLocale === 'ta' ? dldoc.issuerTA : dldoc.issuer} - {t('documents.issued')} {dldoc.issuedDate}
+                            </div>
                           </div>
                         </div>
   
                         <button
-                          onclick={() => alert(`Imported ${dldoc.name} into vault`)}
+                          onclick={() => importDigiLockerDocument(dldoc)}
                           class="rounded-xl border border-primary px-4 py-2 text-xs font-bold text-primary hover:bg-primary hover:text-white transition"
                         >
-                          Import to Vault
+                          {t('ui.import.to.vault')}
                         </button>
                       </div>
                     {/each}
@@ -249,7 +271,7 @@
       </div>
 
       <p class="text-xs text-text-muted leading-relaxed">
-        By clicking Allow, you permit TN Kuviyam to securely access your Aadhaar and educational certificates from DigiLocker for instant service verification.
+        {t('ui.by.clicking.allow.you.permit.tn.kuviyam.to.securely.access.your.aadhaar.and.educ')}
       </p>
 
       <div class="mt-6 flex justify-end gap-3">

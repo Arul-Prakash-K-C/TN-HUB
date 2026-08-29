@@ -6,8 +6,8 @@
 }
 
 /* ============================================
-   TN HUB DESIGN SYSTEM TOKENS
-   Vazhi-inspired semantic tokens for TN HUB
+   TN Kuviyam DESIGN SYSTEM TOKENS
+   Vazhi-inspired semantic tokens for TN Kuviyam
    ============================================ */
 
 @theme {
@@ -202,6 +202,214 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+}
+
+html[data-locale='ta'] body {
+  font-family: var(--font-tamil);
+}
+
+html[data-locale='ta'] button,
+html[data-locale='ta'] a,
+html[data-locale='ta'] label,
+html[data-locale='ta'] th,
+html[data-locale='ta'] .rounded-full,
+html[data-locale='ta'] .rounded-xl {
+  letter-spacing: 0;
+  line-height: 1.45;
+}
+
+html[data-locale='ta'] .text-xs {
+  font-size: 0.705rem;
+}
+
+html[data-locale='ta'] .text-sm {
+  font-size: 0.8225rem;
+}
+
+html[data-locale='ta'] .text-\[9px\] {
+  font-size: 8.45px;
+}
+
+html[data-locale='ta'] .text-\[10px\] {
+  font-size: 9.4px;
+}
+
+html[data-locale='ta'] .text-\[11px\] {
+  font-size: 10.35px;
+}
+
+html[data-locale='ta'] .text-\[12px\] {
+  font-size: 11.3px;
+}
+
+html[data-locale='ta'] .text-\[13px\] {
+  font-size: 12.2px;
+}
+
+html[data-locale='ta'] .text-\[14px\] {
+  font-size: 13.15px;
+}
+
+html[data-locale='ta'] .text-\[20px\] {
+  font-size: 18.8px;
+}
+
+html[data-locale='ta'] .text-base {
+  font-size: 0.94rem;
+}
+
+html[data-locale='ta'] .text-lg {
+  font-size: 1.0575rem;
+}
+
+html[data-locale='ta'] .text-xl {
+  font-size: 1.125rem;
+}
+
+html[data-locale='ta'] .text-2xl {
+  font-size: 1.35rem;
+}
+
+html[data-locale='ta'] .text-3xl {
+  font-size: 1.6875rem;
+}
+
+html[data-locale='ta'] .text-4xl {
+  font-size: 2.115rem;
+}
+
+html[data-locale='ta'] .text-5xl {
+  font-size: 2.82rem;
+}
+
+html[data-locale='ta'] .text-6xl {
+  font-size: 3.525rem;
+}
+
+html[data-locale='ta'] .text-7xl {
+  font-size: 4.23rem;
+}
+
+html[data-locale='ta'] .font-black {
+  font-weight: 800;
+}
+
+html[data-locale='ta'] .font-extrabold {
+  font-weight: 750;
+}
+
+@media (min-width: 40rem) {
+  html[data-locale='ta'] .sm\:text-base {
+    font-size: 0.94rem;
+  }
+
+  html[data-locale='ta'] .sm\:text-lg {
+    font-size: 1.0575rem;
+  }
+
+  html[data-locale='ta'] .sm\:text-xl {
+    font-size: 1.125rem;
+  }
+
+  html[data-locale='ta'] .sm\:text-2xl {
+    font-size: 1.35rem;
+  }
+
+  html[data-locale='ta'] .sm\:text-3xl {
+    font-size: 1.6875rem;
+  }
+
+  html[data-locale='ta'] .sm\:text-4xl {
+    font-size: 2.115rem;
+  }
+
+  html[data-locale='ta'] .sm\:text-5xl {
+    font-size: 2.82rem;
+  }
+
+  html[data-locale='ta'] .sm\:text-6xl {
+    font-size: 3.525rem;
+  }
+}
+
+@media (min-width: 48rem) {
+  html[data-locale='ta'] .md\:text-base {
+    font-size: 0.94rem;
+  }
+
+  html[data-locale='ta'] .md\:text-lg {
+    font-size: 1.0575rem;
+  }
+
+  html[data-locale='ta'] .md\:text-xl {
+    font-size: 1.125rem;
+  }
+
+  html[data-locale='ta'] .md\:text-2xl {
+    font-size: 1.35rem;
+  }
+
+  html[data-locale='ta'] .md\:text-3xl {
+    font-size: 1.6875rem;
+  }
+
+  html[data-locale='ta'] .md\:text-4xl {
+    font-size: 2.115rem;
+  }
+
+  html[data-locale='ta'] .md\:text-5xl {
+    font-size: 2.82rem;
+  }
+
+  html[data-locale='ta'] .md\:text-6xl {
+    font-size: 3.525rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  html[data-locale='ta'] .lg\:text-base {
+    font-size: 0.94rem;
+  }
+
+  html[data-locale='ta'] .lg\:text-lg {
+    font-size: 1.0575rem;
+  }
+
+  html[data-locale='ta'] .lg\:text-xl {
+    font-size: 1.125rem;
+  }
+
+  html[data-locale='ta'] .lg\:text-2xl {
+    font-size: 1.35rem;
+  }
+
+  html[data-locale='ta'] .lg\:text-3xl {
+    font-size: 1.6875rem;
+  }
+
+  html[data-locale='ta'] .lg\:text-4xl {
+    font-size: 2.115rem;
+  }
+
+  html[data-locale='ta'] .lg\:text-5xl {
+    font-size: 2.82rem;
+  }
+
+  html[data-locale='ta'] .lg\:text-6xl {
+    font-size: 3.525rem;
+  }
+
+  html[data-locale='ta'] .lg\:text-7xl {
+    font-size: 4.23rem;
+  }
+}
+
+html[data-locale='ta'] button,
+html[data-locale='ta'] a,
+html[data-locale='ta'] span,
+html[data-locale='ta'] th,
+html[data-locale='ta'] td {
+  overflow-wrap: anywhere;
 }
 
 img,
@@ -505,7 +713,7 @@ table {
 }
 
 /* ============================================
-   TN HUB DYNAMIC THEME SYSTEM OVERRIDES
+   TN Kuviyam DYNAMIC THEME SYSTEM OVERRIDES
    ============================================ */
 :root {
   --theme-primary: #316342;

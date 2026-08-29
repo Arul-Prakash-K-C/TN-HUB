@@ -28,8 +28,8 @@ $effect(() => {
       <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-danger-soft text-danger">
         <Shield class="h-7 w-7" />
       </div>
-      <h2 class="text-lg font-bold text-text">Access Restricted</h2>
-      <p class="mt-2 text-xs text-text-muted">{guard.reason || 'Unauthorized access'}</p>
+      <h2 class="text-lg font-bold text-text">{t('auth.accessRestricted')}</h2>
+      <p class="mt-2 text-xs text-text-muted">{guard.reason || t('auth.unauthorizedAccess')}</p>
     </div>
   </div>
 {:else}
@@ -53,9 +53,9 @@ $effect(() => {
           </div>
           <div>
             <h2 class="text-lg font-bold text-text">{user?.name}</h2>
-            <p class="text-xs font-bold text-primary mt-0.5">{user?.departmentName || 'Revenue Department'}</p>
+            <p class="text-xs font-bold text-primary mt-0.5">{user?.departmentName || t('department.defaultName')}</p>
             <div class="mt-2 inline-flex items-center gap-1.5 rounded-full bg-green-50 border border-green-200 px-3 py-0.5 text-[10px] font-bold text-primary">
-              Status: Active & Government Verified
+              {t('department.profile.statusActiveVerified')}
             </div>
           </div>
         </div>
@@ -63,7 +63,7 @@ $effect(() => {
         <!-- Readonly Official Fields -->
         <div class="grid gap-4 sm:grid-cols-2">
           <div class="rounded-xl bg-surface-container dark:bg-surface-container-high p-4 border border-border">
-            <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block mb-1">Government Email</span>
+            <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block mb-1">{t('department.govtEmail')}</span>
             <div class="flex items-center gap-2 text-xs font-bold text-text">
               <Mail class="h-4 w-4 text-primary shrink-0" />
               <span>{user?.email}</span>
@@ -71,7 +71,7 @@ $effect(() => {
           </div>
 
           <div class="rounded-xl bg-surface-container dark:bg-surface-container-high p-4 border border-border">
-            <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block mb-1">Official Employee ID</span>
+            <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block mb-1">{t('department.employeeId')}</span>
             <div class="flex items-center gap-2 text-xs font-bold text-text font-mono">
               <Award class="h-4 w-4 text-primary shrink-0" />
               <span>{user?.phone || 'REV-TN-2024-9102'}</span>
@@ -79,18 +79,18 @@ $effect(() => {
           </div>
 
           <div class="rounded-xl bg-surface-container dark:bg-surface-container-high p-4 border border-border">
-            <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block mb-1">Assigned Department</span>
+            <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block mb-1">{t('department.assignedDept')}</span>
             <div class="flex items-center gap-2 text-xs font-bold text-text">
               <Building2 class="h-4 w-4 text-primary shrink-0" />
-              <span>{user?.departmentName || 'Revenue Department'}</span>
+              <span>{user?.departmentName || t('department.defaultName')}</span>
             </div>
           </div>
 
           <div class="rounded-xl bg-surface-container dark:bg-surface-container-high p-4 border border-border">
-            <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block mb-1">Taluk / Jurisdiction</span>
+            <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block mb-1">{t('department.jurisdiction')}</span>
             <div class="flex items-center gap-2 text-xs font-bold text-text">
               <MapPin class="h-4 w-4 text-primary shrink-0" />
-              <span>Chennai Central Division</span>
+              <span>{t('department.jurisdictionValue')}</span>
             </div>
           </div>
         </div>
@@ -99,30 +99,30 @@ $effect(() => {
         <div class="rounded-xl border border-warning/25 bg-warning-soft p-4 text-warning text-xs flex items-start gap-3">
           <Lock class="h-5 w-5 text-warning shrink-0 mt-0.5" />
           <div>
-            <strong>Administrative Notice:</strong> Official department assignments and approval designations are governed by state platform administrators. Transfers require formal administrative authorization.
+            <strong>{t('department.adminNoticeLabel')}:</strong> {t('department.adminNotice')}
           </div>
         </div>
 
         <div class="border-t border-border pt-6 space-y-6">
-          <h3 class="text-sm font-bold text-text">System Preferences</h3>
+          <h3 class="text-sm font-bold text-text">{t('settings.systemPreferences')}</h3>
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <span class="block text-xs font-semibold text-text-muted mb-2">Interface Language</span>
+              <span class="block text-xs font-semibold text-text-muted mb-2">{t('settings.interfaceLanguage')}</span>
               <div class="flex items-center gap-3">
                 <button
                   type="button"
                   onclick={() => locale.set('en')}
                   class="rounded-xl border px-4 py-2 text-xs font-bold transition {currentLocale === 'en' ? 'border-primary bg-primary text-white' : 'border-border bg-surface-container-low text-text hover:bg-muted'}"
                 >
-                  English
+                  {t('lang.english')}
                 </button>
                 <button
                   type="button"
                   onclick={() => locale.set('ta')}
                   class="rounded-xl border px-4 py-2 text-xs font-bold transition {currentLocale === 'ta' ? 'border-primary bg-primary text-white' : 'border-border bg-surface-container-low text-text hover:bg-muted'}"
                 >
-                  தமிழ் (Tamil)
+                  {t('lang.tamilWithEnglish')}
                 </button>
               </div>
             </div>
@@ -130,21 +130,21 @@ $effect(() => {
 
 
             <div>
-              <span class="block text-xs font-semibold text-text-muted mb-2">Interface Theme Mode</span>
+              <span class="block text-xs font-semibold text-text-muted mb-2">{t('settings.interfaceThemeMode')}</span>
               <div class="flex items-center gap-3">
                 <button
                   type="button"
                   onclick={() => { isDark = false; applyThemeMode('light'); }}
                   class="rounded-xl border px-4 py-2 text-xs font-bold transition {!isDark ? 'border-primary bg-primary text-white' : 'border-border bg-surface-container-low text-text hover:bg-muted'}"
                 >
-                  Light Mode
+                  {t('settings.lightMode')}
                 </button>
                 <button
                   type="button"
                   onclick={() => { isDark = true; applyThemeMode('dark'); }}
                   class="rounded-xl border px-4 py-2 text-xs font-bold transition {isDark ? 'border-primary bg-primary text-white' : 'border-border bg-surface-container-low text-text hover:bg-muted'}"
                 >
-                  Dark Mode
+                  {t('settings.darkMode')}
                 </button>
               </div>
             </div>

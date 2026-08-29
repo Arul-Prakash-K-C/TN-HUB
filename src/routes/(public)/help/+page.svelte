@@ -1,7 +1,9 @@
 <script>
 
   import { HelpCircle, ChevronDown, ChevronUp, Send, CheckCircle2, FileText, ShieldCheck, Scale, AlertTriangle } from '@lucide/svelte';
-  import { t } from '$lib/i18n';
+  
+const t = $derived($tt);
+import { tt } from '$lib/i18n';
   import { onMount } from 'svelte';
 
 let openFaq = $state(null);
@@ -22,7 +24,7 @@ let questionError = $state('');
 async function handleQuestionSubmit() {
     if (!questionText.trim() || !questionName.trim() || !questionEmail.trim() || submitting) return;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(questionEmail.trim())) {
-        questionError = 'Please enter a valid email address.';
+        questionError = t('apply.validation.emailInvalid');
         return;
     }
     
@@ -49,11 +51,11 @@ async function handleQuestionSubmit() {
             questionText = '';
         }
         else {
-            throw new Error(body?.error ?? 'Unable to submit your question.');
+            throw new Error(body?.error ?? t('errors.submitQuestion'));
         }
     } catch (error) {
         console.error('Error submitting help request:', error);
-        questionError = error instanceof Error ? error.message : 'Unable to submit your question.';
+        questionError = error instanceof Error ? error.message : t('errors.submitQuestion');
     } finally {
         submitting = false;
     }
@@ -89,7 +91,7 @@ const faqs = [
     },
     {
         q: 'Can I apply on behalf of a family member?',
-        a: 'Yes. You can visit an e-Sevai Common Service Center where an authorized operator will assist you. Alternatively, you can use the citizen portal with proper authorization documents for your family member.'
+        a: 'Yes. You can visit an authorized Kiosk Center where an operator will assist you. Alternatively, you can use the citizen portal with proper authorization documents for your family member.'
     },
     {
         q: 'What is DigiLocker integration?',
@@ -122,24 +124,24 @@ const faqs = [
 ];
 const policies = [
     {
-        title: 'Privacy Policy',
+        titleKey: 'help.policies.privacy.title',
         icon: ShieldCheck,
-        desc: 'Your personal data is collected solely for government service delivery. We follow IT Act 2000, DPDP Act 2023, and Government of Tamil Nadu data governance guidelines. Data is encrypted in transit and at rest.'
+        descKey: 'help.policies.privacy.desc'
     },
     {
-        title: 'Terms of Service',
+        titleKey: 'help.policies.terms.title',
         icon: Scale,
-        desc: 'By using TN Kuviyam, you agree to provide accurate information for government service applications. Misrepresentation may result in application rejection and legal action under applicable Indian Penal Code provisions.'
+        descKey: 'help.policies.terms.desc'
     },
     {
-        title: 'Grievance Redressal Policy',
+        titleKey: 'help.policies.grievance.title',
         icon: AlertTriangle,
-        desc: 'Citizens may file grievances for service delays, incorrect rejections, or officer misconduct. All grievances are acknowledged within 24 hours and resolved within the prescribed SLA (typically 7-15 working days).'
+        descKey: 'help.policies.grievance.desc'
     },
     {
-        title: 'Accessibility Statement',
+        titleKey: 'help.policies.accessibility.title',
         icon: FileText,
-        desc: 'TN Kuviyam is designed to meet WCAG 2.1 AA accessibility standards. We support screen readers, keyboard navigation, high-contrast modes, and bilingual Tamil/English content to ensure inclusive access.'
+        descKey: 'help.policies.accessibility.desc'
     }
 ];
 </script>
@@ -168,7 +170,7 @@ const policies = [
       >
         <span class="flex items-center gap-2">
           <HelpCircle class="h-4 w-4" />
-          Frequently Asked Questions
+          {t('service.faq')}
         </span>
       </button>
       <button
@@ -180,7 +182,7 @@ const policies = [
       >
         <span class="flex items-center gap-2">
           <FileText class="h-4 w-4" />
-          Policies & Guidelines
+          {t('ui.routes.public.help.3f695d87')}
         </span>
       </button>
     </div>
@@ -190,7 +192,9 @@ const policies = [
   {#if activeTab === 'faq'}
     <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6">
       <!-- FAQ Count -->
-      <p class="mb-5 text-xs font-bold uppercase tracking-wider text-text-faint">{faqs.length} Frequently Asked Questions</p>
+      <p class="mb-5 text-xs font-bold uppercase tracking-wider text-text-faint">
+        {t('help.faq.count', { count: faqs.length })}
+      </p>
 
       <div class="space-y-3">
         {#each faqs as faq, i}
@@ -221,8 +225,8 @@ const policies = [
             <Send class="h-5 w-5" />
           </div>
           <div>
-            <h2 class="text-lg font-bold text-text">Didn't find your answer?</h2>
-            <p class="text-xs text-text-muted">Send your question to the TN Kuviyam Help Desk. We'll respond within 24 hours.</p>
+            <h2 class="text-lg font-bold text-text">{t('ui.routes.public.help.851c0814')}</h2>
+            <p class="text-xs text-text-muted">{t('ui.routes.public.help.c6df057e')}</p>
           </div>
         </div>
 
@@ -231,49 +235,49 @@ const policies = [
             <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary-soft text-primary">
               <CheckCircle2 class="h-8 w-8" />
             </div>
-            <h3 class="text-lg font-bold text-text">Question Submitted</h3>
-            <p class="mt-2 max-w-md text-sm text-text-muted">Your question has been sent to the TN Kuviyam Help Desk. You will receive a response via email within 24 working hours.</p>
+            <h3 class="text-lg font-bold text-text">{t('ui.routes.public.help.79f70270')}</h3>
+            <p class="mt-2 max-w-md text-sm text-text-muted">{t('ui.routes.public.help.710ad697')}</p>
             <button
               onclick={() => questionSubmitted = false}
               class="mt-6 text-sm font-bold text-primary transition hover:text-primary-hover"
             >
-              Ask Another Question
+              {t('ui.ask.another.question')}
             </button>
           </div>
         {:else}
           <form onsubmit={(e) => { e.preventDefault(); handleQuestionSubmit(); }} class="space-y-4">
             <div class="grid gap-4 sm:grid-cols-2">
               <div>
-                <label for="q-name" class="mb-1.5 block text-xs font-bold text-text">Your Name *</label>
+                <label for="q-name" class="mb-1.5 block text-xs font-bold text-text">{t('ui.routes.public.help.12a90bc6')}</label>
                 <input
                   id="q-name"
                   type="text"
                   bind:value={questionName}
                   required
-                  placeholder="Enter your name"
+                  placeholder={t('ui.enter.your.name')}
                   class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text outline-none transition placeholder:text-text-faint focus:border-primary focus:ring-2 focus:ring-primary/15"
                 />
               </div>
               <div>
-                <label for="q-email" class="mb-1.5 block text-xs font-bold text-text">Email Address *</label>
+                <label for="q-email" class="mb-1.5 block text-xs font-bold text-text">{t('ui.routes.public.help.11fbc7e7')}</label>
                 <input
                   id="q-email"
                   type="email"
                   bind:value={questionEmail}
                   required
-                  placeholder="your@email.com"
+                  placeholder={t('ui.your.email.com')}
                   class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text outline-none transition placeholder:text-text-faint focus:border-primary focus:ring-2 focus:ring-primary/15"
                 />
               </div>
             </div>
             <div>
-              <label for="q-text" class="mb-1.5 block text-xs font-bold text-text">Your Question *</label>
+              <label for="q-text" class="mb-1.5 block text-xs font-bold text-text">{t('ui.routes.public.help.95c56eb0')}</label>
               <textarea
                 id="q-text"
                 bind:value={questionText}
                 required
                 rows={4}
-                placeholder="Describe your question about TN Kuviyam services, processes, or documents..."
+                placeholder={t('ui.describe.your.question.about.tn.kuviyam.services.processes.or.documents')}
                 class="w-full resize-none rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text outline-none transition placeholder:text-text-faint focus:border-primary focus:ring-2 focus:ring-primary/15"
               ></textarea>
             </div>
@@ -287,7 +291,7 @@ const policies = [
                 class="flex items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-bold text-white shadow transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Send class="h-4 w-4" />
-                {submitting ? 'Sending...' : 'Submit to Help Desk'}
+                {submitting ? t('common.sending') : t('help.ask.submit')}
               </button>
             </div>
           </form>
@@ -299,7 +303,7 @@ const policies = [
   <!-- Policies & Guidelines Tab -->
   {#if activeTab === 'policies'}
     <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6">
-      <p class="mb-5 text-xs font-bold uppercase tracking-wider text-text-faint">Policies & Guidelines</p>
+      <p class="mb-5 text-xs font-bold uppercase tracking-wider text-text-faint">{t('ui.routes.public.help.3f695d87')}</p>
 
       <div class="grid gap-5 sm:grid-cols-2">
         {#each policies as policy}
@@ -309,8 +313,8 @@ const policies = [
                 <policy.icon class="h-5 w-5" />
               </div>
               <div>
-                <h3 class="mb-2 text-sm font-bold text-text">{policy.title}</h3>
-                <p class="text-xs leading-relaxed text-text-muted">{policy.desc}</p>
+                <h3 class="mb-2 text-sm font-bold text-text">{t(policy.titleKey)}</h3>
+                <p class="text-xs leading-relaxed text-text-muted">{t(policy.descKey)}</p>
               </div>
             </div>
           </div>
@@ -322,11 +326,9 @@ const policies = [
         <div class="flex items-start gap-3">
           <AlertTriangle class="mt-0.5 h-5 w-5 shrink-0 text-warning" />
           <div>
-            <h4 class="text-sm font-bold text-warning">Important Notice</h4>
+            <h4 class="text-sm font-bold text-warning">{t('ui.routes.public.help.d849a8be')}</h4>
             <p class="mt-1 text-xs leading-relaxed text-warning">
-              TN Kuviyam is a hackathon prototype developed for the BuildWhatMovesIndia initiative. 
-              The policies listed above represent the intended governance framework. Actual government 
-              service policies are governed by the Government of Tamil Nadu and relevant departments.
+              {t('ui.tn.kuviyam.is.a.hackathon.prototype.developed.for.the.buildwhatmovesindia.initia')}
             </p>
           </div>
         </div>

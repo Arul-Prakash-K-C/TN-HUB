@@ -81,7 +81,7 @@ function resetFilters() {
       <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-danger-soft text-danger">
         <Shield class="h-7 w-7" />
       </div>
-      <h2 class="text-lg font-bold text-text">Access Restricted</h2>
+      <h2 class="text-lg font-bold text-text">{t('ui.routes.department.department.applications.6b7afa2e')}</h2>
       <p class="mt-2 text-xs text-text-muted">{guard.reason || 'Unauthorized access'}</p>
     </div>
   </div>
@@ -91,7 +91,7 @@ function resetFilters() {
     <div class="public-banner py-6 px-6 sm:px-8">
       <div class="mx-auto max-w-7xl flex justify-between items-center">
         <div>
-          <h1 class="text-xl font-black text-white">Applications Work Queue</h1>
+          <h1 class="text-xl font-black text-white">{t('ui.routes.department.department.applications.4ad13474')}</h1>
         </div>
       </div>
     </div>
@@ -107,7 +107,7 @@ function resetFilters() {
             <input
               type="text"
               bind:value={searchQuery}
-              placeholder="Search Application ID, Service, Applicant..."
+              placeholder={t('ui.search.application.id.service.applicant')}
               class="w-full pl-10 pr-4 py-2 bg-muted border border-border rounded-lg text-xs text-text focus:ring-2 focus:ring-primary/20 placeholder:text-text-faint"
             />
           </div>
@@ -125,28 +125,28 @@ function resetFilters() {
               onclick={() => selectedStatus = 'PENDING'}
               class="px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap {selectedStatus === 'PENDING' ? 'bg-warning-soft text-warning border border-warning/30' : 'bg-muted text-text-muted hover:bg-surface-container'}"
             >
-              Pending Review
+              {t('dashboard.stats.pending')}
             </button>
 
             <button
               onclick={() => selectedStatus = 'CORRECTION'}
               class="px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap {selectedStatus === 'CORRECTION' ? 'bg-danger-soft text-danger border border-danger/30' : 'bg-muted text-text-muted hover:bg-surface-container'}"
             >
-              Correction Req
+              {t('ui.routes.department.department.applications.5c32d4b0')}
             </button>
 
             <button
               onclick={() => selectedStatus = 'APPROVED'}
               class="px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap {selectedStatus === 'APPROVED' ? 'bg-success-soft text-success border border-success/30' : 'bg-muted text-text-muted hover:bg-surface-container'}"
             >
-              Approved
+              {t('status.APPROVED')}
             </button>
 
             <button
               onclick={() => selectedStatus = 'SLA_RISK'}
               class="px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap {selectedStatus === 'SLA_RISK' ? 'bg-danger-soft text-danger border border-danger/30' : 'bg-muted text-text-muted hover:bg-surface-container'}"
             >
-              SLA Risk
+              {t('ui.routes.department.department.dashboard.3398a37c')}
             </button>
           </div>
         </div>
@@ -160,7 +160,7 @@ function resetFilters() {
             <div class="w-16 h-16 rounded-full bg-muted text-text-muted/80 flex items-center justify-center mx-auto mb-4 border border-border">
               <Inbox class="h-8 w-8 text-text-muted/80" />
             </div>
-            <h3 class="text-base font-bold text-text">No Applications Found</h3>
+            <h3 class="text-base font-bold text-text">{t('ui.routes.department.department.applications.dcfe79ae')}</h3>
             <p class="text-xs text-text-muted mt-1 leading-relaxed">
               {#if searchQuery || selectedStatus !== 'ALL'}
                 No records match your active search filter "{searchQuery}" or status "{selectedStatus}".
@@ -173,7 +173,7 @@ function resetFilters() {
                 onclick={resetFilters}
                 class="adaptive-action-button px-4 py-2 text-xs font-bold rounded-lg transition"
               >
-                Clear All Filters
+                {t('ui.clear.all.filters')}
               </button>
             </div>
           </div>
@@ -182,13 +182,13 @@ function resetFilters() {
             <table class="w-full text-left text-xs">
               <thead class="bg-surface-container dark:bg-surface-container-high text-text-muted uppercase font-bold text-[10px] tracking-wider border-b border-border">
                 <tr>
-                  <th class="py-3 px-4">Application Ref</th>
-                  <th class="py-3 px-4">Service Required</th>
-                  <th class="py-3 px-4">Citizen Applicant</th>
-                  <th class="py-3 px-4">Submission Date</th>
-                  <th class="py-3 px-4">SLA Deadline</th>
-                  <th class="py-3 px-4">Status</th>
-                  <th class="py-3 px-4 text-right">Action</th>
+                  <th class="py-3 px-4">{t('ui.routes.department.department.applications.31e4b15e')}</th>
+                  <th class="py-3 px-4">{t('ui.routes.department.department.applications.d9921e93')}</th>
+                  <th class="py-3 px-4">{t('ui.routes.department.department.applications.81f7e9cd')}</th>
+                  <th class="py-3 px-4">{t('ui.routes.department.department.applications.2be05a32')}</th>
+                  <th class="py-3 px-4">{t('ui.routes.department.department.applications.2f314714')}</th>
+                  <th class="py-3 px-4">{t('ui.routes.department.department.applications.78911fc4')}</th>
+                  <th class="py-3 px-4 text-right">{t('ui.routes.department.department.applications.967ab48d')}</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-border font-medium">
@@ -209,28 +209,28 @@ function resetFilters() {
                     </td>
                     <td class="py-3.5 px-4 font-mono">
                       {#if app.status === 'APPROVED' || app.status === 'COMPLETED'}
-                        <span class="text-success font-bold text-[10px]">Resolved</span>
+                        <span class="text-success font-bold text-[10px]">{t('ui.routes.department.department.applications.5accfa63')}</span>
                       {:else}
-                        <span class="text-warning font-bold text-[10px]">3 Days Left</span>
+                        <span class="text-warning font-bold text-[10px]">{t('ui.routes.department.department.applications.ce697eb6')}</span>
                       {/if}
                     </td>
                     <td class="py-3.5 px-4">
                       {#if app.status === 'SUBMITTED'}
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-soft text-primary-soft-text border border-primary/20">New</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-soft text-primary-soft-text border border-primary/20">{t('ui.routes.department.department.applications.2e40220f')}</span>
                       {:else if app.status === 'DOCUMENT_VERIFICATION'}
                         {#if app.isResubmitted || app.isReady}
-                          <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#316342]/10 text-[#316342] border border-[#316342]/20">Ready (Resubmitted)</span>
+                          <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#316342]/10 text-[#316342] border border-[#316342]/20">{t('ui.routes.department.department.applications.34125231')}</span>
                         {:else}
-                          <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-warning-soft text-warning border border-warning/25">Doc Verification</span>
+                          <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-warning-soft text-warning border border-warning/25">{t('ui.routes.department.department.applications.c3fa16af')}</span>
                         {/if}
                       {:else if app.status === 'OFFICER_REVIEW'}
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-soft text-primary-soft-text border border-primary/20">Officer Review</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-soft text-primary-soft-text border border-primary/20">{t('ui.routes.department.department.applications.0921123e')}</span>
                       {:else if app.status === 'CLARIFICATION_REQUESTED'}
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-danger-soft text-danger border border-danger/25">Correction Req</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-danger-soft text-danger border border-danger/25">{t('ui.routes.department.department.applications.5c32d4b0')}</span>
                       {:else if app.status === 'APPROVED' || app.status === 'COMPLETED'}
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-success-soft text-success border border-success/25">Approved</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-success-soft text-success border border-success/25">{t('ui.routes.department.department.applications.a8d7a99f')}</span>
                       {:else if app.status === 'REJECTED'}
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-danger-soft text-danger border border-danger/25">Rejected</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-danger-soft text-danger border border-danger/25">{t('ui.routes.department.department.applications.ee9e2f19')}</span>
                       {:else}
                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-muted text-text-muted border border-border">{app.status}</span>
                       {/if}
@@ -240,7 +240,7 @@ function resetFilters() {
                         href="/department/applications/{app.id}"
                          class="adaptive-action-button inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold text-[11px] transition"
                       >
-                        <span>Review</span>
+                        <span>{t('ui.routes.department.department.applications.28c11ac8')}</span>
                         <ArrowRight class="h-3 w-3" />
                       </a>
                     </td>

@@ -1,13 +1,15 @@
 <script>
 
   import Sidebar from '$lib/components/layout/Sidebar.svelte';
-  import OperatorSidebar from '$lib/components/layout/OperatorSidebar.svelte';
+  
+const t = $derived($tt);
+import OperatorSidebar from '$lib/components/layout/OperatorSidebar.svelte';
   import MobileHeader from '$lib/components/layout/MobileHeader.svelte';
   import Header from '$lib/components/layout/Header.svelte';
   import Footer from '$lib/components/layout/Footer.svelte';
   import GlassLoader from '$lib/components/ui/GlassLoader.svelte';
   import { isRestored, userRole } from '$lib/stores/auth';
-  import { t } from '$lib/i18n';
+  import { tt } from '$lib/i18n';
 
 let { data, children } = $props();
 let isMobileMenuOpen = $state(false);

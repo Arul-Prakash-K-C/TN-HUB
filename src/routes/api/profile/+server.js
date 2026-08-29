@@ -1,6 +1,19 @@
 import { error, json } from '@sveltejs/kit';
 import { updateUserProfilePreferences } from '$lib/server/users/profile';
-const protectedProfileFields = new Set(['uid', 'email', 'displayName', 'role', 'departmentId', 'isActive']);
+const protectedProfileFields = new Set([
+    'id',
+    'uid',
+    'email',
+    'displayName',
+    'role',
+    'departmentId',
+    'approved',
+    'registrationStatus',
+    'isActive',
+    'isVerified',
+    'admin',
+    'claims'
+]);
 /** Persists only user-controlled profile preferences behind the verified session. */
 export const PATCH = async ({ request, locals }) => {
     if (!locals.user)

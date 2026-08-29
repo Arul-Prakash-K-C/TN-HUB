@@ -1,4 +1,5 @@
 <script>
+const t = $derived($tt);
 
   import { HelpCircle, Phone, Mail, BookOpen, MessageSquare } from '@lucide/svelte';
   import { tt } from '$lib/i18n';
@@ -22,15 +23,15 @@ let activeFaqIndex = $state(null);
 </script>
 
 <svelte:head>
-  <title>Operator Help & Support — TN Kuviyam</title>
+  <title>{t('ui.routes.operator.operator.help.0385d364')}</title>
 </svelte:head>
 
 <div class="bg-background text-text min-h-screen pb-12 flex flex-col w-full">
   <!-- Page Header (Green Banner matching Public Pages) -->
   <div class="public-banner px-6 py-8 sm:px-8">
     <div class="mx-auto max-w-4xl">
-      <h1 class="text-2xl font-black tracking-tight text-white">Kiosk Operator Support Desk</h1>
-      <p class="public-banner-subtitle mt-1 max-w-2xl text-xs font-medium">Find answers to common operational questions or contact the TNeGA admin desk.</p>
+      <h1 class="text-2xl font-black tracking-tight text-white">{t('ui.routes.operator.operator.help.b7ebf006')}</h1>
+      <p class="public-banner-subtitle mt-1 max-w-2xl text-xs font-medium">{t('ui.routes.operator.operator.help.b1dc80e9')}</p>
     </div>
   </div>
 
@@ -42,8 +43,8 @@ let activeFaqIndex = $state(null);
           <BookOpen class="h-6 w-6" />
         </div>
         <div>
-          <h3 class="font-bold text-text text-sm">Operator Manual</h3>
-          <p class="text-xs text-text-muted mt-1 leading-relaxed">Read step-by-step instructions on assisting citizen registrations, uploading documents, and navigating workflows.</p>
+          <h3 class="font-bold text-text text-sm">{t('ui.routes.operator.operator.help.52162002')}</h3>
+          <p class="text-xs text-text-muted mt-1 leading-relaxed">{t('ui.routes.operator.operator.help.8f25e07d')}</p>
         </div>
       </div>
 
@@ -52,16 +53,16 @@ let activeFaqIndex = $state(null);
           <MessageSquare class="h-6 w-6" />
         </div>
         <div>
-          <h3 class="font-bold text-text text-sm">Live Kiosk Support</h3>
-          <p class="text-xs text-text-muted mt-1 leading-relaxed">Connect directly with the TNeGA Technical Support Team via the integrated kiosk chat desk.</p>
-          <a href="/operator/ai-chat" class="mt-2.5 inline-block text-xs font-bold text-warning hover:underline">Start Kiosk Chat</a>
+          <h3 class="font-bold text-text text-sm">{t('ui.routes.operator.operator.help.5ca01b59')}</h3>
+          <p class="text-xs text-text-muted mt-1 leading-relaxed">{t('ui.routes.operator.operator.help.86dbc311')}</p>
+          <a href="/operator/ai-chat" class="mt-2.5 inline-block text-xs font-bold text-warning hover:underline">{t('ui.routes.operator.operator.help.c2a84684')}</a>
         </div>
       </div>
     </div>
 
     <!-- FAQ Accordion -->
     <div class="rounded-2xl border border-border bg-surface p-6 shadow-sm">
-      <h2 class="text-base font-bold text-text mb-4">Frequently Asked Questions</h2>
+      <h2 class="text-base font-bold text-text mb-4">{t('ui.routes.operator.operator.help.eafbd054')}</h2>
       <div class="divide-y divide-border">
         {#each faqs as faq, i}
           <div class="py-3.5">
@@ -83,15 +84,15 @@ let activeFaqIndex = $state(null);
     <!-- Contact Info -->
     <div class="rounded-2xl border border-border bg-surface p-6 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
-        <h3 class="font-bold text-text text-sm">Need immediate administrative assistance?</h3>
-        <p class="text-xs text-text-muted mt-0.5">Contact the TNeGA state-wide operational headquarters.</p>
+        <h3 class="font-bold text-text text-sm">{t('ui.routes.operator.operator.help.71209f29')}</h3>
+        <p class="text-xs text-text-muted mt-0.5">{t('ui.routes.operator.operator.help.fed5173e')}</p>
       </div>
       <div class="flex flex-col sm:flex-row gap-4">
         <a href="tel:18004256000" class="flex items-center gap-2 text-xs font-bold text-text hover:text-primary transition">
           <Phone class="h-4 w-4" /> 1800 425 6000
         </a>
         <a href="mailto:support.tnhub@tn.gov.in" class="flex items-center gap-2 text-xs font-bold text-text hover:text-primary transition">
-          <Mail class="h-4 w-4" /> support.tnhub@tn.gov.in
+          <Mail class="h-4 w-4" /> {t('ui.support.tnhub.tn.gov.in')}
         </a>
       </div>
     </div>

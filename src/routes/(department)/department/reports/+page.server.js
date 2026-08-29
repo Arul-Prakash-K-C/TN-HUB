@@ -1,6 +1,6 @@
 import { listApplicationsForUser } from '$lib/server/applications/repository';
+import { requireDepartmentUser } from '$lib/server/security/authorize';
 export const load = async ({ locals }) => {
-    if (!locals.user)
-        return { applications: [] };
-    return { applications: await listApplicationsForUser(locals.user) };
+    const user = requireDepartmentUser(locals);
+    return { applications: await listApplicationsForUser(user) };
 };

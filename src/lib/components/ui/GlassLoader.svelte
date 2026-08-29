@@ -1,7 +1,9 @@
 <script>
 
-  import { t } from '$lib/i18n';
+  import { tt } from '$lib/i18n';
 
+
+const t = $derived($tt);
 let { message = t('loader.loading'), fullScreen = false } = $props();
 </script>
 
