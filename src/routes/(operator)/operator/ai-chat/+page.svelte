@@ -69,7 +69,7 @@ const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id ==
 </script>
 
 <svelte:head>
-  <title>Thozhan AI — Operator Portal — TN Kuviyam</title>
+  <title>{t('ui.routes.operator.operator.ai.chat.fa04a4ed')}</title>
 </svelte:head>
 
 <div class="flex-grow w-full bg-background text-text min-h-screen font-sans">
@@ -81,8 +81,8 @@ const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id ==
           <MessageSquare class="h-5 w-5" />
         </div>
       </div>
-      <h1 class="text-2xl font-black tracking-tight leading-tight">Thozhan AI</h1>
-      <p class="public-banner-subtitle mt-1 max-w-2xl text-sm leading-relaxed">Choose guided options to find services, start applications, track status, and get TN Kuviyam help.</p>
+      <h1 class="text-2xl font-black tracking-tight leading-tight">{t('chatbot.widget.title')}</h1>
+      <p class="public-banner-subtitle mt-1 max-w-2xl text-sm leading-relaxed">{t('ui.routes.operator.operator.ai.chat.595dc36d')}</p>
     </div>
   </div>
 
@@ -120,14 +120,14 @@ const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id ==
 
         <div class="flex flex-col sm:flex-row sm:items-center gap-4">
           <div class="w-14 h-14 flex items-center justify-center shrink-0">
-            <img src="/thozhan-logo.png" alt="Thozhan AI Logo" class="w-14 h-14 object-contain" onerror={(e) => { (e.currentTarget).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling).style.display='block'; }} />
+            <img src="/thozhan-logo.png" alt={t('ui.thozhan.ai.logo')} class="w-14 h-14 object-contain" onerror={(e) => { (e.currentTarget).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling).style.display='block'; }} />
             <Bot class="w-7 h-7 text-primary hidden" />
           </div>
           <div class="flex-1">
             <div class="flex flex-wrap items-center gap-3">
               <h2 class="text-[22px] font-bold text-text leading-tight">{history.length > 1 ? resolveText(screen.title) : 'Thozhan AI'}</h2>
               <span class="bg-primary/15 text-primary text-[10px] uppercase font-bold px-2 py-1 rounded-full flex items-center gap-1">
-                <ShieldCheck class="w-[12px] h-[12px]" /> Selection Only
+                <ShieldCheck class="w-[12px] h-[12px]" /> {t('chatbot.controlled.badge')}
               </span>
             </div>
             <p class="text-[15px] text-text-muted mt-1">{history.length > 1 ? resolveText(screen.description) : 'Choose guided options to find services, start applications, track status, review document requirements, and get TN Kuviyam help.'}</p>
@@ -138,7 +138,7 @@ const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id ==
               onclick={startOver}
               class="mt-3 sm:mt-0 sm:ml-auto flex items-center gap-2 px-4 py-2 border border-border rounded-full text-[13px] font-medium hover:bg-muted transition-colors shrink-0"
             >
-              <RefreshCcw class="w-[16px] h-[16px]" /> Start Over
+              <RefreshCcw class="w-[16px] h-[16px]" /> {t('chatbot.action.startOver')}
             </button>
           {/if}
         </div>
@@ -210,12 +210,12 @@ const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id ==
         {#if history.length === 1}
           <div class="flex items-start gap-4 mb-6">
             <div class="w-10 h-10 flex items-center justify-center shrink-0">
-              <img src="/thozhan-logo.png" alt="Thozhan AI Logo" class="w-10 h-10 object-contain" onerror={(e) => { (e.currentTarget).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling).style.display='block'; }} />
+              <img src="/thozhan-logo.png" alt={t('ui.thozhan.ai.logo')} class="w-10 h-10 object-contain" onerror={(e) => { (e.currentTarget).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling).style.display='block'; }} />
               <Bot class="w-6 h-6 text-primary hidden" />
             </div>
             <div>
-              <h3 class="text-[18px] font-bold text-text mb-1">What would you like help with?</h3>
-              <p class="text-[15px] text-text-muted">Thozhan AI guides you only through approved TN Kuviyam options. It does not accept free-text questions.</p>
+              <h3 class="text-[18px] font-bold text-text mb-1">{t('ui.routes.operator.operator.ai.chat.ac41698e')}</h3>
+              <p class="text-[15px] text-text-muted">{t('ui.routes.operator.operator.ai.chat.68a39fa6')}</p>
             </div>
           </div>
         {/if}
@@ -293,30 +293,30 @@ const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id ==
       <div class="lg:col-span-1 flex flex-col gap-6">
         <!-- How it works card -->
         <div class="bg-surface rounded-xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.24)] border border-border">
-          <h4 class="text-[12px] font-bold text-primary uppercase tracking-widest mb-3">How Thozhan AI Works</h4>
+          <h4 class="text-[12px] font-bold text-primary uppercase tracking-widest mb-3">{t('ui.routes.operator.operator.ai.chat.de1a99a3')}</h4>
           <div class="flex flex-col gap-3">
             <div class="bg-muted p-3 rounded-lg">
-              <h5 class="text-[11px] font-bold text-text uppercase mb-1">Selection-Only</h5>
-              <p class="text-[12px] text-text">Every step uses predefined TN Kuviyam options. Free-text chat is disabled.</p>
+              <h5 class="text-[11px] font-bold text-text uppercase mb-1">{t('ui.routes.operator.operator.ai.chat.d6fd68c8')}</h5>
+              <p class="text-[12px] text-text">{t('ui.routes.operator.operator.ai.chat.bef26d15')}</p>
             </div>
             <div class="bg-muted p-3 rounded-lg">
-              <h5 class="text-[11px] font-bold text-text uppercase mb-1">Real TN Kuviyam Data</h5>
-              <p class="text-[12px] text-text">Services, departments, applications, and document requirements are loaded from the existing TN Kuviyam data sources.</p>
+              <h5 class="text-[11px] font-bold text-text uppercase mb-1">{t('ui.routes.operator.operator.ai.chat.62bbcf25')}</h5>
+              <p class="text-[12px] text-text">{t('ui.routes.operator.operator.ai.chat.263b91da')}</p>
             </div>
             <div class="bg-muted p-3 rounded-lg">
-              <h5 class="text-[11px] font-bold text-text uppercase mb-1">Operator Context</h5>
-              <p class="text-[12px] text-text">This view is embedded within the operator portal — no public header or footer is shown.</p>
+              <h5 class="text-[11px] font-bold text-text uppercase mb-1">{t('ui.routes.operator.operator.ai.chat.aab9ff59')}</h5>
+              <p class="text-[12px] text-text">{t('ui.routes.operator.operator.ai.chat.bd903e27')}</p>
             </div>
           </div>
         </div>
 
         <!-- Quick Actions Card -->
         <div class="bg-surface rounded-xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.24)] border border-border">
-          <h4 class="text-[12px] font-bold text-primary uppercase tracking-widest mb-3">Quick Actions</h4>
+          <h4 class="text-[12px] font-bold text-primary uppercase tracking-widest mb-3">{t('ui.routes.operator.operator.ai.chat.5561b6f6')}</h4>
           <div class="flex flex-col gap-2">
-            <a href="/services" class="w-full text-left px-4 py-2.5 rounded-lg border border-border bg-muted hover:bg-muted transition-colors text-[13px] font-semibold text-text block">Browse Services</a>
-            <a href="/applications" class="w-full text-left px-4 py-2.5 rounded-lg border border-border bg-muted hover:bg-muted transition-colors text-[13px] font-semibold text-text block">Open Applications</a>
-            <a href="/operator/help" class="w-full text-left px-4 py-2.5 rounded-lg border border-border bg-muted hover:bg-muted transition-colors text-[13px] font-semibold text-text block">Contact Help Desk</a>
+            <a href="/services" class="w-full text-left px-4 py-2.5 rounded-lg border border-border bg-muted hover:bg-muted transition-colors text-[13px] font-semibold text-text block">{t('ui.routes.operator.operator.ai.chat.9fcf6b69')}</a>
+            <a href="/applications" class="w-full text-left px-4 py-2.5 rounded-lg border border-border bg-muted hover:bg-muted transition-colors text-[13px] font-semibold text-text block">{t('ui.routes.operator.operator.ai.chat.efe93fbd')}</a>
+            <a href="/operator/help" class="w-full text-left px-4 py-2.5 rounded-lg border border-border bg-muted hover:bg-muted transition-colors text-[13px] font-semibold text-text block">{t('ui.routes.operator.operator.ai.chat.200293c4')}</a>
           </div>
         </div>
       </div>

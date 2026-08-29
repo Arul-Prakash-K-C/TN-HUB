@@ -146,16 +146,16 @@ async function submitGrievance() {
       {#if !user}
         <div class="text-center py-6">
           <AlertCircle class="mx-auto mb-3 h-12 w-12 text-primary/80" />
-          <h3 class="mb-2 text-base font-bold text-text">Authentication Required</h3>
+          <h3 class="mb-2 text-base font-bold text-text">{t('ui.routes.citizen.complaints.3caaa0c4')}</h3>
           <p class="mb-6 text-xs leading-relaxed text-text-muted">
-            Please log in with your citizen account to file and track grievances.
+            {t('ui.please.log.in.with.your.citizen.account.to.file.and.track.grievances')}
           </p>
           <div class="flex justify-center gap-3">
             <button type="button" onclick={() => showNewModal = false} class="rounded-xl border border-border px-4 py-2.5 text-xs font-bold text-text-muted">
               {t('common.cancel')}
             </button>
             <a href="/login?redirect=/complaints" class="rounded-xl bg-primary hover:bg-primary-hover px-5 py-2.5 text-xs font-bold text-white shadow transition">
-              Log In
+              {t('ui.log.in')}
             </a>
           </div>
         </div>
@@ -173,26 +173,26 @@ async function submitGrievance() {
           <div>
             <label for="complaint-category" class="mb-1 block text-xs font-bold text-text">{t('complaints.field.category')}</label>
             <select id="complaint-category" bind:value={category} class="w-full rounded-xl border border-border bg-muted p-2.5 text-sm text-text outline-none">
-              <option value="service_delay">Service Delay / Timelines Breached</option>
-              <option value="document_issue">Document Processing Issue</option>
-              <option value="officer_misconduct">Officer Inquiry / Conduct</option>
-              <option value="technical_issue">Platform / Portal Technical Error</option>
+              <option value="service_delay">{t('ui.routes.citizen.complaints.12bb02d2')}</option>
+              <option value="document_issue">{t('ui.routes.citizen.complaints.8649ca86')}</option>
+              <option value="officer_misconduct">{t('ui.routes.citizen.complaints.f5231966')}</option>
+              <option value="technical_issue">{t('ui.routes.citizen.complaints.beaa8b24')}</option>
             </select>
           </div>
 
           <div>
             <label for="complaint-subject" class="mb-1 block text-xs font-bold text-text">{t('complaints.field.subject')} *</label>
-            <input id="complaint-subject" type="text" bind:value={subject} required placeholder="Brief title of grievance" class="w-full rounded-xl border border-border bg-muted p-2.5 text-sm text-text outline-none" />
+            <input id="complaint-subject" type="text" bind:value={subject} required placeholder={t('ui.brief.title.of.grievance')} class="w-full rounded-xl border border-border bg-muted p-2.5 text-sm text-text outline-none" />
           </div>
 
           <div>
             <label for="complaint-description" class="mb-1 block text-xs font-bold text-text">{t('complaints.field.description')} *</label>
-            <textarea id="complaint-description" bind:value={description} required rows="3" placeholder="Provide full details..." class="w-full rounded-xl border border-border bg-muted p-2.5 text-sm text-text outline-none"></textarea>
+            <textarea id="complaint-description" bind:value={description} required rows="3" placeholder={t('ui.provide.full.details')} class="w-full rounded-xl border border-border bg-muted p-2.5 text-sm text-text outline-none"></textarea>
           </div>
 
           <div>
             <label for="complaint-location" class="mb-1 block text-xs font-bold text-text">{t('complaints.field.location')}</label>
-            <input id="complaint-location" type="text" bind:value={location} placeholder="District / Taluk" class="w-full rounded-xl border border-border bg-muted p-2.5 text-sm text-text outline-none" />
+            <input id="complaint-location" type="text" bind:value={location} placeholder={t('ui.district.taluk')} class="w-full rounded-xl border border-border bg-muted p-2.5 text-sm text-text outline-none" />
           </div>
 
           <div class="flex justify-end gap-3 pt-4">

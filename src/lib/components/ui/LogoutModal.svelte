@@ -46,7 +46,7 @@
             onclick={() => (isOpen = false)}
             class="flex-1 rounded-2xl border border-border bg-muted px-4 py-3 text-xs font-bold uppercase tracking-wider text-text-muted transition-all duration-200 hover:bg-surface-container-high hover:text-text active:scale-95 cursor-pointer"
           >
-            {t("cancel")}
+            {t("common.cancel")}
           </button>
           <button
             onclick={() => {

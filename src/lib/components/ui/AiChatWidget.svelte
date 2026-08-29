@@ -84,7 +84,7 @@ async function loadAssistantData() {
     }
     catch (err) {
         console.error('Failed to load assistant data', err);
-        loadError = 'Unable to load Thozhan AI right now. Please try again.';
+        loadError = t('chatbot.loadError');
     }
     finally {
         loading = false;
@@ -103,9 +103,9 @@ async function toggleOpen() {
   <button 
     class="group flex h-16 w-16 items-center justify-center rounded-full bg-transparent shadow-none backdrop-blur-0 transition-all duration-300 hover:scale-110 active:scale-95" 
     onclick={toggleOpen}
-    aria-label="Open Thozhan AI"
+    aria-label={t('a11y.openThozhan')}
   >
-    <img src="/thozhan-logo.png" alt="Thozhan AI" class="h-12 w-12 object-contain drop-shadow-md" onerror={(e) => { (e.currentTarget).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling).style.display='block'; }} />
+    <img src="/thozhan-logo.png" alt={t('chatbot.widget.title')} class="h-12 w-12 object-contain drop-shadow-md" onerror={(e) => { (e.currentTarget).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling).style.display='block'; }} />
     <Bot class="hidden h-8 w-8 text-primary" />
   </button>
 </div>
@@ -119,18 +119,18 @@ async function toggleOpen() {
     <div class="flex shrink-0 items-start justify-between border-b border-border bg-surface-container p-4">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 flex items-center justify-center shrink-0">
-          <img src="/thozhan-logo.png" alt="Thozhan AI" class="w-10 h-10 object-contain" onerror={(e) => { (e.currentTarget).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling).style.display='block'; }} />
+          <img src="/thozhan-logo.png" alt={t('chatbot.widget.title')} class="w-10 h-10 object-contain" onerror={(e) => { (e.currentTarget).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling).style.display='block'; }} />
           <Bot class="hidden h-6 w-6 text-primary" />
         </div>
         <div>
-          <h3 class="text-[20px] font-bold leading-tight text-text">Thozhan AI</h3>
-          <p class="text-[12px] font-medium text-text-muted">TN Kuviyam Citizen Assistant</p>
+          <h3 class="text-[20px] font-bold leading-tight text-text">{t('chatbot.widget.title')}</h3>
+          <p class="text-[12px] font-medium text-text-muted">{t('chatbot.widget.citizenSubtitle')}</p>
         </div>
       </div>
       <button 
         class="rounded-full p-2 text-text-muted transition-colors hover:bg-muted hover:text-text" 
         onclick={toggleOpen}
-        aria-label="Close chat"
+        aria-label={t('a11y.closeDialog')}
       >
         <X class="w-5 h-5" />
       </button>
@@ -145,7 +145,7 @@ async function toggleOpen() {
             <span class="h-2 w-2 animate-bounce rounded-full bg-primary" style="animation-delay: 150ms"></span>
             <span class="h-2 w-2 animate-bounce rounded-full bg-primary" style="animation-delay: 300ms"></span>
           </div>
-          <span class="text-sm font-medium">Loading assistant...</span>
+          <span class="text-sm font-medium">{t('chatbot.loading')}</span>
         </div>
       {:else if loadError}
         <div class="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center">
@@ -157,12 +157,12 @@ async function toggleOpen() {
             onclick={loadAssistantData}
             class="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover"
           >
-            Retry
+            {t('common.retry')}
           </button>
         </div>
       {:else if !screen}
         <div class="absolute inset-0 flex items-center justify-center px-6 text-center text-sm text-text-muted">
-          Assistant is unavailable right now.
+          {t('chatbot.unavailable')}
         </div>
       {/if}
 
@@ -195,10 +195,10 @@ async function toggleOpen() {
           <!-- Screen Title & Description -->
           <div class="rounded-xl border border-border bg-surface p-5 shadow-sm">
             <h2 class="flex items-center gap-2 text-xl font-bold leading-tight text-text">
-              {history.length > 1 ? resolveText(screen.title) : 'What would you like help with?'}
+              {history.length > 1 ? resolveText(screen.title) : t('chatbot.initial.title')}
             </h2>
             <p class="mt-2 text-[13px] leading-relaxed text-text-muted">
-              {history.length > 1 ? resolveText(screen.description) : 'Thozhan AI guides you through approved TN Kuviyam options.'}
+              {history.length > 1 ? resolveText(screen.description) : t('chatbot.initial.description')}
             </p>
           </div>
 
@@ -336,7 +336,7 @@ async function toggleOpen() {
     <!-- Footer -->
     <div class="shrink-0 border-t border-border bg-surface-container p-3 text-center">
       <p class="text-[10px] text-text-muted">
-        Thozhan AI answers general questions. It can't see your personal applications or live status unless you log in.
+        {t('chatbot.footer.disclaimer')}
       </p>
     </div>
 

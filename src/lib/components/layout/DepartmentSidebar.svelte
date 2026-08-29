@@ -4,12 +4,13 @@
   import { LayoutDashboard, Inbox, Bell, User, Settings, LogOut, BarChart3, ShieldCheck, PhoneCall } from '@lucide/svelte';
   import { auth, currentUser } from '$lib/stores/auth';
   import LogoutModal from '$lib/components/ui/LogoutModal.svelte';
-  import { t } from '$lib/i18n';
+  import { tt } from '$lib/i18n';
   import BrandLogo from '$lib/components/ui/BrandLogo.svelte';
 
 let { isOpen = $bindable(false) } = $props();
 let showLogoutModal = $state(false);
 const user = $derived($currentUser);
+const t = $derived($tt);
 function isActive(path) {
     if (path === '/department/dashboard' && $page.url.pathname === '/department/dashboard')
         return true;
@@ -33,7 +34,7 @@ $effect(() => {
 <aside class="fixed left-0 top-0 z-50 flex h-screen w-64 flex-col gap-5 border-r border-white/10 bg-[var(--color-sidebar-bg)] px-4 py-5 text-[var(--color-sidebar-text)] transition-transform duration-300 ease-in-out md:translate-x-0 {isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}">
   <!-- Brand Header -->
   <a href="/department/dashboard" class="flex w-full items-center justify-center px-1 py-1 hover:opacity-90 transition">
-    <BrandLogo showWordmark={true} subtitle={user?.departmentName || 'Revenue Department'} sizeClass="h-[86px] w-full max-w-[236px]" wordmarkClass="text-sm text-[var(--color-sidebar-text)]" subtitleOffsetClass="-mt-2" subtitleClass="text-[10px] text-[var(--color-sidebar-text-muted)]" />
+    <BrandLogo showWordmark={true} subtitle={user?.departmentName || t('department.defaultName')} sizeClass="h-[86px] w-full max-w-[236px]" wordmarkClass="text-sm text-[var(--color-sidebar-text)]" subtitleOffsetClass="-mt-2" subtitleClass="text-[10px] text-[var(--color-sidebar-text-muted)]" />
   </a>
 
   <!-- Officer Department Badge Card -->
@@ -66,7 +67,7 @@ $effect(() => {
       class="flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-medium transition-all {isActive('/department/applications') ? 'border-l-4 border-primary bg-primary text-white font-bold shadow-sm' : 'text-[var(--color-sidebar-text-muted)] hover:bg-[var(--color-sidebar-hover)] hover:text-[var(--color-sidebar-text)]'}"
     >
       <Inbox class="h-4 w-4 shrink-0" />
-      <span>Application Queue</span>
+      <span>{t('department.applicationQueue')}</span>
     </a>
 
     <a 
@@ -82,7 +83,7 @@ $effect(() => {
       class="flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-medium transition-all {isActive('/department/reports') ? 'border-l-4 border-primary bg-primary text-white font-bold shadow-sm' : 'text-[var(--color-sidebar-text-muted)] hover:bg-[var(--color-sidebar-hover)] hover:text-[var(--color-sidebar-text)]'}"
     >
       <BarChart3 class="h-4 w-4 shrink-0" />
-      <span>Reports</span>
+      <span>{t('reports.titleShort')}</span>
     </a>
   </nav>
 
@@ -93,7 +94,7 @@ $effect(() => {
       class="flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-medium transition-all {isActive('/department/profile') ? 'border-l-4 border-primary bg-primary text-white font-bold shadow-sm' : 'text-[var(--color-sidebar-text-muted)] hover:bg-[var(--color-sidebar-hover)] hover:text-[var(--color-sidebar-text)]'}"
     >
       <User class="h-4 w-4 shrink-0" />
-      <span>Profile</span>
+      <span>{t('nav.profile')}</span>
     </a>
 
 

@@ -41,15 +41,15 @@ async function saveProfile() {
   <div class="public-banner px-6 py-8 text-white shadow-md sm:px-8">
     <div class="mx-auto max-w-7xl">
       <h1 class="text-2xl font-black tracking-tight text-white">{t('profile.title')}</h1>
-      <p class="public-banner-subtitle mt-1 max-w-2xl text-xs font-medium">Manage your citizen profile, preferences, and language settings.</p>
+      <p class="public-banner-subtitle mt-1 max-w-2xl text-xs font-medium">{t('profile.subtitle')}</p>
     </div>
   </div>
 
   <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
     {#if !authenticated || !user}
       <div class="rounded-2xl border border-border bg-surface p-8 text-center shadow-sm">
-        <h2 class="text-2xl font-bold text-text">Please log in to view profile</h2>
-        <a href="/login" class="mt-4 inline-flex rounded-xl bg-primary px-5 py-2.5 text-xs font-bold text-white transition hover:bg-primary-hover">Login</a>
+        <h2 class="text-2xl font-bold text-text">{t('profile.loginRequired')}</h2>
+        <a href="/login" class="mt-4 inline-flex rounded-xl bg-primary px-5 py-2.5 text-xs font-bold text-white transition hover:bg-primary-hover">{t('nav.login')}</a>
       </div>
     {:else}
       <div class="space-y-6 rounded-2xl border border-border bg-surface p-6 shadow-sm">
@@ -59,13 +59,13 @@ async function saveProfile() {
           </div>
           <div>
             <h2 class="text-2xl font-bold text-text">{user.name}</h2>
-            <p class="text-xs text-text-muted">{user.email} • Role: <strong class="capitalize text-primary">{user.role.replace('_', ' ')}</strong></p>
+            <p class="text-xs text-text-muted">{user.email} • {t('profile.role')}: <strong class="capitalize text-primary">{user.role.replace('_', ' ')}</strong></p>
           </div>
         </div>
 
         {#if savedNotice}
           <div class="rounded-xl border border-success/30 bg-success-soft p-3 text-center text-xs font-bold text-success">
-            {t('common.save')}d successfully
+            {t('profile.saved')}
           </div>
         {/if}
 
@@ -89,13 +89,13 @@ async function saveProfile() {
 
             <div>
               <label for="profile-aadhaar" class="mb-1 block text-xs font-semibold text-text-muted">{t('apply.field.aadhaar')}</label>
-              <input id="profile-aadhaar" type="text" value={user.aadhaarNumber || 'Not Linked'} readonly class="w-full rounded-xl border border-border bg-surface-container p-2.5 text-xs text-text" />
+              <input id="profile-aadhaar" type="text" value={user.aadhaarNumber || t('profile.notLinked')} readonly class="w-full rounded-xl border border-border bg-surface-container p-2.5 text-xs text-text" />
             </div>
           </div>
         </div>
 
         <div class="space-y-6 border-t border-border pt-6">
-          <h3 class="text-sm font-bold text-text">System Preferences</h3>
+          <h3 class="text-sm font-bold text-text">{t('settings.systemPreferences')}</h3>
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -106,14 +106,14 @@ async function saveProfile() {
                   onclick={() => locale.set('en')}
                   class="rounded-xl border px-4 py-2 text-xs font-bold transition {currentLocale === 'en' ? 'border-primary bg-primary text-white' : 'border-border bg-surface-container text-text hover:bg-surface-container-high'}"
                 >
-                  English
+                  {t('lang.english')}
                 </button>
                 <button
                   type="button"
                   onclick={() => locale.set('ta')}
                   class="rounded-xl border px-4 py-2 text-xs font-bold transition {currentLocale === 'ta' ? 'border-primary bg-primary text-white' : 'border-border bg-surface-container text-text hover:bg-surface-container-high'}"
                 >
-                  தமிழ் (Tamil)
+                  {t('lang.tamilWithEnglish')}
                 </button>
               </div>
             </div>
@@ -121,21 +121,21 @@ async function saveProfile() {
 
 
             <div>
-              <span class="mb-2 block text-xs font-semibold text-text-muted">Interface Theme Mode</span>
+              <span class="mb-2 block text-xs font-semibold text-text-muted">{t('settings.interfaceThemeMode')}</span>
               <div class="flex items-center gap-3">
                 <button
                   type="button"
                   onclick={() => { isDark = false; applyThemeMode('light'); }}
                   class="rounded-xl border px-4 py-2 text-xs font-bold transition {!isDark ? 'border-primary bg-primary text-white' : 'border-border bg-surface-container text-text hover:bg-surface-container-high'}"
                 >
-                  Light Mode
+                  {t('settings.lightMode')}
                 </button>
                 <button
                   type="button"
                   onclick={() => { isDark = true; applyThemeMode('dark'); }}
                   class="rounded-xl border px-4 py-2 text-xs font-bold transition {isDark ? 'border-primary bg-primary text-white' : 'border-border bg-surface-container text-text hover:bg-surface-container-high'}"
                 >
-                  Dark Mode
+                  {t('settings.darkMode')}
                 </button>
               </div>
             </div>

@@ -204,6 +204,36 @@ body {
   overflow-x: hidden;
 }
 
+html[data-locale='ta'] body {
+  font-family: var(--font-tamil);
+}
+
+html[data-locale='ta'] button,
+html[data-locale='ta'] a,
+html[data-locale='ta'] label,
+html[data-locale='ta'] th,
+html[data-locale='ta'] .rounded-full,
+html[data-locale='ta'] .rounded-xl {
+  letter-spacing: 0;
+  line-height: 1.45;
+}
+
+html[data-locale='ta'] nav,
+html[data-locale='ta'] button,
+html[data-locale='ta'] .text-xs,
+html[data-locale='ta'] .text-sm,
+html[data-locale='ta'] th {
+  font-size: 0.94em;
+}
+
+html[data-locale='ta'] button,
+html[data-locale='ta'] a,
+html[data-locale='ta'] span,
+html[data-locale='ta'] th,
+html[data-locale='ta'] td {
+  overflow-wrap: anywhere;
+}
+
 img,
 svg,
 video,

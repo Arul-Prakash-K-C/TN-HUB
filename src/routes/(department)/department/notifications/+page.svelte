@@ -49,7 +49,7 @@ async function markRead(id) {
       <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-danger-soft text-danger">
         <Shield class="h-7 w-7" />
       </div>
-      <h2 class="text-lg font-bold text-text">Access Restricted</h2>
+      <h2 class="text-lg font-bold text-text">{t('ui.routes.department.department.notifications.7f2239e9')}</h2>
       <p class="mt-2 text-xs text-text-muted">{guard.reason || 'Unauthorized access'}</p>
     </div>
   </div>
@@ -59,7 +59,7 @@ async function markRead(id) {
     <div class="public-banner py-6 px-6 sm:px-8 shadow-md">
       <div class="mx-auto max-w-7xl flex justify-between items-center">
         <div>
-          <h1 class="text-xl font-black text-white">Department Notifications</h1>
+          <h1 class="text-xl font-black text-white">{t('ui.routes.department.department.notifications.752b7e29')}</h1>
         </div>
       </div>
     </div>
@@ -80,14 +80,14 @@ async function markRead(id) {
             onclick={() => activeFilter = 'CRITICAL'}
             class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap {activeFilter === 'CRITICAL' ? 'bg-danger-soft text-danger border border-danger/20' : 'bg-surface border border-border text-text-muted hover:bg-muted'}"
           >
-            SLA Alerts
+            {t('ui.sla.alerts')}
           </button>
 
           <button
             onclick={() => activeFilter = 'UNREAD'}
             class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap {activeFilter === 'UNREAD' ? 'bg-primary-soft text-primary-soft-text border border-primary/20' : 'bg-surface border border-border text-text-muted hover:bg-muted'}"
           >
-            Unread Only
+            {t('ui.unread.only')}
           </button>
         </div>
 
@@ -97,7 +97,7 @@ async function markRead(id) {
           class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-surface text-text text-xs font-bold hover:bg-muted transition shadow-2xs disabled:opacity-50"
         >
           <Check class="h-3.5 w-3.5 text-primary" />
-          <span>Mark All Read</span>
+          <span>{t('ui.routes.department.department.notifications.4781ee63')}</span>
         </button>
       </div>
 
@@ -129,7 +129,7 @@ async function markRead(id) {
                 onclick={() => markRead(notif.id)}
                 class="text-[10px] font-bold px-2 py-1 rounded border border-border hover:bg-muted text-text-muted"
               >
-                Done
+                {t('ui.done')}
               </button>
             {/if}
           </div>

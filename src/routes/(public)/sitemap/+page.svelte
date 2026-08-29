@@ -1,7 +1,9 @@
 <script>
 
   import { Map, Link2, Building2 } from '@lucide/svelte';
-  import { t } from '$lib/i18n';
+  
+const t = $derived($tt);
+import { tt } from '$lib/i18n';
 
 const sitemapGroups = [
     { title: 'Main Navigation', links: [

@@ -47,79 +47,79 @@ function validateCurrentStep() {
     stepError = '';
     if (currentStep === 1) { // Personal Details
         if (!formData.fullName || String(formData.fullName).trim() === '') {
-            stepError = 'Please enter the Full Name.';
+            stepError = t('apply.validation.requiredField', { field: t('apply.field.fullName') });
             return false;
         }
         if (!formData.phone || !/^\d{10}$/.test(String(formData.phone).trim())) {
-            stepError = 'Please enter a valid 10-digit phone number.';
+            stepError = t('apply.validation.phoneInvalid');
             return false;
         }
         if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(formData.email).trim())) {
-            stepError = 'Please enter a valid email address.';
+            stepError = t('apply.validation.emailInvalid');
             return false;
         }
         if (formData.aadhaarNumber && !/^\d{12}$/.test(String(formData.aadhaarNumber))) {
-            stepError = 'Aadhaar Number must be exactly 12 digits.';
+            stepError = t('apply.validation.aadhaarInvalid');
             return false;
         }
     }
     else if (currentStep === 2) { // Service Details
         if (service?.slug === 'e-adangal-extract') {
             if (!formData.surveyNumber || String(formData.surveyNumber).trim() === '') {
-                stepError = 'Please enter the Survey Number.';
+                stepError = t('apply.validation.requiredField', { field: t('ui.surveyNumber') });
                 return false;
             }
             if (!formData.taluk || String(formData.taluk).trim() === '') {
-                stepError = 'Please enter the Taluk.';
+                stepError = t('apply.validation.requiredField', { field: t('apply.field.taluk') });
                 return false;
             }
             if (!formData.village || String(formData.village).trim() === '') {
-                stepError = 'Please enter the Village.';
+                stepError = t('apply.validation.requiredField', { field: t('apply.field.village') });
                 return false;
             }
         }
         else if (service?.slug === 'income-certificate') {
             if (!formData.annualIncome || Number(formData.annualIncome) <= 0) {
-                stepError = 'Please enter a valid Annual Income (greater than 0).';
+                stepError = t('apply.validation.positiveField', { field: t('apply.field.annualIncome') });
                 return false;
             }
             if (!formData.occupation || String(formData.occupation).trim() === '') {
-                stepError = 'Please enter the Occupation.';
+                stepError = t('apply.validation.requiredField', { field: t('apply.field.occupation') });
                 return false;
             }
         }
         else if (service?.slug === 'community-certificate') {
             if (!formData.religion || String(formData.religion).trim() === '') {
-                stepError = 'Please enter the Religion.';
+                stepError = t('apply.validation.requiredField', { field: t('apply.field.religion') });
                 return false;
             }
             if (!formData.communityCategory || String(formData.communityCategory).trim() === '') {
-                stepError = 'Please select the Community Category.';
+                stepError = t('apply.validation.selectField', { field: t('ui.communityCategory') });
                 return false;
             }
             if (!formData.subCaste || String(formData.subCaste).trim() === '') {
-                stepError = 'Please enter the Sub-Caste Name.';
+                stepError = t('apply.validation.requiredField', { field: t('ui.subCasteName') });
                 return false;
             }
         }
         else if (service?.slug === 'nativity-certificate') {
             if (!formData.placeOfBirth || String(formData.placeOfBirth).trim() === '') {
-                stepError = 'Please enter the Place of Birth.';
+                stepError = t('apply.validation.requiredField', { field: t('ui.placeOfBirth') });
                 return false;
             }
             if (!formData.residenceDurationYears || Number(formData.residenceDurationYears) <= 0) {
-                stepError = 'Please enter a valid duration of residence in years.';
+                stepError = t('apply.validation.residenceDurationInvalid');
                 return false;
             }
         }
         else {
             // Fallback for default address services
             if (!formData.district || String(formData.district).trim() === '') {
-                stepError = 'Please enter the District.';
+                stepError = t('apply.validation.requiredField', { field: t('apply.field.district') });
                 return false;
             }
             if (!formData.pincode || String(formData.pincode).trim() === '') {
-                stepError = 'Please enter the Pincode.';
+                stepError = t('apply.validation.requiredField', { field: t('apply.field.pincode') });
                 return false;
             }
         }
@@ -128,7 +128,7 @@ function validateCurrentStep() {
         if (service?.requiredDocuments && service.requiredDocuments.length > 0) {
             for (const doc of service.requiredDocuments) {
                 if (doc.mandatory && !uploadedDocs[doc.id]) {
-                    stepError = `Please upload required document: ${currentLocale === 'ta' ? doc.name.ta : doc.name.en}`;
+                    stepError = t('apply.validation.requiredDocument', { document: currentLocale === 'ta' ? doc.name.ta : doc.name.en });
                     return false;
                 }
             }
@@ -147,11 +147,11 @@ async function saveDraft() {
         });
         if (!response.ok) {
             const body = await response.json().catch(() => null);
-            throw new Error(body?.message ?? 'Failed to save application draft progress.');
+            throw new Error(body?.message ?? t('errors.saveDraftFailed'));
         }
     }
     catch (cause) {
-        stepError = cause instanceof Error ? cause.message : 'Unable to save draft progress.';
+        stepError = cause instanceof Error ? cause.message : t('errors.saveDraftProgress');
     }
     finally {
         isSaving = false;
@@ -191,7 +191,7 @@ async function submitApplication() {
         });
         if (!saveResponse.ok) {
             const saveBody = await saveResponse.json().catch(() => null);
-            throw new Error(saveBody?.message ?? 'Unable to save the final draft details.');
+            throw new Error(saveBody?.message ?? t('errors.saveFinalDraft'));
         }
         // 2. Upload any new documents
         for (const [documentType, upload] of Object.entries(uploadedDocs)) {
@@ -206,7 +206,7 @@ async function submitApplication() {
             });
             if (!uploadResponse.ok) {
                 const uploadBody = await uploadResponse.json().catch(() => null);
-                throw new Error(uploadBody?.message ?? 'Unable to upload a required document.');
+                throw new Error(uploadBody?.message ?? t('errors.uploadRequiredDocument'));
             }
         }
         // 3. Submit draft
@@ -215,13 +215,13 @@ async function submitApplication() {
         });
         const submitBody = await submitResponse.json().catch(() => null);
         if (!submitResponse.ok || !submitBody?.application?.trackingId) {
-            throw new Error(submitBody?.message ?? 'Unable to submit the application.');
+            throw new Error(submitBody?.message ?? t('errors.submitApplication'));
         }
         applicationId = submitBody.application.trackingId;
         submitted = true;
     }
     catch (cause) {
-        stepError = cause instanceof Error ? cause.message : 'Unable to submit the application.';
+        stepError = cause instanceof Error ? cause.message : t('errors.submitApplication');
     }
     finally {
         isSubmitting = false;
@@ -230,7 +230,7 @@ async function submitApplication() {
 async function deleteDraft() {
     if (isDeletingDraft)
         return;
-    const confirmed = window.confirm('Delete this assisted draft?');
+    const confirmed = window.confirm(t('confirm.deleteAssistedDraft'));
     if (!confirmed)
         return;
     isDeletingDraft = true;
@@ -242,12 +242,12 @@ async function deleteDraft() {
         });
         const body = await response.json().catch(() => null);
         if (!response.ok) {
-            throw new Error(body?.message ?? 'Unable to delete this draft.');
+            throw new Error(body?.message ?? t('errors.deleteDraft'));
         }
         await goto('/applications');
     }
     catch (cause) {
-        stepError = cause instanceof Error ? cause.message : 'Unable to delete this draft.';
+        stepError = cause instanceof Error ? cause.message : t('errors.deleteDraft');
     }
     finally {
         isDeletingDraft = false;
@@ -267,10 +267,10 @@ async function deleteDraft() {
         <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary-50 border border-primary-100 text-primary-600">
           <Check class="h-8 w-8" />
         </div>
-        <h1 class="text-xl font-black text-slate-900">Application Submitted</h1>
+        <h1 class="text-xl font-black text-slate-900">{t('ui.routes.operator.operator.applications.id.edit.87581771')}</h1>
         <p class="mt-2 text-xs font-medium text-slate-500">{t('operator.submissionSuccessDesc')}</p>
         <div class="mt-6 rounded-2xl bg-primary-50/40 border border-primary-100 p-4">
-          <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Tracking Reference ID</div>
+          <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">{t('ui.routes.operator.operator.applications.id.edit.79930671')}</div>
           <div class="mt-1.5 text-lg font-black text-primary-800 font-mono">{applicationId}</div>
         </div>
         <div class="mt-6 flex flex-col gap-3">
@@ -278,7 +278,7 @@ async function deleteDraft() {
             {t('operator.viewAllServices')}
           </a>
           <a href="/operator/dashboard" class="rounded-xl border border-slate-200 py-3 text-xs font-bold text-slate-700 transition hover:bg-slate-50">
-            Go to Operator Dashboard
+            {t('ui.go.to.operator.dashboard')}
           </a>
         </div>
       </div>
@@ -294,7 +294,7 @@ async function deleteDraft() {
           {t('operator.serviceApplicationForm')}
         </h1>
         <p class="text-xs font-medium text-primary-200/80 mt-1 max-w-xl">
-          Service: <span class="font-extrabold text-white">{currentLocale === 'ta' ? service.name.ta : service.name.en}</span>
+          {t('ui.service')} <span class="font-extrabold text-white">{currentLocale === 'ta' ? service.name.ta : service.name.en}</span>
         </p>
         <p class="text-[10px] font-bold text-slate-400 mt-1 font-mono uppercase tracking-wider">
           Draft ID: {application.applicationNumber} • Citizen: {application.citizenName}
@@ -345,7 +345,7 @@ async function deleteDraft() {
         
         <!-- Step 0: Eligibility -->
         {#if currentStep === 0}
-          <h2 class="text-base font-bold text-slate-900 mb-4">Eligibility Requirements</h2>
+          <h2 class="text-base font-bold text-slate-900 mb-4">{t('ui.routes.operator.operator.applications.id.edit.90b8d851')}</h2>
           <ul class="space-y-3 mb-6">
             {#each (currentLocale === 'ta' ? service.eligibility.statements : service.eligibility.statements) as item}
               <li class="flex items-start gap-2.5 text-xs text-slate-600">
@@ -356,176 +356,176 @@ async function deleteDraft() {
           </ul>
           <div class="rounded-2xl bg-primary-50/50 border border-primary-100 p-4 text-xs font-bold text-primary-800">
             <AlertCircle class="inline h-4 w-4 mr-1 text-primary-600" />
-            Please verify all eligibility conditions with the citizen before filling the form.
+            {t('ui.please.verify.all.eligibility.conditions.with.the.citizen.before.filling.the.for')}
           </div>
 
         <!-- Step 1: Personal Details -->
         {:else if currentStep === 1}
-          <h2 class="text-base font-bold text-slate-900 mb-6">Citizen's Personal Profile</h2>
+          <h2 class="text-base font-bold text-slate-900 mb-6">{t('ui.routes.operator.operator.applications.id.edit.149975c8')}</h2>
           <div class="grid gap-5 sm:grid-cols-2">
             <div>
-              <label for="fullName" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Full Name *</label>
+              <label for="fullName" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.fd765bb5')}</label>
               <input id="fullName" type="text" bind:value={formData.fullName} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition" />
             </div>
             <div>
-              <label for="fatherName" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Father's / Husband's Name *</label>
+              <label for="fatherName" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.703d8de7')}</label>
               <input id="fatherName" type="text" bind:value={formData.fatherName} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition" />
             </div>
             <div>
-              <label for="dateOfBirth" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Date of Birth *</label>
+              <label for="dateOfBirth" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.c635ffa2')}</label>
               <input id="dateOfBirth" type="date" bind:value={formData.dateOfBirth} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition" />
             </div>
             <div>
-              <label for="gender" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Gender *</label>
+              <label for="gender" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.87da065c')}</label>
               <select id="gender" bind:value={formData.gender} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition">
-                <option value="">Select</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
+                <option value="">{t('ui.routes.operator.operator.applications.id.edit.51740abb')}</option>
+                <option value="male">{t('ui.routes.operator.operator.applications.id.edit.4107b286')}</option>
+                <option value="female">{t('ui.routes.operator.operator.applications.id.edit.df52364e')}</option>
+                <option value="other">{t('ui.routes.operator.operator.applications.id.edit.0095482b')}</option>
               </select>
             </div>
             <div>
-              <label for="phone" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Phone Number * (For updates)</label>
+              <label for="phone" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.9b1d6c9a')}</label>
               <input id="phone" type="tel" inputmode="numeric" maxlength="10" bind:value={formData.phone} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition" />
             </div>
             <div>
-              <label for="email" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Email Address</label>
+              <label for="email" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.2670b83b')}</label>
               <input id="email" type="email" bind:value={formData.email} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition" />
             </div>
             <div>
-              <label for="aadhaarNumber" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Aadhaar Number</label>
+              <label for="aadhaarNumber" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.7f45842e')}</label>
               <input id="aadhaarNumber" type="text" pattern="[0-9]{12}" bind:value={formData.aadhaarNumber} maxlength="12" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition" placeholder="12-digit number" />
             </div>
           </div>
 
         <!-- Step 2: Service Details -->
         {:else if currentStep === 2}
-          <h2 class="text-base font-bold text-slate-900 mb-6">Service Form Details</h2>
+          <h2 class="text-base font-bold text-slate-900 mb-6">{t('ui.routes.operator.operator.applications.id.edit.c14a1d36')}</h2>
           
           {#if service.slug === 'e-adangal-extract'}
             <div class="grid gap-5 sm:grid-cols-2">
               <div>
-                <label for="adangalDistrict" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">District *</label>
+                <label for="adangalDistrict" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.c7dafecd')}</label>
                 <select id="adangalDistrict" bind:value={formData.district} required class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition">
-                  <option value="">Select District</option>
-                  <option value="chennai">Chennai</option>
-                  <option value="coimbatore">Coimbatore</option>
-                  <option value="madurai">Madurai</option>
-                  <option value="thanjavur">Thanjavur</option>
-                  <option value="tiruchirappalli">Tiruchirappalli</option>
+                  <option value="">{t('ui.routes.operator.operator.applications.id.edit.749fc59f')}</option>
+                  <option value="chennai">{t('ui.routes.operator.operator.applications.id.edit.2935135c')}</option>
+                  <option value="coimbatore">{t('ui.routes.operator.operator.applications.id.edit.752d9d86')}</option>
+                  <option value="madurai">{t('ui.routes.operator.operator.applications.id.edit.800f6c5c')}</option>
+                  <option value="thanjavur">{t('ui.routes.operator.operator.applications.id.edit.8bc1120d')}</option>
+                  <option value="tiruchirappalli">{t('ui.routes.operator.operator.applications.id.edit.d13adf93')}</option>
                 </select>
               </div>
               <div>
-                <label for="adangalTaluk" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Taluk *</label>
-                <input id="adangalTaluk" type="text" bind:value={formData.taluk} required placeholder="e.g. Mambalam" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
+                <label for="adangalTaluk" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.f25d0a86')}</label>
+                <input id="adangalTaluk" type="text" bind:value={formData.taluk} required placeholder={t('ui.e.g.mambalam')} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
               </div>
               <div>
-                <label for="adangalVillage" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Village *</label>
-                <input id="adangalVillage" type="text" bind:value={formData.village} required placeholder="e.g. Kodambakkam" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
+                <label for="adangalVillage" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.2f0f49bb')}</label>
+                <input id="adangalVillage" type="text" bind:value={formData.village} required placeholder={t('ui.e.g.kodambakkam')} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
               </div>
               <div>
-                <label for="adangalSurveyNumber" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Survey Number / Sub-division *</label>
-                <input id="adangalSurveyNumber" type="text" bind:value={formData.surveyNumber} required placeholder="e.g. 142/3A" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
+                <label for="adangalSurveyNumber" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.6a1d2695')}</label>
+                <input id="adangalSurveyNumber" type="text" bind:value={formData.surveyNumber} required placeholder={t('ui.e.g.142.3a')} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
               </div>
             </div>
           {:else}
             <div class="grid gap-5 sm:grid-cols-2">
               {#if service.slug === 'income-certificate'}
                 <div>
-                  <label for="annualIncome" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Annual Family Income (₹) *</label>
-                  <input id="annualIncome" type="number" bind:value={formData.annualIncome} required placeholder="e.g. 120000" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
+                  <label for="annualIncome" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.53c7f1fe')}</label>
+                  <input id="annualIncome" type="number" bind:value={formData.annualIncome} required placeholder={t('ui.e.g.120000')} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
                 </div>
                 <div>
-                  <label for="occupation" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Occupation *</label>
-                  <input id="occupation" type="text" bind:value={formData.occupation} required placeholder="e.g. Farmer / Business" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
+                  <label for="occupation" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.73e1739e')}</label>
+                  <input id="occupation" type="text" bind:value={formData.occupation} required placeholder={t('ui.e.g.farmer.business')} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
                 </div>
                 <div class="sm:col-span-2">
-                  <label for="purpose" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Purpose of Certificate</label>
-                  <input id="purpose" type="text" bind:value={formData.purpose} placeholder="e.g. Scholarship / Higher Education" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
+                  <label for="purpose" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.b94d3baf')}</label>
+                  <input id="purpose" type="text" bind:value={formData.purpose} placeholder={t('ui.e.g.scholarship.higher.education')} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
                 </div>
               {:else if service.slug === 'community-certificate'}
                 <div>
-                  <label for="religion" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Religion *</label>
+                  <label for="religion" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.d1635ec4')}</label>
                   <select id="religion" bind:value={formData.religion} required class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition">
-                    <option value="">Select Religion</option>
-                    <option value="Hinduism">Hinduism</option>
-                    <option value="Islam">Islam</option>
-                    <option value="Christianity">Christianity</option>
-                    <option value="Sikhism">Sikhism</option>
-                    <option value="Buddhism">Buddhism</option>
-                    <option value="Jainism">Jainism</option>
-                    <option value="Other">Other</option>
+                    <option value="">{t('ui.routes.operator.operator.applications.id.edit.41ad33a2')}</option>
+                    <option value="Hinduism">{t('ui.routes.operator.operator.applications.id.edit.afc03ec5')}</option>
+                    <option value="Islam">{t('ui.routes.operator.operator.applications.id.edit.94073237')}</option>
+                    <option value="Christianity">{t('ui.routes.operator.operator.applications.id.edit.13ff6ab2')}</option>
+                    <option value="Sikhism">{t('ui.routes.operator.operator.applications.id.edit.b5dcfdc7')}</option>
+                    <option value="Buddhism">{t('ui.routes.operator.operator.applications.id.edit.01dc8c4a')}</option>
+                    <option value="Jainism">{t('ui.routes.operator.operator.applications.id.edit.d34c2e84')}</option>
+                    <option value="Other">{t('ui.routes.operator.operator.applications.id.edit.0095482b')}</option>
                   </select>
                 </div>
                 <div>
-                  <label for="communityCategory" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Community Category *</label>
+                  <label for="communityCategory" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.8fa743d2')}</label>
                   <select id="communityCategory" bind:value={formData.communityCategory} required class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition">
-                    <option value="">Select Category</option>
-                    <option value="BC">Backward Class (BC)</option>
-                    <option value="MBC">Most Backward Class (MBC)</option>
-                    <option value="SC">Scheduled Caste (SC)</option>
-                    <option value="ST">Scheduled Tribe (ST)</option>
-                    <option value="DNC">Denotified Community (DNC)</option>
-                    <option value="General">General (OC)</option>
+                    <option value="">{t('ui.routes.operator.operator.applications.id.edit.5c8382bb')}</option>
+                    <option value="BC">{t('ui.routes.operator.operator.applications.id.edit.e3053d55')}</option>
+                    <option value="MBC">{t('ui.routes.operator.operator.applications.id.edit.7068ebf9')}</option>
+                    <option value="SC">{t('ui.routes.operator.operator.applications.id.edit.cbce448f')}</option>
+                    <option value="ST">{t('ui.routes.operator.operator.applications.id.edit.3fbcdae1')}</option>
+                    <option value="DNC">{t('ui.routes.operator.operator.applications.id.edit.0111f874')}</option>
+                    <option value="General">{t('ui.routes.operator.operator.applications.id.edit.a9ade785')}</option>
                   </select>
                 </div>
                 <div class="sm:col-span-2">
-                  <label for="subCaste" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Sub-Caste Name *</label>
+                  <label for="subCaste" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.3a149b9a')}</label>
                   <select id="subCaste" bind:value={formData.subCaste} required class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition">
-                    <option value="">Select Sub-Caste</option>
-                    <option value="Adidravidar">Adidravidar</option>
-                    <option value="Kongu Vellalar">Kongu Vellalar</option>
-                    <option value="Kallar">Kallar</option>
-                    <option value="Maravar">Maravar</option>
-                    <option value="Vanniyar">Vanniyar</option>
-                    <option value="Nadar">Nadar</option>
-                    <option value="Other">Other</option>
+                    <option value="">{t('ui.routes.operator.operator.applications.id.edit.02b89c89')}</option>
+                    <option value="Adidravidar">{t('ui.routes.operator.operator.applications.id.edit.2273b5c9')}</option>
+                    <option value="Kongu Vellalar">{t('ui.routes.operator.operator.applications.id.edit.34c0b186')}</option>
+                    <option value="Kallar">{t('ui.routes.operator.operator.applications.id.edit.f462d7ed')}</option>
+                    <option value="Maravar">{t('ui.routes.operator.operator.applications.id.edit.77a488e0')}</option>
+                    <option value="Vanniyar">{t('ui.routes.operator.operator.applications.id.edit.6c7c9aea')}</option>
+                    <option value="Nadar">{t('ui.routes.operator.operator.applications.id.edit.0c5e2a41')}</option>
+                    <option value="Other">{t('ui.routes.operator.operator.applications.id.edit.0095482b')}</option>
                   </select>
                 </div>
               {:else if service.slug === 'nativity-certificate'}
                 <div>
-                  <label for="placeOfBirth" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Place of Birth *</label>
-                  <input id="placeOfBirth" type="text" bind:value={formData.placeOfBirth} required placeholder="e.g. Madurai" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
+                  <label for="placeOfBirth" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.9b351883')}</label>
+                  <input id="placeOfBirth" type="text" bind:value={formData.placeOfBirth} required placeholder={t('ui.e.g.madurai')} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
                 </div>
                 <div>
-                  <label for="residenceDurationYears" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Duration of Residence in Tamil Nadu (in Years) *</label>
-                  <input id="residenceDurationYears" type="number" bind:value={formData.residenceDurationYears} required placeholder="e.g. 15" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
+                  <label for="residenceDurationYears" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.e80113c8')}</label>
+                  <input id="residenceDurationYears" type="number" bind:value={formData.residenceDurationYears} required placeholder={t('ui.e.g.15')} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
                 </div>
                 <div class="sm:col-span-2">
-                  <label for="purpose" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Purpose of Certificate</label>
-                  <input id="purpose" type="text" bind:value={formData.purpose} placeholder="e.g. Government Job / Education" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
+                  <label for="purpose" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.b94d3baf')}</label>
+                  <input id="purpose" type="text" bind:value={formData.purpose} placeholder={t('ui.e.g.government.job.education')} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
                 </div>
               {:else}
                 <div>
-                  <label for="doorNo" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Door No.</label>
+                  <label for="doorNo" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.518c4d63')}</label>
                   <input id="doorNo" type="text" bind:value={formData.doorNo} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
                 </div>
                 <div>
-                  <label for="street" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Street</label>
+                  <label for="street" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.d8eb4bba')}</label>
                   <input id="street" type="text" bind:value={formData.street} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
                 </div>
                 <div>
-                  <label for="area" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Area / Landmark</label>
+                  <label for="area" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.92d2548f')}</label>
                   <input id="area" type="text" bind:value={formData.area} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
                 </div>
                 <div>
-                  <label for="district" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">District *</label>
+                  <label for="district" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.c7dafecd')}</label>
                   <input id="district" type="text" bind:value={formData.district} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
                 </div>
                 <div>
-                  <label for="taluk" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Taluk</label>
+                  <label for="taluk" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.3eaffbaa')}</label>
                   <input id="taluk" type="text" bind:value={formData.taluk} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
                 </div>
                 <div>
-                  <label for="pincode" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Pincode *</label>
+                  <label for="pincode" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.10cc8788')}</label>
                   <input id="pincode" type="text" bind:value={formData.pincode} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
                 </div>
                 <div>
-                  <label for="occupation" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Occupation</label>
+                  <label for="occupation" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.7344eada')}</label>
                   <input id="occupation" type="text" bind:value={formData.occupation} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
                 </div>
                 <div>
-                  <label for="purpose" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Purpose</label>
+                  <label for="purpose" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.82070a79')}</label>
                   <input id="purpose" type="text" bind:value={formData.purpose} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
                 </div>
               {/if}
@@ -534,7 +534,7 @@ async function deleteDraft() {
 
         <!-- Step 3: Documents -->
         {:else if currentStep === 3}
-          <h2 class="text-base font-bold text-slate-900 mb-2">Upload Required Documents</h2>
+          <h2 class="text-base font-bold text-slate-900 mb-2">{t('ui.routes.operator.operator.applications.id.edit.38e08b84')}</h2>
           <p class="text-xs text-slate-500 mb-6">{t('operator.documents.uploadHelp')}</p>
           <div class="space-y-4">
             {#each service.requiredDocuments as doc}
@@ -560,14 +560,14 @@ async function deleteDraft() {
                       onclick={() => { delete uploadedDocs[doc.id]; uploadedDocs = { ...uploadedDocs }; }}
                       class="text-[10px] font-bold text-rose-600 hover:text-rose-800 hover:underline px-2.5 py-1.5 rounded-lg hover:bg-rose-50 transition shrink-0"
                     >
-                      Remove
+                      {t('ui.remove')}
                     </button>
                   </div>
                 {:else}
                   <div>
                     <label class="flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 p-4 text-xs font-bold text-slate-500 cursor-pointer hover:border-primary-500 hover:text-primary-700 bg-white transition">
                       <Upload class="h-4 w-4" />
-                      Upload File
+                      {t('ui.upload.file')}
                       <input type="file" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange={(e) => handleFileUpload(doc.id, e)} />
                     </label>
                   </div>
@@ -578,7 +578,7 @@ async function deleteDraft() {
 
         <!-- Step 4: Review -->
         {:else if currentStep === 4}
-          <h2 class="text-base font-bold text-slate-900 mb-6">Review Application Details</h2>
+          <h2 class="text-base font-bold text-slate-900 mb-6">{t('ui.routes.operator.operator.applications.id.edit.67875255')}</h2>
           <div class="space-y-4">
             <div class="rounded-2xl bg-slate-50/50 border border-slate-200 p-5">
               <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
@@ -586,42 +586,42 @@ async function deleteDraft() {
               </h3>
               {#if service.slug === 'e-adangal-extract'}
                 <dl class="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
-                  <dt class="text-slate-500">Applicant Name</dt><dd class="text-slate-900 font-bold">{formData.fullName || '—'}</dd>
-                  <dt class="text-slate-500">District</dt><dd class="text-slate-900 font-bold capitalize">{formData.district || '—'}</dd>
-                  <dt class="text-slate-500">Taluk</dt><dd class="text-slate-900 font-bold">{formData.taluk || '—'}</dd>
-                  <dt class="text-slate-500">Village</dt><dd class="text-slate-900 font-bold">{formData.village || '—'}</dd>
-                  <dt class="text-slate-500">Survey Number</dt><dd class="text-slate-900 font-bold">{formData.surveyNumber || '—'}</dd>
+                  <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.00efdc0e')}</dt><dd class="text-slate-900 font-bold">{formData.fullName || '—'}</dd>
+                  <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.e6eec367')}</dt><dd class="text-slate-900 font-bold capitalize">{formData.district || '—'}</dd>
+                  <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.3eaffbaa')}</dt><dd class="text-slate-900 font-bold">{formData.taluk || '—'}</dd>
+                  <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.b404ab13')}</dt><dd class="text-slate-900 font-bold">{formData.village || '—'}</dd>
+                  <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.1b462c70')}</dt><dd class="text-slate-900 font-bold">{formData.surveyNumber || '—'}</dd>
                 </dl>
               {:else}
                 <dl class="grid grid-cols-2 gap-x-4 gap-y-2.5 text-xs">
-                  <dt class="text-slate-500">Full Name</dt><dd class="text-slate-900 font-bold">{formData.fullName || '—'}</dd>
-                  <dt class="text-slate-500">Father's / Husband's Name</dt><dd class="text-slate-900 font-bold">{formData.fatherName || '—'}</dd>
-                  <dt class="text-slate-500">Date of Birth</dt><dd class="text-slate-900 font-bold">{formData.dateOfBirth || '—'}</dd>
-                  <dt class="text-slate-500">Gender</dt><dd class="text-slate-900 font-bold capitalize">{formData.gender || '—'}</dd>
-                  <dt class="text-slate-500">Phone Number</dt><dd class="text-slate-900 font-bold">{formData.phone || '—'}</dd>
+                  <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.e0a87fe0')}</dt><dd class="text-slate-900 font-bold">{formData.fullName || '—'}</dd>
+                  <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.a83ce049')}</dt><dd class="text-slate-900 font-bold">{formData.fatherName || '—'}</dd>
+                  <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.60dfca8a')}</dt><dd class="text-slate-900 font-bold">{formData.dateOfBirth || '—'}</dd>
+                  <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.51ebde2e')}</dt><dd class="text-slate-900 font-bold capitalize">{formData.gender || '—'}</dd>
+                  <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.b6f5442a')}</dt><dd class="text-slate-900 font-bold">{formData.phone || '—'}</dd>
                   
                   {#if service.slug === 'income-certificate'}
-                    <dt class="text-slate-500">Annual Family Income</dt><dd class="text-slate-900 font-bold">₹{formData.annualIncome || '—'}</dd>
-                    <dt class="text-slate-500">Occupation</dt><dd class="text-slate-900 font-bold">{formData.occupation || '—'}</dd>
-                    <dt class="text-slate-500">Purpose</dt><dd class="text-slate-900 font-bold">{formData.purpose || '—'}</dd>
+                    <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.7e0ef584')}</dt><dd class="text-slate-900 font-bold">₹{formData.annualIncome || '—'}</dd>
+                    <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.7344eada')}</dt><dd class="text-slate-900 font-bold">{formData.occupation || '—'}</dd>
+                    <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.82070a79')}</dt><dd class="text-slate-900 font-bold">{formData.purpose || '—'}</dd>
                   {/if}
 
                   {#if service.slug === 'community-certificate'}
-                    <dt class="text-slate-500">Religion</dt><dd class="text-slate-900 font-bold">{formData.religion || '—'}</dd>
-                    <dt class="text-slate-500">Community Category</dt><dd class="text-slate-900 font-bold">{formData.communityCategory || '—'}</dd>
-                    <dt class="text-slate-500">Sub-Caste Name</dt><dd class="text-slate-900 font-bold">{formData.subCaste || '—'}</dd>
+                    <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.896abb59')}</dt><dd class="text-slate-900 font-bold">{formData.religion || '—'}</dd>
+                    <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.f8a31e7c')}</dt><dd class="text-slate-900 font-bold">{formData.communityCategory || '—'}</dd>
+                    <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.f32450ea')}</dt><dd class="text-slate-900 font-bold">{formData.subCaste || '—'}</dd>
                   {/if}
 
                   {#if service.slug === 'nativity-certificate'}
-                    <dt class="text-slate-500">Place of Birth</dt><dd class="text-slate-900 font-bold">{formData.placeOfBirth || '—'}</dd>
-                    <dt class="text-slate-500">Duration of Residence</dt><dd class="text-slate-900 font-bold">{formData.residenceDurationYears || '—'} Years</dd>
-                    <dt class="text-slate-500">Purpose</dt><dd class="text-slate-900 font-bold">{formData.purpose || '—'}</dd>
+                    <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.1a10e399')}</dt><dd class="text-slate-900 font-bold">{formData.placeOfBirth || '—'}</dd>
+                    <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.1d46a71c')}</dt><dd class="text-slate-900 font-bold">{formData.residenceDurationYears || '—'} Years</dd>
+                    <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.82070a79')}</dt><dd class="text-slate-900 font-bold">{formData.purpose || '—'}</dd>
                   {/if}
                 </dl>
               {/if}
             </div>
             <div class="rounded-2xl bg-slate-50/50 border border-slate-200 p-5">
-              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Documents Check</h3>
+              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">{t('ui.routes.operator.operator.applications.id.edit.644a04a3')}</h3>
               {#each service.requiredDocuments as doc}
                 <div class="flex items-center justify-between py-1.5 text-xs">
                   <span class="text-slate-500">{currentLocale === 'ta' ? doc.name.ta : doc.name.en}</span>
@@ -635,13 +635,13 @@ async function deleteDraft() {
 
         <!-- Step 5: Declaration -->
         {:else if currentStep === 5}
-          <h2 class="text-base font-bold text-slate-900 mb-6">Declaration</h2>
+          <h2 class="text-base font-bold text-slate-900 mb-6">{t('ui.routes.operator.operator.applications.id.edit.b8e2f210')}</h2>
           <div class="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-xs text-slate-600 leading-relaxed mb-6 font-medium">
-            I hereby declare that all the information furnished by me in this application on behalf of the citizen is true, complete and correct to the best of my knowledge and belief. I understand that in the event of any information being found false, the application is liable to be rejected.
+            {t('ui.i.hereby.declare.that.all.the.information.furnished.by.me.in.this.application.on')}
           </div>
           <label class="flex items-start gap-3 cursor-pointer">
             <input type="checkbox" bind:checked={declarationAgreed} class="mt-1 h-4.5 w-4.5 rounded border-slate-300 text-primary-600 focus:ring-primary-500" />
-            <span class="text-xs font-bold text-slate-800">I confirm the citizen agrees to the declaration and authorizes submission.</span>
+            <span class="text-xs font-bold text-slate-800">{t('ui.routes.operator.operator.applications.id.edit.db453345')}</span>
           </label>
         {/if}
       </div>
@@ -661,7 +661,7 @@ async function deleteDraft() {
           class="inline-flex items-center gap-2 rounded-xl border border-slate-250 bg-white px-5 py-3 text-xs font-bold text-slate-700 transition hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed"
         >
           <ArrowLeft class="h-4 w-4" />
-          Previous Step
+          {t('ui.previous.step')}
         </button>
 
         <div class="flex items-center gap-3">

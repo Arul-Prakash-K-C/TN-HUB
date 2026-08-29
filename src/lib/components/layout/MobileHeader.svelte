@@ -1,8 +1,10 @@
 <script>
 
   import { Menu, Bell } from '@lucide/svelte';
-  import { auth, isAuthenticated, currentUser } from '$lib/stores/auth';
-  import { t } from '$lib/i18n';
+  
+const t = $derived($tt);
+import { auth, isAuthenticated, currentUser } from '$lib/stores/auth';
+  import { tt } from '$lib/i18n';
   import BrandLogo from '$lib/components/ui/BrandLogo.svelte';
   import { notificationUnreadCount } from '$lib/stores/notifications';
 
@@ -15,7 +17,7 @@ const unreadCount = $derived($notificationUnreadCount);
 
 <header class="sticky top-0 z-30 flex w-full items-center justify-between border-b px-4 py-3.5 text-white shadow-xs md:hidden {portal === 'operator' || portal === 'admin' || isDept ? 'border-border bg-[var(--color-sidebar-bg)]' : 'border-border bg-[var(--color-sidebar-bg)]'}">
   <div class="flex items-center gap-3">
-    <button class="rounded-lg p-1.5 text-white transition-colors hover:bg-white/10" onclick={() => isOpen = true} aria-label="Open navigation menu">
+    <button class="rounded-lg p-1.5 text-white transition-colors hover:bg-white/10" onclick={() => isOpen = true} aria-label={t('ui.open.navigation.menu')}>
       <Menu class="h-5 w-5" />
     </button>
     <a href={isDept ? "/department/dashboard" : portal === 'operator' ? "/operator/dashboard" : portal === 'admin' ? "/admin" : "/"} class="flex items-center gap-2.5">

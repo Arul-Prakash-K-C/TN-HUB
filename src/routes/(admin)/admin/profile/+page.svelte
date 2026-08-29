@@ -25,21 +25,21 @@ $effect(() => {
 </script>
 
 <svelte:head>
-  <title>Admin Profile — TN Kuviyam</title>
+  <title>{t('ui.routes.admin.admin.profile.d1ba9458')}</title>
 </svelte:head>
 
 {#if !authenticated || role !== 'admin'}
   <div class="flex min-h-[60vh] flex-col items-center justify-center p-4 bg-background">
     <div class="w-full max-w-md rounded-3xl border border-border bg-surface p-8 text-center shadow-xl">
-      <h2 class="text-xl font-bold text-text">Access Denied</h2>
+      <h2 class="text-xl font-bold text-text">{t('ui.routes.admin.admin.profile.36925ff0')}</h2>
     </div>
   </div>
 {:else}
   <div class="bg-background min-h-screen pb-12">
     <div class="public-banner border-b border-border">
       <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <h1 class="text-h1 text-white">Admin Profile</h1>
-        <p class="text-xs text-white/70">View your account details and credentials</p>
+        <h1 class="text-h1 text-white">{t('ui.routes.admin.admin.profile.55886f7c')}</h1>
+        <p class="text-xs text-white/70">{t('ui.routes.admin.admin.profile.590da562')}</p>
       </div>
     </div>
 
@@ -53,7 +53,7 @@ $effect(() => {
           <h2 class="mt-3 text-lg font-bold transition-all duration-300 text-text">{user?.displayName || 'System Administrator'}</h2>
           <span class="inline-flex items-center gap-1.5 mt-1 rounded-full px-3 py-1 text-[10px] font-bold transition-all duration-300 uppercase bg-success-soft text-success border border-success/20">
             <Shield class="h-3 w-3" />
-            Platform Administrator
+            {t('ui.routes.admin.admin.profile.1d6c3afa')}
           </span>
         </div>
 
@@ -63,7 +63,7 @@ $effect(() => {
             <div class="rounded-2xl bg-surface-container-low border border-border p-4">
               <div class="flex items-center gap-2 text-xs font-bold text-text-muted uppercase mb-1.5">
                 <UserCircle class="h-3.5 w-3.5" />
-                Display Name
+                {t('ui.display.name')}
               </div>
               <p class="text-sm font-bold text-text">{user?.displayName || 'N/A'}</p>
             </div>
@@ -71,7 +71,7 @@ $effect(() => {
             <div class="rounded-2xl bg-surface-container-low border border-border p-4">
               <div class="flex items-center gap-2 text-xs font-bold text-text-muted uppercase mb-1.5">
                 <Mail class="h-3.5 w-3.5" />
-                Email
+                {t('chatbot.help.issue.email')}
               </div>
               <p class="text-sm font-bold text-text">{user?.email || 'N/A'}</p>
             </div>
@@ -79,23 +79,23 @@ $effect(() => {
             <div class="rounded-2xl bg-surface-container-low border border-border p-4">
               <div class="flex items-center gap-2 text-xs font-bold text-text-muted uppercase mb-1.5">
                 <Shield class="h-3.5 w-3.5" />
-                Role
+                {t('profile.role')}
               </div>
-              <p class="text-sm font-bold text-primary-soft-text">Platform Administrator</p>
+              <p class="text-sm font-bold text-primary-soft-text">{t('ui.routes.admin.admin.profile.1d6c3afa')}</p>
             </div>
 
             <div class="rounded-2xl bg-surface-container-low border border-border p-4">
               <div class="flex items-center gap-2 text-xs font-bold text-text-muted uppercase mb-1.5">
                 <CheckCircle class="h-3.5 w-3.5" />
-                Account Status
+                {t('ui.account.status')}
               </div>
-              <p class="text-sm font-bold text-primary-soft-text">Active & Verified</p>
+              <p class="text-sm font-bold text-primary-soft-text">{t('ui.routes.admin.admin.profile.729cd78f')}</p>
             </div>
 
             <div class="rounded-2xl bg-surface-container-low border border-border p-4">
               <div class="flex items-center gap-2 text-xs font-bold text-text-muted uppercase mb-1.5">
                 <Key class="h-3.5 w-3.5" />
-                User ID
+                {t('ui.user.id')}
               </div>
               <p class="text-xs font-mono text-text-muted">{user?.uid || 'N/A'}</p>
             </div>
@@ -103,36 +103,36 @@ $effect(() => {
             <div class="rounded-2xl bg-surface-container-low border border-border p-4">
               <div class="flex items-center gap-2 text-xs font-bold text-text-muted uppercase mb-1.5">
                 <Globe class="h-3.5 w-3.5" />
-                Language
+                {t('chatbot.help.issue.language')}
               </div>
               <p class="text-sm font-bold text-text">{currentLocale === 'ta' ? 'தமிழ்' : 'English'}</p>
             </div>
           </div>
 
           <div class="rounded-2xl bg-primary-soft border border-primary/20 p-4 text-xs text-primary-soft-text">
-            <strong>Note:</strong> Profile changes are managed through Firebase Authentication. Contact the development team for credential updates.
+            <strong>{t('ui.routes.admin.admin.profile.2ad06884')}</strong> {t('ui.profile.changes.are.managed.through.firebase.authentication.contact.the.developm')}
           </div>
 
           <div class="border-t border-border pt-6 space-y-6">
-            <h3 class="text-sm font-bold text-text">System Preferences</h3>
+            <h3 class="text-sm font-bold text-text">{t('ui.routes.admin.admin.profile.e400659d')}</h3>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <span class="block text-xs font-semibold text-text-muted mb-2">Interface Language</span>
+                <span class="block text-xs font-semibold text-text-muted mb-2">{t('ui.routes.admin.admin.profile.555dfa9e')}</span>
                 <div class="flex items-center gap-3">
                   <button
                     type="button"
                     onclick={() => locale.set('en')}
                     class="rounded-xl border px-4 py-2 text-xs font-bold transition {currentLocale === 'en' ? 'border-primary bg-primary text-white' : 'border-border bg-surface dark:bg-surface-container text-text hover:bg-surface-container-high dark:hover:bg-surface-container-highest'}"
                   >
-                    English
+                    {t('lang.current')}
                   </button>
                   <button
                     type="button"
                     onclick={() => locale.set('ta')}
                     class="rounded-xl border px-4 py-2 text-xs font-bold transition {currentLocale === 'ta' ? 'border-primary bg-primary text-white' : 'border-border bg-surface dark:bg-surface-container text-text hover:bg-surface-container-high dark:hover:bg-surface-container-highest'}"
                   >
-                    தமிழ் (Tamil)
+                    {t('lang.tamilWithEnglish')}
                   </button>
                 </div>
               </div>
@@ -140,21 +140,21 @@ $effect(() => {
 
 
               <div>
-                <span class="block text-xs font-semibold text-text-muted mb-2">Interface Theme Mode</span>
+                <span class="block text-xs font-semibold text-text-muted mb-2">{t('ui.routes.admin.admin.profile.141ff583')}</span>
                 <div class="flex items-center gap-3">
                   <button
                     type="button"
                     onclick={() => { isDark = false; applyThemeMode('light'); }}
                     class="rounded-xl border px-4 py-2 text-xs font-bold transition {!isDark ? 'border-primary bg-primary text-white' : 'border-border bg-surface dark:bg-surface-container text-text hover:bg-surface-container-high dark:hover:bg-surface-container-highest'}"
                   >
-                    Light Mode
+                    {t('settings.lightMode')}
                   </button>
                   <button
                     type="button"
                     onclick={() => { isDark = true; applyThemeMode('dark'); }}
                     class="rounded-xl border px-4 py-2 text-xs font-bold transition {isDark ? 'border-primary bg-primary text-white' : 'border-border bg-surface dark:bg-surface-container text-text hover:bg-surface-container-high dark:hover:bg-surface-container-highest'}"
                   >
-                    Dark Mode
+                    {t('settings.darkMode')}
                   </button>
                 </div>
               </div>

@@ -48,7 +48,7 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'same-origin',
-            body: JSON.stringify({ category, subject, description, location, departmentId: 'dept-tnega', email: user?.email })
+            body: JSON.stringify({ category, subject, description, location, departmentId: 'dept-kuviyam', email: user?.email })
         });
         if (!res.ok) {
             const body = await res.json().catch(() => ({}));
@@ -75,7 +75,7 @@
 </script>
 
 <svelte:head>
-  <title>Operator Grievances — TN Kuviyam</title>
+  <title>{t('ui.routes.operator.operator.grievance.8a820171')}</title>
 </svelte:head>
 
 <div class="bg-background text-text min-h-screen pb-12 flex flex-col w-full">
@@ -83,8 +83,8 @@
   <div class="public-banner px-6 py-8 sm:px-8">
     <div class="mx-auto max-w-6xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-black tracking-tight text-white">Kiosk Grievances & Issues</h1>
-        <p class="public-banner-subtitle mt-1 max-w-2xl text-xs font-medium">Report technical malfunctions, payment portal issues, or missing service catalogues.</p>
+        <h1 class="text-2xl font-black tracking-tight text-white">{t('ui.routes.operator.operator.grievance.baf37b23')}</h1>
+        <p class="public-banner-subtitle mt-1 max-w-2xl text-xs font-medium">{t('ui.routes.operator.operator.grievance.0099f005')}</p>
       </div>
 
       <button
@@ -92,19 +92,19 @@
         class="inline-flex items-center gap-2 rounded-xl bg-surface text-primary hover:bg-primary-soft px-4 py-2.5 text-xs font-bold shadow-md transition-all animate-fade-in"
       >
         <PlusCircle class="h-4 w-4" />
-        Raise Kiosk Complaint
+        {t('ui.routes.operator.operator.grievance.b1047952')}
       </button>
     </div>
   </div>
 
   <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8 flex-grow w-full">
     {#if isLoading}
-      <div class="text-center py-12 text-xs font-bold text-text-muted">Loading kiosk grievances...</div>
+      <div class="text-center py-12 text-xs font-bold text-text-muted">{t('ui.routes.operator.operator.grievance.5e8ffc98')}</div>
     {:else if complaintList.length === 0}
       <div class="rounded-2xl border border-border bg-surface p-12 text-center shadow-sm flex flex-col items-center">
         <AlertCircle class="mx-auto h-12 w-12 text-text-faint mb-4" />
-        <h3 class="text-base font-bold text-text">No grievances registered</h3>
-        <p class="mt-1 text-xs text-text-muted">If you experience hardware or registry problems, use the button above to register an issue.</p>
+        <h3 class="text-base font-bold text-text">{t('ui.routes.operator.operator.grievance.beb0c942')}</h3>
+        <p class="mt-1 text-xs text-text-muted">{t('ui.routes.operator.operator.grievance.1e8f627c')}</p>
       </div>
     {:else}
       <div class="grid gap-4 md:grid-cols-2">
@@ -140,7 +140,7 @@
   <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
     <div class="w-full max-w-lg rounded-3xl border border-border bg-surface p-6 shadow-2xl animate-scale-in">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-base font-bold text-text">Raise Kiosk Complaint</h3>
+        <h3 class="text-base font-bold text-text">{t('ui.routes.operator.operator.grievance.b1047952')}</h3>
         <button
           onclick={() => showNewModal = false}
           class="rounded-lg p-1 text-text-muted hover:bg-surface-container"
@@ -154,56 +154,56 @@
           <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft text-primary mb-3">
             ✓
           </div>
-          <p class="text-sm font-bold text-text">Grievance registered successfully!</p>
+          <p class="text-sm font-bold text-text">{t('ui.routes.operator.operator.grievance.d185c9e6')}</p>
         </div>
       {:else}
         <form onsubmit={(e) => { e.preventDefault(); submitGrievance(); }} class="space-y-4">
           <div>
-            <label for="comp-cat" class="mb-1.5 block text-xs font-bold text-text">Issue Category</label>
+            <label for="comp-cat" class="mb-1.5 block text-xs font-bold text-text">{t('ui.routes.operator.operator.grievance.6340c2f1')}</label>
             <select
               id="comp-cat"
               bind:value={category}
               class="w-full rounded-xl border border-border bg-muted px-3 py-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-primary/20"
             >
-              <option value="kiosk_hardware">Kiosk Hardware / Printer failure</option>
-              <option value="portal_bug">Software Bug / Crash</option>
-              <option value="payment_gateway">Payment Failure / Token issue</option>
-              <option value="service_missing">Service catalogue missing</option>
-              <option value="other">Other technical issue</option>
+              <option value="kiosk_hardware">{t('ui.routes.operator.operator.grievance.231bef0b')}</option>
+              <option value="portal_bug">{t('ui.routes.operator.operator.grievance.72fa45ff')}</option>
+              <option value="payment_gateway">{t('ui.routes.operator.operator.grievance.0462472f')}</option>
+              <option value="service_missing">{t('ui.routes.operator.operator.grievance.65b0f57c')}</option>
+              <option value="other">{t('ui.routes.operator.operator.grievance.aeb49967')}</option>
             </select>
           </div>
 
           <div>
-            <label for="comp-sub" class="mb-1.5 block text-xs font-bold text-text">Subject *</label>
+            <label for="comp-sub" class="mb-1.5 block text-xs font-bold text-text">{t('ui.routes.operator.operator.grievance.8916d111')}</label>
             <input
               id="comp-sub"
               type="text"
               bind:value={subject}
               required
-              placeholder="e.g. Thermal printer not outputting receipts"
+              placeholder={t('ui.e.g.thermal.printer.not.outputting.receipts')}
               class="w-full rounded-xl border border-border bg-muted px-3 py-2 text-xs text-text placeholder:text-text-faint outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
 
           <div>
-            <label for="comp-desc" class="mb-1.5 block text-xs font-bold text-text">Detailed Description *</label>
+            <label for="comp-desc" class="mb-1.5 block text-xs font-bold text-text">{t('ui.routes.operator.operator.grievance.637a5c8e')}</label>
             <textarea
               id="comp-desc"
               bind:value={description}
               required
               rows={4}
-              placeholder="Provide specific details about the malfunction, error messages displayed, and steps to reproduce..."
+              placeholder={t('ui.provide.specific.details.about.the.malfunction.error.messages.displayed.and.step')}
               class="w-full rounded-xl border border-border bg-muted px-3 py-2 text-xs text-text placeholder:text-text-faint outline-none resize-none focus:ring-2 focus:ring-primary/20"
             ></textarea>
           </div>
 
           <div>
-            <label for="comp-loc" class="mb-1.5 block text-xs font-bold text-text">Kiosk Location / ID</label>
+            <label for="comp-loc" class="mb-1.5 block text-xs font-bold text-text">{t('ui.routes.operator.operator.grievance.1fabf650')}</label>
             <input
               id="comp-loc"
               type="text"
               bind:value={location}
-              placeholder="e.g. Kiosk #42, Madurai e-Sevai Center"
+              placeholder={t('ui.e.g.kiosk.42.madurai.e.sevai.center')}
               class="w-full rounded-xl border border-border bg-muted px-3 py-2 text-xs text-text placeholder:text-text-faint outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
@@ -218,7 +218,7 @@
               onclick={() => showNewModal = false}
               class="rounded-xl px-4 py-2 text-xs font-bold text-text-muted hover:bg-surface-container"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               type="submit"

@@ -3,6 +3,9 @@ import { getCatalogDepartment, getCatalogService } from '$lib/server/catalog/rep
 import { getFirebaseAdminFirestore } from '$lib/server/firebase/admin';
 import { writeAuditLogInTransaction } from '$lib/server/audit/repository';
 import { applicationTransitionNotification, documentReviewNotification, writeDepartmentSubmissionNotificationsInTransaction, writeNotificationInTransaction } from '$lib/server/notifications/repository';
+import { createPaymentOtpChallenge, verifyPaymentOtpChallenge } from '$lib/server/payments/otp';
+import { assertPaymentOutcome, buildSimulatedPaymentReference, requiresPaymentForService } from '$lib/server/payments/simulation';
+import { sendApplicationSms } from '$lib/server/sms/applicationSms';
 import { getAvailableWorkflowActions, getWorkflowDefinition, getWorkflowTransition } from '$lib/server/workflows/repository';
 function toIso(timestamp) {
     return timestamp.toDate().toISOString();
@@ -85,6 +88,19 @@ function auditActionForTransition(fromStatus, targetStatus) {
     if (targetStatus === 'REJECTED')
         return 'APPLICATION_REJECTED';
     return 'APPLICATION_STATUS_CHANGED';
+}
+function smsEventForTransition(fromStatus, targetStatus, finalStatus) {
+    if (fromStatus === 'DRAFT' && targetStatus === 'SUBMITTED')
+        return 'APPLICATION_SUBMITTED';
+    if (targetStatus === 'CLARIFICATION_REQUESTED')
+        return 'CLARIFICATION_REQUESTED';
+    if (targetStatus === 'REJECTED' || finalStatus === 'REJECTED')
+        return 'APPLICATION_REJECTED';
+    if (targetStatus === 'APPROVED')
+        return 'APPLICATION_APPROVED';
+    if (finalStatus === 'COMPLETED')
+        return 'APPLICATION_COMPLETED';
+    return null;
 }
 function toTimestampIso(value) {
     if (value instanceof Timestamp)
@@ -173,6 +189,13 @@ function toApplication(snapshot, details = {}) {
         reviewedDocumentIds: Array.isArray(data.reviewedDocumentIds)
             ? data.reviewedDocumentIds.filter((value) => typeof value === 'string' && value.trim().length > 0)
             : [],
+        payment: data.payment && typeof data.payment === 'object' ? {
+            status: optionalString(data.payment.status) ?? 'NOT_REQUIRED',
+            amount: Number(data.payment.amount ?? 0),
+            provider: optionalString(data.payment.provider),
+            referenceId: optionalString(data.payment.referenceId),
+            updatedAt: toTimestampIso(data.payment.updatedAt)
+        } : undefined,
         assignedOfficerId: optionalString(data.assignedOfficerId),
         assignedOfficerName: optionalString(data.assignedOfficerName),
         rejectionReason: optionalString(data.rejectionReason),
@@ -206,6 +229,40 @@ function assertDepartmentProcessor(user, application) {
         return;
     if (user.role !== 'department_user' || !user.departmentId || application.departmentId !== user.departmentId) {
         throw new Error('You are not authorized to process this application.');
+    }
+}
+function canSubmitApplication(user, application) {
+    const isOwner = optionalString(application.citizenId) === user.uid;
+    const isAssistingOperator = optionalString(application.assistedByOperatorId) === user.uid;
+    return user.role === 'admin' || isOwner || isAssistingOperator;
+}
+function applicationPaymentStatus(application) {
+    return optionalString(application?.payment?.status) ?? 'NOT_REQUIRED';
+}
+function paymentChallengeFromApplication(application) {
+    const challenge = application?.payment?.otpChallenge;
+    if (!challenge || typeof challenge !== 'object')
+        return null;
+    const expiresAt = challenge.expiresAt;
+    const expiresAtMs = expiresAt instanceof Timestamp
+        ? expiresAt.toMillis()
+        : expiresAt && typeof expiresAt.toDate === 'function'
+            ? expiresAt.toDate().getTime()
+            : Number(challenge.expiresAtMs ?? 0);
+    return {
+        salt: optionalString(challenge.salt),
+        otpHash: optionalString(challenge.otpHash),
+        expiresAtMs,
+        attempts: Number(challenge.attempts ?? 0),
+        maxAttempts: Number(challenge.maxAttempts ?? 3)
+    };
+}
+function assertPaymentUser(user, application) {
+    if (user.role !== 'citizen' && user.role !== 'operator') {
+        throw new Error('Only citizens or operators can manage application payment.');
+    }
+    if (!canReadApplication(user, application) || !canSubmitApplication(user, application)) {
+        throw new Error('Application not found.');
     }
 }
 function normalizeReviewedDocumentIds(value) {
@@ -506,6 +563,7 @@ export async function transitionApplication(user, applicationId, input) {
     const comment = input.comment?.trim();
     if (comment && comment.length > 2000)
         throw new Error('Remarks are too long.');
+    let smsEvent = null;
     await db.runTransaction(async (transaction) => {
         const applicationSnapshot = await transaction.get(applicationRef);
         if (!applicationSnapshot.exists)
@@ -566,6 +624,7 @@ export async function transitionApplication(user, applicationId, input) {
         }
         if (automaticTransitions.length === 10)
             throw new Error('Workflow has an invalid automatic transition loop.');
+        smsEvent = smsEventForTransition(currentStatus, targetStatus, finalStatus);
         const update = {
             status: finalStatus,
             currentStage: finalStatus,
@@ -785,6 +844,9 @@ export async function submitCitizenDraft(user, applicationId) {
     const service = await getCatalogService(requiredString(application.serviceId, 'service ID'));
     if (!service)
         throw new Error('Application service is unavailable.');
+    if (currentStatus === 'DRAFT' && requiresPaymentForService(service) && applicationPaymentStatus(application) !== 'SUCCESS') {
+        throw new Error('Complete the simulated payment before submitting this paid application.');
+    }
     assertApplicationRequiredFields(application.formData, service);
     const persistedDocuments = await loadApplicationDocuments(applicationId);
     const uploadedTypes = new Set(persistedDocuments.map((document) => document.documentId));
@@ -799,6 +861,159 @@ export async function submitCitizenDraft(user, applicationId) {
     if (!submitTransition)
         throw new Error('This application cannot be submitted through its workflow.');
     return transitionApplication(user, applicationId, { transitionId: submitTransition.id });
+}
+export async function requestApplicationPaymentOtp(user, applicationId) {
+    const db = getFirebaseAdminFirestore();
+    const applicationRef = db.collection('applications').doc(applicationId);
+    const snapshot = await applicationRef.get();
+    if (!snapshot.exists)
+        throw new Error('Application not found.');
+    const application = snapshot.data();
+    assertPaymentUser(user, application);
+    const currentStatus = asApplicationStatus(application.status);
+    if (currentStatus !== 'DRAFT') {
+        throw new Error('Payment can only be started for draft applications.');
+    }
+    const service = await getCatalogService(requiredString(application.serviceId, 'service ID'));
+    if (!service)
+        throw new Error('Application service is unavailable.');
+    const amount = Number(service.fee?.amount ?? service.fee ?? 0);
+    if (!requiresPaymentForService(service)) {
+        throw new Error('This application does not require payment.');
+    }
+    if (applicationPaymentStatus(application) === 'SUCCESS') {
+        return {
+            amount,
+            status: 'SUCCESS',
+            message: 'Payment is already recorded.'
+        };
+    }
+    const phone = String(application.formData?.phone ?? '').replace(/\D/g, '');
+    if (!/^\d{10}$/.test(phone)) {
+        throw new Error('A verified 10-digit mobile number is required before payment.');
+    }
+    const challenge = createPaymentOtpChallenge();
+    const now = Timestamp.now();
+    await applicationRef.update({
+        payment: {
+            provider: 'razorpay_simulation',
+            mode: 'SIMULATION_ONLY',
+            status: 'OTP_SENT',
+            amount,
+            currency: 'INR',
+            phoneLast4: phone.slice(-4),
+            otpChallenge: {
+                salt: challenge.salt,
+                otpHash: challenge.otpHash,
+                expiresAt: Timestamp.fromDate(new Date(challenge.expiresAtMs)),
+                attempts: 0,
+                maxAttempts: challenge.maxAttempts
+            },
+            updatedAt: now
+        },
+        updatedAt: now
+    });
+    return {
+        amount,
+        currency: 'INR',
+        status: 'OTP_SENT',
+        provider: 'razorpay_simulation',
+        demoOtpHint: 'Use OTP 1234 for this simulation only.'
+    };
+}
+export async function confirmSimulatedApplicationPayment(user, applicationId, input) {
+    const outcome = assertPaymentOutcome(input?.outcome);
+    const db = getFirebaseAdminFirestore();
+    const applicationRef = db.collection('applications').doc(applicationId);
+    let result;
+    let otpError = null;
+    await db.runTransaction(async (transaction) => {
+        const snapshot = await transaction.get(applicationRef);
+        if (!snapshot.exists)
+            throw new Error('Application not found.');
+        const application = snapshot.data();
+        assertPaymentUser(user, application);
+        if (asApplicationStatus(application.status) !== 'DRAFT') {
+            throw new Error('Payment can only be completed for draft applications.');
+        }
+        const payment = application.payment && typeof application.payment === 'object' ? application.payment : null;
+        if (!payment || payment.status !== 'OTP_SENT') {
+            throw new Error('Start payment OTP verification before confirming payment.');
+        }
+        const storedApplicationId = requiredString(application.id ?? applicationId, 'id');
+        const applicantPhone = optionalString(application.formData?.phone);
+        const trackingId = optionalString(application.trackingId);
+        const challenge = paymentChallengeFromApplication(application);
+        const verification = verifyPaymentOtpChallenge(challenge, input?.otp);
+        const attempts = Number(challenge?.attempts ?? 0);
+        const now = Timestamp.now();
+        if (!verification.ok) {
+            transaction.update(applicationRef, {
+                'payment.otpChallenge.attempts': attempts + 1,
+                'payment.updatedAt': now,
+                updatedAt: now
+            });
+            otpError = verification.reason;
+            return;
+        }
+        const referenceId = outcome === 'SUCCESS' ? buildSimulatedPaymentReference(applicationId) : null;
+        const amount = Number(payment.amount ?? 0);
+        transaction.update(applicationRef, {
+            payment: {
+                provider: 'razorpay_simulation',
+                mode: 'SIMULATION_ONLY',
+                status: outcome,
+                amount,
+                currency: 'INR',
+                referenceId,
+                completedAt: now,
+                updatedAt: now
+            },
+            updatedAt: now
+        });
+        const historyRef = applicationRef.collection('statusHistory').doc();
+        transaction.set(historyRef, {
+            id: historyRef.id,
+            status: asApplicationStatus(application.status),
+            stage: asApplicationStatus(application.status),
+            changedBy: user.uid,
+            changedByRole: user.role,
+            actorName: user.displayName,
+            comment: outcome === 'SUCCESS' ? 'Simulated Razorpay payment successful' : 'Simulated Razorpay payment failed',
+            createdAt: now
+        });
+        writeAuditLogInTransaction(db, transaction, {
+            actor: user,
+            departmentId: requiredString(application.departmentId, 'department ID'),
+            action: outcome === 'SUCCESS' ? 'SIMULATED_PAYMENT_SUCCESS' : 'SIMULATED_PAYMENT_FAILED',
+            entityType: 'application',
+            entityId: storedApplicationId,
+            timestamp: now,
+            metadata: { amount, provider: 'razorpay_simulation', mode: 'SIMULATION_ONLY' }
+        });
+        result = {
+            status: outcome,
+            amount,
+            currency: 'INR',
+            provider: 'razorpay_simulation',
+            referenceId,
+            applicationId: storedApplicationId,
+            trackingId,
+            applicantPhone
+        };
+    });
+    if (otpError) {
+        throw new Error(otpError);
+    }
+    if (result?.status === 'SUCCESS') {
+        await sendApplicationSms({
+            phoneNumber: result.applicantPhone,
+            applicationId: result.applicationId,
+            trackingId: result.trackingId,
+            event: 'PAYMENT_SUCCESS'
+        });
+    }
+    return result;
 }
 export async function reviewApplicationDocument(user, applicationId, documentId, status, comment) {
     const db = getFirebaseAdminFirestore();
@@ -878,6 +1093,14 @@ export async function reviewApplicationDocument(user, applicationId, documentId,
     const application = await getApplicationForUser(user, applicationId);
     if (!application)
         throw new Error('Application not found.');
+    if (smsEvent) {
+        await sendApplicationSms({
+            phoneNumber: application.formData?.phone,
+            applicationId: application.id,
+            trackingId: application.applicationNumber,
+            event: smsEvent
+        });
+    }
     return application;
 }
 export async function markApplicationDocumentViewed(user, applicationId, documentId) {

@@ -3,10 +3,11 @@
   import { LayoutDashboard, UserCheck, MessageCircleQuestion, UserCircle, LogOut } from '@lucide/svelte';
   import { auth, isAuthenticated } from '$lib/stores/auth';
   import LogoutModal from '$lib/components/ui/LogoutModal.svelte';
-  import { t } from '$lib/i18n';
+  import { tt } from '$lib/i18n';
   import BrandLogo from '$lib/components/ui/BrandLogo.svelte';
 
   const authenticated = $derived($isAuthenticated);
+  const t = $derived($tt);
 
   function isActive(path) {
     const currentPath = $page.url.pathname;
@@ -27,12 +28,12 @@
   });
 
   const mainLinks = [
-    { href: '/admin', icon: LayoutDashboard, label: 'Dashboard', labelTA: 'டாஷ்போர்டு' },
-    { href: '/admin/approvals', icon: UserCheck, label: 'Registration Approvals', labelTA: 'பதிவு ஒப்புதல்கள்' },
-    { href: '/admin/helpdesk', icon: MessageCircleQuestion, label: 'Help Desk & Grievance', labelTA: 'உதவி மற்றும் புகார்கள்' },
+    { href: '/admin', icon: LayoutDashboard, labelKey: 'nav.dashboard' },
+    { href: '/admin/approvals', icon: UserCheck, labelKey: 'admin.registration.title' },
+    { href: '/admin/helpdesk', icon: MessageCircleQuestion, labelKey: 'admin.helpdesk.nav' },
   ];
   const bottomLinks = [
-    { href: '/admin/profile', icon: UserCircle, label: 'Profile', labelTA: 'சுயவிவரம்' },
+    { href: '/admin/profile', icon: UserCircle, labelKey: 'nav.profile' },
   ];
 </script>
 
@@ -56,7 +57,7 @@
         class="flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-medium transition-all {isActive(link.href) ? 'border-l-4 border-white/30 bg-primary text-white font-bold' : 'text-[var(--color-sidebar-text-muted)] hover:bg-[var(--color-sidebar-hover)] hover:text-[var(--color-sidebar-text)]'}"
       >
         <link.icon class="h-4 w-4 shrink-0" />
-        <span>{link.label}</span>
+        <span>{t(link.labelKey)}</span>
       </a>
     {/each}
   </nav>
@@ -68,7 +69,7 @@
         class="flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-medium transition-all {isActive(link.href) ? 'border-l-4 border-white/30 bg-primary text-white font-bold' : 'text-[var(--color-sidebar-text-muted)] hover:bg-[var(--color-sidebar-hover)] hover:text-[var(--color-sidebar-text)]'}"
       >
         <link.icon class="h-4 w-4 shrink-0" />
-        <span>{link.label}</span>
+        <span>{t(link.labelKey)}</span>
       </a>
     {/each}
 

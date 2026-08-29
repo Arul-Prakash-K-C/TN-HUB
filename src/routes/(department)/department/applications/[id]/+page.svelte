@@ -167,12 +167,12 @@
     <div class="flex items-center justify-center min-h-[calc(100vh-4rem)] p-4">
       <div class="bg-surface border border-border rounded-3xl p-10 text-center shadow-xl max-w-lg w-full">
         <Lock class="mx-auto h-12 w-12 text-danger mb-4" />
-        <h2 class="text-xl font-black text-text tracking-tight">Access Restricted</h2>
+        <h2 class="text-xl font-black text-text tracking-tight">{t('ui.routes.department.department.applications.id.59cfeb75')}</h2>
         <p class="mt-2 text-sm text-text-muted">
           You are either not authorized to view applications outside your assigned department (`{user?.departmentName || 'Revenue Department'}`), or this record does not exist.
         </p>
         <a href="/department/applications" class="mt-6 inline-flex items-center justify-center rounded-2xl bg-primary px-6 py-3 text-xs font-bold text-white shadow-md transition hover:bg-primary-hover">
-          Return to Authorized Queue
+          {t('ui.return.to.authorized.queue')}
         </a>
       </div>
     </div>
@@ -183,7 +183,7 @@
       <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 border-b border-border pb-6">
         <div>
           <a href="/department/applications" class="inline-flex items-center gap-2 text-sm font-bold text-text-muted hover:text-primary transition-colors mb-3">
-            <ArrowLeft class="h-4 w-4" /> Back to Application Queue
+            <ArrowLeft class="h-4 w-4" /> {t('ui.back.to.application.queue')}
           </a>
           <h1 class="text-2xl md:text-3xl font-black text-text tracking-tight flex items-center gap-3 flex-wrap">
             {appState.applicationNumber}
@@ -204,7 +204,7 @@
         </div>
         <div class="flex gap-2">
           <button class="px-4 py-2 bg-surface border border-border text-text-muted rounded-2xl text-xs font-bold hover:bg-surface-container hover:text-text transition-colors flex items-center gap-2 shadow-sm">
-            <Printer class="h-4 w-4" /> Print
+            <Printer class="h-4 w-4" /> {t('ui.print')}
           </button>
         </div>
       </div>
@@ -218,9 +218,9 @@
                 <Check class="h-6 w-6" />
               </div>
               <div class="flex-1">
-                <h3 class="text-base font-black text-text">Application Corrected & Resubmitted</h3>
+                <h3 class="text-base font-black text-text">{t('ui.routes.department.department.applications.id.21bd618f')}</h3>
                 <p class="mt-1.5 text-xs text-text-muted leading-relaxed font-medium">
-                  The applicant has corrected the requested information/documents and resubmitted the application. Please review the updated details and verify again.
+                  {t('ui.the.applicant.has.corrected.the.requested.information.documents.and.resubmitted.')}
                 </p>
               </div>
             </div>
@@ -230,15 +230,15 @@
           <div class="bg-surface border border-border rounded-3xl p-6 sm:p-8 shadow-sm">
             <h2 class="text-base font-black text-text mb-6 flex items-center gap-2">
               <ShieldCheck class="h-5 w-5 text-primary" />
-              Applicant Information
+              {t('ui.applicant.information')}
             </h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-surface-container/50 rounded-2xl p-6 border border-border">
               <div>
-                <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider block mb-1">Full Name</span>
+                <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider block mb-1">{t('ui.routes.department.department.applications.id.2438498a')}</span>
                 <span class="text-sm font-bold text-text">{appState.citizenName}</span>
               </div>
               <div>
-                <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider block mb-1">Submission Date</span>
+                <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider block mb-1">{t('ui.routes.department.department.applications.id.f9968e07')}</span>
                 <span class="text-sm font-bold text-text">{new Date(appState.createdAt).toLocaleDateString()}</span>
               </div>
               
@@ -259,7 +259,7 @@
             <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
               <h2 class="text-base font-black text-text flex items-center gap-2">
                 <FileText class="h-5 w-5 text-primary" />
-                Submitted Documents
+                {t('application.documents')}
               </h2>
               <span class="px-3 py-1 bg-surface-container text-text-muted rounded-full text-xs font-bold border border-border">
                 {Object.values(docVerificationMap).filter(v => v === 'VERIFIED').length} / {appState.documents.length} Verified
@@ -286,7 +286,7 @@
                   
                   <div class="flex gap-2 w-full sm:w-auto">
                     <button onclick={() => viewDocument(doc.id)} class="flex-1 sm:flex-none flex justify-center items-center gap-1.5 px-4 py-2 text-[11px] font-bold text-text-muted bg-surface-container hover:bg-surface-container-high dark:hover:bg-surface-container-highest rounded-xl transition-colors border border-border">
-                      <Eye class="h-3.5 w-3.5" /> View
+                      <Eye class="h-3.5 w-3.5" /> {t('ui.routes.citizen.applications.id.07708181')}
                     </button>
                     <button onclick={() => toggleDocStatus(doc.id)} class="flex-1 sm:flex-none flex justify-center items-center gap-1.5 px-4 py-2 text-[11px] font-bold rounded-xl transition-colors border {docVerificationMap[doc.id] === 'VERIFIED' ? 'bg-surface border-border text-text-muted hover:bg-danger-soft hover:text-danger hover:border-danger/30' : 'bg-success border-success text-white hover:bg-success/90'}">
                       {#if docVerificationMap[doc.id] === 'VERIFIED'}
@@ -308,34 +308,34 @@
           {#if appState.status !== 'COMPLETED' && appState.status !== 'APPROVED' && appState.status !== 'CERTIFICATE_GENERATED' && appState.status !== 'REJECTED'}
             <!-- Officer Actions -->
             <div class="bg-surface dark:bg-surface-container border border-border rounded-3xl p-6 sm:p-8 shadow-sm">
-              <h2 class="text-base font-black text-text mb-6">Officer Actions</h2>
+              <h2 class="text-base font-black text-text mb-6">{t('ui.routes.department.department.applications.id.2026ff87')}</h2>
               {#if actionError}
                 <p class="mb-4 rounded-xl border border-danger/25 bg-danger-soft p-3 text-xs font-semibold text-danger">{actionError}</p>
               {/if}
               {#if finalDecisionLocked}
                 <div class="mb-4 rounded-2xl border border-warning/25 bg-warning-soft p-3 text-xs font-semibold text-warning">
-                  Please open every submitted document before approving or rejecting this application.
+                  {t('ui.please.open.every.submitted.document.before.approving.or.rejecting.this.applicat')}
                 </div>
               {/if}
               
               <div class="flex flex-col gap-3">
                 <button onclick={() => { actionModal = 'approve'; remarkText = ''; }} disabled={finalDecisionLocked} class="w-full py-3.5 bg-primary text-white font-bold text-xs rounded-2xl hover:bg-primary-hover transition-colors flex items-center justify-center gap-2 shadow-sm disabled:cursor-not-allowed disabled:opacity-50">
-                  <CheckCircle class="h-4 w-4" /> Approve & Issue
+                  <CheckCircle class="h-4 w-4" /> {t('ui.approve.and.issue')}
                 </button>
                 
                 <button onclick={() => { actionModal = 'reject'; remarkText = ''; }} disabled={finalDecisionLocked} class="w-full py-3.5 bg-surface dark:bg-surface-container border border-border text-danger font-bold text-xs rounded-2xl hover:bg-danger-soft transition-colors flex items-center justify-center gap-2 shadow-sm disabled:cursor-not-allowed disabled:opacity-50">
-                  <XCircle class="h-4 w-4" /> Reject Request
+                  <XCircle class="h-4 w-4" /> {t('ui.reject.request')}
                 </button>
                 
                 <button onclick={() => { actionModal = 'clarify'; remarkText = ''; }} class="w-full py-3.5 bg-surface dark:bg-surface-container border border-border text-text-muted font-bold text-xs rounded-2xl hover:bg-background transition-colors flex items-center justify-center gap-2 shadow-sm">
-                  <HelpCircle class="h-4 w-4" /> Request Correction
+                  <HelpCircle class="h-4 w-4" /> {t('ui.request.correction')}
                 </button>
               </div>
             </div>
           {:else}
             <!-- Finished State Summary -->
             <div class="bg-surface dark:bg-surface-container border border-border rounded-3xl p-6 sm:p-8 shadow-sm">
-              <h2 class="text-base font-black text-text mb-4">Officer Actions</h2>
+              <h2 class="text-base font-black text-text mb-4">{t('ui.routes.department.department.applications.id.2026ff87')}</h2>
               <div class="flex items-center gap-2 text-xs font-bold text-text-muted bg-surface-container dark:bg-surface-container-high p-4 rounded-2xl border border-border">
                 <Lock class="h-4 w-4 text-text-faint" />
                 Review Closed (Application {appState.status})
@@ -345,7 +345,7 @@
 
           <!-- Application History Timeline -->
           <div class="bg-surface border border-border rounded-3xl p-6 sm:p-8 shadow-sm">
-            <h2 class="text-base font-black text-text mb-6">Audit Trail</h2>
+            <h2 class="text-base font-black text-text mb-6">{t('ui.routes.department.department.applications.id.bced5a85')}</h2>
             
             <div class="relative pl-6 space-y-8">
               <!-- Timeline Line -->
@@ -361,7 +361,7 @@
                     </p>
                     {#if step.remarks}
                       <div class="mt-3 text-xs bg-surface-container/50 border border-border p-3 rounded-xl text-text-muted font-medium leading-relaxed">
-                        <strong class="text-text block mb-1">Official Remarks:</strong> {step.remarks}
+                        <strong class="text-text block mb-1">{t('ui.routes.department.department.applications.id.2393e3fc')}</strong> {step.remarks}
                       </div>
                     {/if}
                   </div>
@@ -393,18 +393,18 @@
           {actionModal === 'approve' ? 'Approve Application' : actionModal === 'reject' ? 'Reject Application' : 'Request Correction'}
         </h3>
         <p class="text-xs text-text-muted mb-6 font-medium leading-relaxed">
-          This action will immediately update the official application status and notify the citizen via SMS and email.
+          {t('ui.this.action.will.immediately.update.the.official.application.status.and.notify.t')}
         </p>
 
         {#if actionModal === 'reject' || actionModal === 'clarify'}
           <div class="mb-6">
-            <label class="block text-xs font-bold text-text mb-2" for="remarkText">Official Remarks (Required) *</label>
+            <label class="block text-xs font-bold text-text mb-2" for="remarkText">{t('ui.routes.department.department.applications.id.c97a1f98')}</label>
             <textarea
               id="remarkText"
               bind:value={remarkText}
               rows="4"
               required
-              placeholder="Please provide clear reasons for the citizen..."
+              placeholder={t('ui.please.provide.clear.reasons.for.the.citizen')}
               class="w-full rounded-2xl border border-border bg-surface-container-low dark:text-text p-4 text-xs font-medium text-text outline-none focus:border-primary transition-colors resize-none"
             ></textarea>
           </div>
@@ -415,13 +415,13 @@
             onclick={() => actionModal = null} 
             class="w-full sm:w-auto rounded-xl px-5 py-3 text-xs font-bold text-text-muted bg-surface-container dark:bg-surface-container-high hover:bg-surface-container-highest transition-colors"
           >
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             onclick={() => handleAction(actionModal)}
             class="w-full sm:w-auto rounded-xl px-5 py-3 text-xs font-bold shadow-md transition-colors flex items-center justify-center gap-2 {actionModal === 'approve' ? 'bg-success text-white hover:bg-success/90' : actionModal === 'reject' ? 'bg-danger text-white hover:bg-danger/90' : 'bg-warning text-white hover:bg-warning/90'}"
           >
-            Confirm Decision
+            {t('ui.confirm.decision')}
           </button>
         </div>
       </div>

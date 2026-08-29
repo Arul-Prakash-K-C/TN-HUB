@@ -108,14 +108,14 @@ const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id ==
 
         <div class="flex flex-col sm:flex-row sm:items-center gap-4">
           <div class="w-14 h-14 flex items-center justify-center shrink-0">
-            <img src="/thozhan-logo.png" alt="Thozhan AI Logo" class="w-14 h-14 object-contain" onerror={(e) => { (e.currentTarget).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling).style.display='block'; }} />
+            <img src="/thozhan-logo.png" alt={t('ui.thozhan.ai.logo')} class="w-14 h-14 object-contain" onerror={(e) => { (e.currentTarget).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling).style.display='block'; }} />
               <Bot class="hidden h-7 w-7 text-primary" />
           </div>
           <div class="flex-1">
             <div class="flex flex-wrap items-center gap-3">
               <h2 class="text-[22px] font-bold leading-tight text-text">{history.length > 1 ? resolveText(screen.title) : 'Thozhan AI'}</h2>
               <span class="flex items-center gap-1 rounded-full bg-primary-soft px-2 py-1 text-[10px] font-bold uppercase text-primary">
-                <ShieldCheck class="w-[12px] h-[12px]" /> Selection Only
+                <ShieldCheck class="w-[12px] h-[12px]" /> {t('chatbot.controlled.badge')}
               </span>
             </div>
             <p class="mt-1 text-[15px] text-text-muted">{history.length > 1 ? resolveText(screen.description) : 'Choose guided options to find services, start applications, track status, review document requirements, and get TN Kuviyam help.'}</p>
@@ -126,7 +126,7 @@ const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id ==
               onclick={startOver}
               class="mt-3 flex shrink-0 items-center gap-2 rounded-full border border-border px-4 py-2 text-[13px] font-medium transition-colors hover:bg-muted sm:ml-auto sm:mt-0"
             >
-              <RefreshCcw class="w-[16px] h-[16px]" /> Start Over
+              <RefreshCcw class="w-[16px] h-[16px]" /> {t('chatbot.action.startOver')}
             </button>
           {/if}
         </div>
@@ -198,12 +198,12 @@ const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id ==
         {#if history.length === 1}
           <div class="flex items-start gap-4 mb-6">
             <div class="w-10 h-10 flex items-center justify-center shrink-0">
-              <img src="/thozhan-logo.png" alt="Thozhan AI Logo" class="w-10 h-10 object-contain" onerror={(e) => { (e.currentTarget).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling).style.display='block'; }} />
+              <img src="/thozhan-logo.png" alt={t('ui.thozhan.ai.logo')} class="w-10 h-10 object-contain" onerror={(e) => { (e.currentTarget).style.display='none'; if (e.currentTarget?.nextElementSibling) (e.currentTarget.nextElementSibling).style.display='block'; }} />
               <Bot class="hidden h-6 w-6 text-primary" />
             </div>
             <div>
-              <h3 class="mb-1 text-[18px] font-bold text-text">What would you like help with?</h3>
-              <p class="text-[15px] text-text-muted">Thozhan AI guides you only through approved TN Kuviyam options. It does not accept free-text questions.</p>
+              <h3 class="mb-1 text-[18px] font-bold text-text">{t('ui.routes.public.chatbot.a070ad77')}</h3>
+              <p class="text-[15px] text-text-muted">{t('ui.routes.public.chatbot.a529c234')}</p>
             </div>
           </div>
         {/if}
@@ -281,30 +281,30 @@ const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id ==
       <div class="lg:col-span-1 flex flex-col gap-6">
         <!-- How it works card -->
         <div class="rounded-xl border border-border bg-surface p-5 shadow-[var(--shadow-vazhi-1)]">
-          <h4 class="mb-3 text-[12px] font-bold uppercase tracking-widest text-primary">How Thozhan AI Works</h4>
+          <h4 class="mb-3 text-[12px] font-bold uppercase tracking-widest text-primary">{t('ui.routes.public.chatbot.918d3667')}</h4>
           <div class="flex flex-col gap-3">
             <div class="rounded-lg bg-muted p-3">
-              <h5 class="mb-1 text-[11px] font-bold uppercase text-text">Selection-Only</h5>
-              <p class="text-[12px] text-text-muted">Every step uses predefined TN Kuviyam options. Free-text chat is disabled.</p>
+              <h5 class="mb-1 text-[11px] font-bold uppercase text-text">{t('ui.routes.public.chatbot.f4bcdd6f')}</h5>
+              <p class="text-[12px] text-text-muted">{t('ui.routes.public.chatbot.7eaa36e2')}</p>
             </div>
             <div class="rounded-lg bg-muted p-3">
-              <h5 class="mb-1 text-[11px] font-bold uppercase text-text">Real TN Kuviyam Data</h5>
-              <p class="text-[12px] text-text-muted">Services, departments, applications, and document requirements are loaded from the existing TN Kuviyam data sources.</p>
+              <h5 class="mb-1 text-[11px] font-bold uppercase text-text">{t('ui.routes.public.chatbot.01e6bb9b')}</h5>
+              <p class="text-[12px] text-text-muted">{t('ui.routes.public.chatbot.0e9e0ab4')}</p>
             </div>
             <div class="rounded-lg bg-muted p-3">
-              <h5 class="mb-1 text-[11px] font-bold uppercase text-text">Scoped Access</h5>
-              <p class="text-[12px] text-text-muted">Personal applications and document vault data are shown only when the authenticated TN Kuviyam session allows them.</p>
+              <h5 class="mb-1 text-[11px] font-bold uppercase text-text">{t('ui.routes.public.chatbot.4202323e')}</h5>
+              <p class="text-[12px] text-text-muted">{t('ui.routes.public.chatbot.28933415')}</p>
             </div>
           </div>
         </div>
 
         <!-- Quick Actions Card -->
         <div class="rounded-xl border border-border bg-surface p-5 shadow-[var(--shadow-vazhi-1)]">
-          <h4 class="mb-3 text-[12px] font-bold uppercase tracking-widest text-primary">Quick Actions</h4>
+          <h4 class="mb-3 text-[12px] font-bold uppercase tracking-widest text-primary">{t('ui.routes.public.chatbot.e1fc80d4')}</h4>
           <div class="flex flex-col gap-2">
-            <a href="/services" class="block w-full rounded-lg border border-border bg-muted px-4 py-2.5 text-left text-[13px] font-semibold text-text transition-colors hover:bg-surface-container">Browse Services</a>
-            <a href="/applications" class="block w-full rounded-lg border border-border bg-muted px-4 py-2.5 text-left text-[13px] font-semibold text-text transition-colors hover:bg-surface-container">Open Applications</a>
-            <a href="/help" class="block w-full rounded-lg border border-border bg-muted px-4 py-2.5 text-left text-[13px] font-semibold text-text transition-colors hover:bg-surface-container">Contact Help Desk</a>
+            <a href="/services" class="block w-full rounded-lg border border-border bg-muted px-4 py-2.5 text-left text-[13px] font-semibold text-text transition-colors hover:bg-surface-container">{t('ui.routes.public.chatbot.85e1f34a')}</a>
+            <a href="/applications" class="block w-full rounded-lg border border-border bg-muted px-4 py-2.5 text-left text-[13px] font-semibold text-text transition-colors hover:bg-surface-container">{t('ui.routes.public.chatbot.31daeaca')}</a>
+            <a href="/help" class="block w-full rounded-lg border border-border bg-muted px-4 py-2.5 text-left text-[13px] font-semibold text-text transition-colors hover:bg-surface-container">{t('ui.routes.public.chatbot.e3f838a4')}</a>
           </div>
         </div>
       </div>

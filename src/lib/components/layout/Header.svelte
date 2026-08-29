@@ -77,7 +77,7 @@ function handleProtectedNav(targetPath, title, e) {
       </a>
       
       <!-- Desktop Navigation -->
-      <nav class="hidden lg:flex items-center gap-2 text-[14px] font-semibold text-text-muted" aria-label="Main navigation">
+      <nav class="hidden lg:flex items-center gap-2 text-[14px] font-semibold text-text-muted" aria-label={t('navigation.main')}>
         <a href="/services" class="px-3 py-2 transition hover:text-primary border-b-2 {currentPath.startsWith('/services') ? 'border-primary text-primary' : 'border-transparent'}">{t('nav.services')}</a>
         {#if authenticated}
           <a href="/applications" class="px-3 py-2 transition hover:text-primary border-b-2 {currentPath.startsWith('/applications') ? 'border-primary text-primary' : 'border-transparent'}">{t('nav.track')}</a>
@@ -91,7 +91,7 @@ function handleProtectedNav(targetPath, title, e) {
         <a href="/tutorials" class="px-3 py-2 transition hover:text-primary border-b-2 {currentPath === '/tutorials' ? 'border-primary text-primary' : 'border-transparent'}">
           <span class="flex items-center gap-1.5">
             <GraduationCap class="h-4 w-4" />
-            {$locale === 'ta' ? 'பயிற்சிகள்' : 'Tutorials'}
+            {t('nav.tutorials')}
           </span>
         </a>
       </nav>
@@ -102,7 +102,7 @@ function handleProtectedNav(targetPath, title, e) {
           <a
             href="/notifications"
             class="relative rounded-full p-2 text-text-muted hover:bg-muted transition"
-            aria-label="Notifications"
+            aria-label={t('a11y.notifications')}
           >
             <Bell class="h-4 w-4" />
             {#if unreadCount > 0}
@@ -135,11 +135,11 @@ function handleProtectedNav(targetPath, title, e) {
                 </div>
                 <a href={getDashboardUrl()} class="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-text hover:bg-primary-soft hover:text-primary transition" onclick={() => profileMenuOpen = false}>
                   <User class="h-4 w-4 text-primary" />
-                  Dashboard
+                  {t('nav.dashboard')}
                 </a>
                 <a href="/profile" class="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-text hover:bg-primary-soft transition" onclick={() => profileMenuOpen = false}>
                   <User class="h-4 w-4 text-text-faint" />
-                  Profile
+                  {t('nav.profile')}
                 </a>
                 <div class="border-t border-border mt-1 pt-1">
                   <button
@@ -147,7 +147,7 @@ function handleProtectedNav(targetPath, title, e) {
                     class="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-danger hover:bg-danger-soft transition"
                   >
                     <LogOut class="h-4 w-4" />
-                    Logout
+                    {t('nav.logout')}
                   </button>
                 </div>
               </div>
@@ -159,7 +159,7 @@ function handleProtectedNav(targetPath, title, e) {
               type="button"
               onclick={handleLanguageToggle}
               class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-muted text-text-muted transition hover:bg-surface-container"
-              aria-label="Change Language"
+              aria-label={t('a11y.changeLanguage')}
             >
               <Globe class="h-4 w-4" />
             </button>
@@ -167,7 +167,7 @@ function handleProtectedNav(targetPath, title, e) {
               type="button"
               onclick={handleThemeToggle}
               class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-muted text-text-muted transition hover:bg-surface-container"
-              aria-label="Toggle Theme"
+              aria-label={t('a11y.toggleTheme')}
             >
               {#if themeMode === 'dark'}
                 <Sun class="h-4 w-4" />
@@ -188,7 +188,7 @@ function handleProtectedNav(targetPath, title, e) {
         <button
           onclick={() => mobileMenuOpen = !mobileMenuOpen}
           class="rounded-lg p-2 text-text-muted hover:bg-muted transition lg:hidden"
-          aria-label="Toggle Mobile Navigation"
+          aria-label={t('a11y.toggleMobileNavigation')}
         >
           {#if mobileMenuOpen}<X class="h-5 w-5" />{:else}<Menu class="h-5 w-5" />{/if}
         </button>
@@ -221,7 +221,7 @@ function handleProtectedNav(targetPath, title, e) {
         <span class="flex items-center gap-2"><Phone class="h-4 w-4" /> {t('footer.contact')}</span>
       </a>
       <a href="/tutorials" onclick={() => mobileMenuOpen = false} class="block rounded-xl px-4 py-3 hover:bg-muted">
-        <span class="flex items-center gap-2"><GraduationCap class="h-4 w-4" /> {$locale === 'ta' ? 'பயிற்சிகள்' : 'Tutorials'}</span>
+        <span class="flex items-center gap-2"><GraduationCap class="h-4 w-4" /> {t('nav.tutorials')}</span>
       </a>
       <a href="/sitemap" onclick={() => mobileMenuOpen = false} class="block rounded-xl px-4 py-3 hover:bg-muted">{t('sitemap.heading')}</a>
     </div>
@@ -235,9 +235,9 @@ function handleProtectedNav(targetPath, title, e) {
       <div class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-primary-soft text-primary">
         <Lock class="h-8 w-8" />
       </div>
-      <h3 class="text-xl font-bold text-text">Login Required</h3>
+      <h3 class="text-xl font-bold text-text">{t('auth.loginRequired')}</h3>
       <p class="mt-3 text-sm text-text-muted leading-relaxed">
-        You must be logged in to access <strong>{loginGuardModal.title}</strong>. Please log in with your credentials to proceed.
+        {t('auth.loginRequiredFor', { title: loginGuardModal.title })}
       </p>
 
       <div class="mt-8 flex flex-col-reverse sm:flex-row items-center justify-center gap-3">
@@ -245,7 +245,7 @@ function handleProtectedNav(targetPath, title, e) {
           onclick={() => loginGuardModal = { open: false, target: '', title: '' }}
           class="w-full sm:w-auto rounded-xl border border-border px-6 py-3 text-sm font-bold text-text hover:bg-muted transition"
         >
-          Cancel
+          {t('common.cancel')}
         </button>
 
         <a
@@ -253,7 +253,7 @@ function handleProtectedNav(targetPath, title, e) {
           onclick={() => loginGuardModal = { open: false, target: '', title: '' }}
           class="w-full sm:w-auto rounded-xl bg-primary px-8 py-3 text-sm font-bold text-white shadow-md hover:bg-primary-hover transition"
         >
-          Go to Login
+          {t('common.goToLogin')}
         </a>
       </div>
     </div>

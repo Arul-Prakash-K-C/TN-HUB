@@ -141,7 +141,7 @@ const categoryOptions = $derived([
               <div class="flex-grow min-w-0">
                 <div class="flex items-center gap-1.5 mb-1.5 flex-wrap">
                   {#if service.fee === 0}
-                    <span class="text-[9px] text-primary font-extrabold uppercase tracking-wider shrink-0">FREE</span>
+                    <span class="text-[9px] text-primary font-extrabold uppercase tracking-wider shrink-0">{t('ui.routes.public.services.09aa092f')}</span>
                   {:else}
                     <span class="text-[9px] text-text-muted font-extrabold uppercase tracking-wider shrink-0">₹{service.fee}</span>
                   {/if}
@@ -161,11 +161,11 @@ const categoryOptions = $derived([
               <div class="shrink-0">
                 {#if service.implementationMode === 'EXTERNAL_REDIRECT'}
                   <span class="inline-flex bg-muted text-text font-semibold text-xs px-3.5 py-1.5 rounded-full hover:bg-surface-container transition-colors">
-                    External
+                    {t('ui.external')}
                   </span>
                 {:else}
                   <span class="inline-flex bg-primary-soft text-primary font-semibold text-xs px-3.5 py-1.5 rounded-full hover:bg-primary-soft transition-colors">
-                    Apply
+                    {t('operator.startService')}
                   </span>
                 {/if}
               </div>

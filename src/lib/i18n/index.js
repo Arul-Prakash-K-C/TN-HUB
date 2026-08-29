@@ -7,18 +7,25 @@ import ta from './ta.json';
 // Add a locale here and the existing component calls remain unchanged.
 const localeModules = { en, ta };
 const translations = localeModules;
+function applyDocumentLocale(value) {
+    if (typeof document === 'undefined')
+        return;
+    document.documentElement.lang = value;
+    document.documentElement.dataset.locale = value;
+}
 // Create locale store with browser persistence
 function createLocaleStore() {
     const stored = typeof window !== 'undefined' ? localStorage.getItem('tnhub-locale') : null;
     const initial = stored && stored in translations ? stored : 'en';
+    applyDocumentLocale(initial);
     const { subscribe, set, update } = writable(initial);
     return {
         subscribe,
         set: (value) => {
             if (typeof window !== 'undefined') {
                 localStorage.setItem('tnhub-locale', value);
-                document.documentElement.lang = value;
             }
+            applyDocumentLocale(value);
             set(value);
         },
         toggle: () => {
@@ -26,8 +33,8 @@ function createLocaleStore() {
                 const next = current === 'en' ? 'ta' : 'en';
                 if (typeof window !== 'undefined') {
                     localStorage.setItem('tnhub-locale', next);
-                    document.documentElement.lang = next;
                 }
+                applyDocumentLocale(next);
                 return next;
             });
         }

@@ -1,6 +1,8 @@
 <script>
   import { Mail, Phone, MapPin, Send, CheckCircle2, Clock, MessageSquare, Globe, Headphones } from '@lucide/svelte';
-  import { t } from '$lib/i18n';
+  
+const t = $derived($tt);
+import { tt } from '$lib/i18n';
 
   let name = $state('');
   let email = $state('');
@@ -13,7 +15,7 @@
     if (!name.trim() || !email.trim() || !message.trim() || isSubmitting)
         return;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-        errorMessage = 'Please enter a valid email address.';
+        errorMessage = t('apply.validation.emailInvalid');
         return;
     }
     isSubmitting = true;
@@ -32,7 +34,7 @@
         });
         const body = await response.json().catch(() => null);
         if (!response.ok) {
-            throw new Error(body?.error ?? 'Unable to submit your message.');
+            throw new Error(body?.error ?? t('errors.submitMessage'));
         }
         sent = true;
         setTimeout(() => {
@@ -43,7 +45,7 @@
         }, 3000);
     }
     catch (cause) {
-        errorMessage = cause instanceof Error ? cause.message : 'Unable to submit your message.';
+        errorMessage = cause instanceof Error ? cause.message : t('errors.submitMessage');
     }
     finally {
         isSubmitting = false;
@@ -84,9 +86,9 @@
             <h3 class="text-sm font-bold text-text">{t('contact.headquarters')}</h3>
           </div>
           <p class="text-xs text-text-muted leading-relaxed">
-            TN Kuviyam Citizen Platform,<br />
-            BuildWhatMovesIndia Hackathon Hub,<br />
-            Chennai, Tamil Nadu.
+            {t('ui.tn.kuviyam.citizen.platform')}<br />
+            {t('ui.buildwhatmovesindia.hackathon.hub')}<br />
+            {t('ui.chennai.tamil.nadu')}
           </p>
         </div>
 
@@ -97,8 +99,8 @@
             </div>
             <h3 class="text-sm font-bold text-text">{t('contact.tollFree')}</h3>
           </div>
-          <p class="text-sm text-text font-mono font-bold">1800-XXX-XXXX</p>
-          <p class="text-[11px] text-text-faint mt-1">Mon–Sat, 9 AM – 6 PM IST</p>
+          <p class="text-sm text-text font-mono font-bold">{t('ui.routes.operator.operator.contact.6e9ee0e5')}</p>
+          <p class="text-[11px] text-text-faint mt-1">{t('ui.routes.operator.operator.contact.ea819127')}</p>
         </div>
 
         <div class="rounded-3xl border border-border bg-surface p-6 shadow-sm hover:shadow-md transition">
@@ -108,8 +110,8 @@
             </div>
             <h3 class="text-sm font-bold text-text">{t('contact.emailSupport')}</h3>
           </div>
-          <p class="text-sm text-text font-mono font-bold">support@tnhub.org</p>
-          <p class="text-[11px] text-text-faint mt-1">Average response within 24 hours</p>
+          <p class="text-sm text-text font-mono font-bold">{t('ui.routes.operator.operator.contact.803fc6c6')}</p>
+          <p class="text-[11px] text-text-faint mt-1">{t('ui.routes.operator.operator.contact.4cbc1785')}</p>
         </div>
       </div>
 
@@ -122,7 +124,7 @@
             </div>
             <div>
               <h2 class="text-lg font-bold text-text">{t('contact.sendMessage')}</h2>
-              <p class="text-xs text-text-muted">Fill in the form and our team will respond promptly.</p>
+              <p class="text-xs text-text-muted">{t('ui.routes.operator.operator.contact.c54b13bb')}</p>
             </div>
           </div>
 
@@ -131,7 +133,7 @@
               <div class="flex h-16 w-16 items-center justify-center rounded-full bg-primary-soft text-primary-soft-text mb-4">
                 <CheckCircle2 class="h-8 w-8" />
               </div>
-              <h3 class="text-lg font-bold text-text">Message Sent</h3>
+              <h3 class="text-lg font-bold text-text">{t('ui.routes.operator.operator.contact.bbaa6ac2')}</h3>
               <p class="text-sm text-text-muted mt-2 max-w-md">{t('contact.successMsg')}</p>
             </div>
           {:else}
@@ -139,17 +141,17 @@
               <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label for="contactName" class="block text-xs font-bold text-text mb-1.5">{t('contact.nameLabel')}</label>
-                  <input id="contactName" type="text" bind:value={name} required placeholder="Meena Lakshmi" class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text placeholder:text-text-faint outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" />
+                  <input id="contactName" type="text" bind:value={name} required placeholder={t('ui.meena.lakshmi')} class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text placeholder:text-text-faint outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" />
                 </div>
                 <div>
                   <label for="contactEmail" class="block text-xs font-bold text-text mb-1.5">{t('contact.emailLabel')} *</label>
-                  <input id="contactEmail" type="email" bind:value={email} required placeholder="meena@example.com" class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text placeholder:text-text-faint outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" />
+                  <input id="contactEmail" type="email" bind:value={email} required placeholder={t('ui.meena.example.com')} class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text placeholder:text-text-faint outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" />
                 </div>
               </div>
 
               <div>
                 <label for="contactMessage" class="block text-xs font-bold text-text mb-1.5">{t('contact.messageLabel')}</label>
-                <textarea id="contactMessage" bind:value={message} required rows={5} placeholder="How can we help you?" class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text placeholder:text-text-faint outline-none transition resize-none focus:border-primary focus:ring-2 focus:ring-primary/15"></textarea>
+                <textarea id="contactMessage" bind:value={message} required rows={5} placeholder={t('ui.how.can.we.help.you')} class="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-text placeholder:text-text-faint outline-none transition resize-none focus:border-primary focus:ring-2 focus:ring-primary/15"></textarea>
               </div>
               {#if errorMessage}
                 <p class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-bold text-rose-700">{errorMessage}</p>

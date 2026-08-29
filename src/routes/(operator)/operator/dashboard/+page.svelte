@@ -1,10 +1,12 @@
 <script>
 
   import { goto } from '$app/navigation';
-  import { currentUser, isAuthenticated, isRestored } from '$lib/stores/auth';
+  
+const t = $derived($tt);
+import { currentUser, isAuthenticated, isRestored } from '$lib/stores/auth';
   import { canAccessRoute } from '$lib/utils/authGuard';
   import { Shield, UserCheck, PlusCircle, Search, FileText, CheckCircle2, Clock, Eye, AlertTriangle } from '@lucide/svelte';
-  import { t } from '$lib/i18n';
+  import { tt } from '$lib/i18n';
 
 let { data } = $props();
 const user = $derived($currentUser);
@@ -132,15 +134,15 @@ async function createAssistedDraft(serviceId) {
           <div class="rounded-3xl border border-border bg-surface p-6 shadow-sm">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
               <div>
-                <h2 class="text-base font-bold text-text">Popular Services</h2>
-                <p class="text-xs text-text-muted">Quickly launch and start applications for citizen-facing services.</p>
+                <h2 class="text-base font-bold text-text">{t('ui.routes.operator.operator.dashboard.027aa3ba')}</h2>
+                <p class="text-xs text-text-muted">{t('ui.routes.operator.operator.dashboard.e9e655ef')}</p>
               </div>
 
               <a 
                 href="/services" 
                 class="text-xs font-bold text-primary hover:text-primary-hover transition underline"
               >
-                Browse All Services
+                {t('ui.browse.all.services')}
               </a>
             </div>
 

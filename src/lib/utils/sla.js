@@ -1,5 +1,5 @@
 /**
- * Centralized SLA Calculation Utility for TN HUB.
+ * Centralized SLA Calculation Utility for TN Kuviyam.
  * Calculates remaining working days (excluding Saturdays and Sundays) relative to a submission timestamp.
  */
 /**

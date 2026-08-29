@@ -237,7 +237,7 @@
 </script>
 
 <svelte:head>
-  <title>User Verification & Approvals — TN Kuviyam Admin</title>
+  <title>{t('ui.routes.admin.admin.approvals.6c857d11')}</title>
 </svelte:head>
 
 {#if !authenticated || role !== "admin"}
@@ -252,8 +252,8 @@
       >
         <Shield class="h-7 w-7" />
       </div>
-      <h2 class="text-xl font-bold text-text">Access Denied</h2>
-      <p class="mt-2 text-xs text-text-muted">Admin access only.</p>
+      <h2 class="text-xl font-bold text-text">{t('ui.routes.admin.admin.approvals.ca62e291')}</h2>
+      <p class="mt-2 text-xs text-text-muted">{t('ui.routes.admin.admin.approvals.c8e4e8be')}</p>
     </div>
   </div>
 {:else}
@@ -272,7 +272,7 @@
         <div class="flex items-center justify-center py-20">
           <Loader2 class="h-8 w-8 animate-spin text-primary" />
           <span class="ml-3 text-sm text-text-muted font-bold"
-            >Loading registrations...</span
+            >{t('ui.routes.admin.admin.approvals.9c654d78')}</span
           >
         </div>
       {:else}
@@ -286,10 +286,10 @@
               <h1
                 class="text-3xl font-black tracking-tight text-text sm:text-[2.1rem]"
               >
-                Application Requests
+                {t('ui.application.requests')}
               </h1>
               <p class="text-sm text-text-muted">
-                Manage and verify departmental officer applications.
+                {t('ui.manage.and.verify.departmental.officer.applications')}
               </p>
             </div>
 
@@ -300,7 +300,7 @@
                 class="inline-flex items-center gap-2 rounded-2xl border border-border bg-muted px-4 py-2.5 text-xs font-bold text-text-muted shadow-sm transition hover:border-primary/30 hover:bg-primary-soft hover:text-primary"
               >
                 <Filter class="h-4 w-4" />
-                Filter
+                {t('common.filter')}
               </button>
               <button
                 type="button"
@@ -308,7 +308,7 @@
                 class="inline-flex items-center gap-2 rounded-2xl border border-border bg-muted px-4 py-2.5 text-xs font-bold text-text-muted shadow-sm transition hover:border-primary/30 hover:bg-primary-soft hover:text-primary"
               >
                 <Download class="h-4 w-4" />
-                Export
+                {t('ui.export')}
               </button>
             </div>
           </div>
@@ -324,7 +324,7 @@
                 <input
                   bind:value={searchQuery}
                   oninput={() => (currentPage = 1)}
-                  placeholder="Search by name, email, or role..."
+                  placeholder={t('ui.search.by.name.email.or.role')}
                   class="w-full rounded-2xl border border-border bg-muted py-3 pl-10 pr-4 text-sm font-medium text-text outline-none shadow-sm transition placeholder:text-text-faint focus:border-primary focus:ring-2 focus:ring-primary/10"
                 />
               </div>
@@ -356,9 +356,9 @@
               >
                 <UserCheck class="h-5 w-5" />
               </div>
-              <p class="text-sm font-bold text-text">No registrations found.</p>
+              <p class="text-sm font-bold text-text">{t('ui.routes.admin.admin.approvals.d2d065e2')}</p>
               <p class="mt-1 text-xs text-text-muted">
-                Try changing the search or filter criteria.
+                {t('ui.try.changing.the.search.or.filter.criteria')}
               </p>
             </div>
           {:else}
@@ -368,12 +368,12 @@
                   <tr
                     class="border-b border-border bg-table-header-bg text-[10px] font-black uppercase tracking-[0.18em] text-text-muted"
                   >
-                    <th class="py-4 px-6">Name</th>
-                    <th class="py-4 px-6">Email Address</th>
-                    <th class="py-4 px-6">Requested Role</th>
-                    <th class="py-4 px-6">Assigned Department</th>
-                    <th class="py-4 px-6">Status</th>
-                    <th class="py-4 px-6 text-right">Actions</th>
+                    <th class="py-4 px-6">{t('ui.routes.admin.admin.approvals.6e32e8fd')}</th>
+                    <th class="py-4 px-6">{t('ui.routes.admin.admin.approvals.f982f19c')}</th>
+                    <th class="py-4 px-6">{t('ui.routes.admin.admin.approvals.8e02c3c9')}</th>
+                    <th class="py-4 px-6">{t('ui.routes.admin.admin.approvals.6e5da442')}</th>
+                    <th class="py-4 px-6">{t('ui.routes.admin.admin.approvals.59e87de7')}</th>
+                    <th class="py-4 px-6 text-right">{t('ui.routes.admin.admin.approvals.90889dc0')}</th>
                   </tr>
                 </thead>
                 <tbody
@@ -431,7 +431,7 @@
                               class="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3 py-2 text-[11px] font-bold text-white shadow-sm transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
                             >
                               <UserCheck class="h-3.5 w-3.5" />
-                              Verify
+                              {t('ui.verify')}
                             </button>
                             <button
                               onclick={() =>
@@ -444,13 +444,13 @@
                               class="inline-flex items-center gap-1.5 rounded-xl border border-danger/20 bg-danger-soft px-3 py-2 text-[11px] font-bold text-danger transition hover:bg-danger-soft/80 disabled:cursor-not-allowed disabled:opacity-60"
                             >
                               <XCircle class="h-3.5 w-3.5" />
-                              Reject
+                              {t('officer.reject')}
                             </button>
                           </div>
                         {:else}
                           <span
                             class="text-[10px] font-bold italic text-text-faint"
-                            >Processed</span
+                            >{t('ui.routes.admin.admin.approvals.9591db5d')}</span
                           >
                         {/if}
                       </td>
@@ -475,7 +475,7 @@
                   onclick={() => (currentPage = Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
                   class="inline-flex h-9 w-9 items-center justify-center rounded-xl text-text-muted transition hover:bg-primary-soft hover:text-primary disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-primary/10"
-                  aria-label="Previous page"
+                  aria-label={t('ui.previous.page')}
                 >
                   <ChevronLeft class="h-4 w-4" />
                 </button>
@@ -507,7 +507,7 @@
                     (currentPage = Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages}
                   class="inline-flex h-9 w-9 items-center justify-center rounded-xl text-text-muted transition hover:bg-primary-soft hover:text-primary disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-primary/10"
-                  aria-label="Next page"
+                  aria-label={t('ui.next.page')}
                 >
                   <ChevronRight class="h-4 w-4" />
                 </button>
@@ -560,7 +560,7 @@
           onclick={() => (confirmAction = null)}
           class="rounded-xl border border-border px-4 py-2 text-xs font-bold text-text-muted hover:bg-surface-container-high transition"
         >
-          Cancel
+          {t('common.cancel')}
         </button>
         <button
           onclick={() =>

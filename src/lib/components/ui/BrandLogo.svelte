@@ -1,4 +1,6 @@
 <script>
+  import { tt } from '$lib/i18n';
+  const t = $derived($tt);
   let {
     showWordmark = false,
     subtitle = '',
@@ -12,7 +14,7 @@
 
 <div class="flex min-w-0 flex-col items-center justify-center gap-2">
   <div class={`shrink-0 bg-transparent ${imageSizeClass}`}>
-    <img src="/logo.png" alt="TN Kuviyam logo" class="block h-full w-full rounded-lg object-contain" />
+    <img src="/logo.png" alt={t('ui.tn.kuviyam.logo')} class="block h-full w-full rounded-lg object-contain" />
   </div>
 
   {#if showWordmark && subtitle}

@@ -184,7 +184,7 @@ function getTutorialThumbnailClass(id) {
                   target="_blank"
                   rel="noopener noreferrer"
                   class="flex items-center justify-center rounded-xl border border-border px-3 text-text-muted transition hover:bg-muted hover:text-text"
-                  title="Open on YouTube"
+                  title={t('ui.open.on.youtube')}
                 >
                   <ExternalLink class="h-4 w-4" />
                 </a>

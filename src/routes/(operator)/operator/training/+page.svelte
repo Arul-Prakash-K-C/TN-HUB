@@ -1,7 +1,9 @@
 <script>
 
   import { Play, BookOpen, CheckCircle2, Clock, Users, Monitor, FileText, Shield, Layers } from '@lucide/svelte';
-  import { t } from '$lib/i18n';
+  
+const t = $derived($tt);
+import { tt } from '$lib/i18n';
 
 const modules = [
     {
@@ -86,7 +88,7 @@ function getAccentColor(color) {
 </script>
 
 <svelte:head>
-  <title>Operator Training Portal — TN Kuviyam</title>
+  <title>{t('ui.routes.operator.operator.training.024a0a94')}</title>
 </svelte:head>
 
 <div class="bg-background text-text min-h-screen pb-20 flex flex-col w-full">
@@ -96,10 +98,10 @@ function getAccentColor(color) {
       <div class="flex-grow">
         <div class="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-3 py-1 text-[11px] font-bold text-white">
           <Monitor class="h-3.5 w-3.5" />
-          Operator Training
+          {t('ui.operator.training')}
         </div>
-        <h1 class="text-3xl font-black mt-2">Operator Kiosk Training</h1>
-        <p class="mt-1 text-xs text-green-100 max-w-2xl leading-relaxed">Boost your e-Sevai Kiosk performance and navigate workflows effectively.</p>
+        <h1 class="text-3xl font-black mt-2">{t('ui.routes.operator.operator.training.d702cc94')}</h1>
+        <p class="mt-1 text-xs text-green-100 max-w-2xl leading-relaxed">{t('ui.routes.operator.operator.training.e234709a')}</p>
       </div>
 
       <!-- Quick Stats -->
@@ -121,17 +123,17 @@ function getAccentColor(color) {
   <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 flex-grow w-full">
     <div class="flex items-center justify-between mb-8">
       <div>
-        <h2 class="text-xl font-bold text-text">Training Modules</h2>
+        <h2 class="text-xl font-bold text-text">{t('ui.routes.operator.operator.training.3628412f')}</h2>
       </div>
       <div class="hidden sm:flex items-center gap-2">
         <span class="flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary-soft px-3 py-1 text-[10px] font-bold text-primary-soft-text">
-          <CheckCircle2 class="h-3 w-3" /> Beginner
+          <CheckCircle2 class="h-3 w-3" /> {t('ui.beginner')}
         </span>
         <span class="flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary-soft px-3 py-1 text-[10px] font-bold text-primary-soft-text">
-          <CheckCircle2 class="h-3 w-3" /> Intermediate
+          <CheckCircle2 class="h-3 w-3" /> {t('ui.intermediate')}
         </span>
         <span class="flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary-soft px-3 py-1 text-[10px] font-bold text-primary-soft-text">
-          <CheckCircle2 class="h-3 w-3" /> Official
+          <CheckCircle2 class="h-3 w-3" /> {t('ui.official')}
         </span>
       </div>
     </div>
@@ -167,7 +169,7 @@ function getAccentColor(color) {
 
             <!-- Topics Preview -->
             <div class="flex-1">
-              <p class="text-[10px] font-bold text-text-faint uppercase tracking-wider mb-2">What you'll learn</p>
+              <p class="text-[10px] font-bold text-text-faint uppercase tracking-wider mb-2">{t('ui.routes.operator.operator.training.d3ec607b')}</p>
               <ul class="space-y-1.5">
                 {#each mod.topics.slice(0, 4) as topic}
                   <li class="flex items-start gap-2 text-xs text-text-muted">
@@ -185,11 +187,11 @@ function getAccentColor(color) {
           <!-- Module Footer -->
           <div class="px-6 pb-6 pt-2">
             <button
-              onclick={() => alert(`Starting: ${mod.title}\n\nThis is a prototype demonstration. Full training content will be available in the production release.`)}
+              onclick={() => alert(t('training.starting', { title: mod.title }))}
               class="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-vazhi-1 hover:bg-primary-hover hover:shadow-vazhi-2 transition-all duration-300"
             >
               <Play class="h-4 w-4 fill-current" />
-              Start Training
+              {t('training.startBtn')}
             </button>
           </div>
         </div>

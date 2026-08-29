@@ -84,10 +84,10 @@
       <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-warning-soft text-warning">
         <Shield class="h-7 w-7" />
       </div>
-      <h2 class="text-xl font-bold text-text">Access Denied</h2>
-      <p class="mt-2 text-xs text-text-muted">Only authorized System Administrators can access this dashboard. Please log in with an administrator account.</p>
+      <h2 class="text-xl font-bold text-text">{t('ui.routes.admin.admin.210d976a')}</h2>
+      <p class="mt-2 text-xs text-text-muted">{t('ui.routes.admin.admin.ca903597')}</p>
       <a href="/login?redirect=/admin" class="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-primary py-3.5 text-xs font-bold text-white shadow transition hover:bg-primary-hover">
-        Log In
+        {t('ui.log.in')}
       </a>
     </div>
   </div>
@@ -98,7 +98,7 @@
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 class="text-h1 text-white">{t('admin.title')}</h1>
-            <p class="text-xs text-white/70">Platform usage analytics & service architecture overview</p>
+            <p class="text-xs text-white/70">{t('ui.routes.admin.admin.e76f6ffb')}</p>
           </div>
         </div>
       </div>
@@ -110,7 +110,7 @@
         <div class="rounded-2xl border border-border bg-surface p-5 shadow-vazhi-1">
           <div class="flex items-center gap-2 text-xs font-medium text-text-muted">
             <FileText class="h-4 w-4 text-primary" />
-            Total Applications
+            {t('admin.stats.totalApplications')}
           </div>
           <div class="mt-2 text-3xl font-bold text-primary">{stats.totalApplications}</div>
           <div class="mt-1 text-[10px] font-bold text-success">{stats.approvedApplications} approved</div>
@@ -119,7 +119,7 @@
         <div class="rounded-2xl border border-border bg-surface p-5 shadow-vazhi-1">
           <div class="flex items-center gap-2 text-xs font-medium text-text-muted">
             <Clock class="h-4 w-4 text-warning" />
-            Pending Review
+            {t('dashboard.stats.pending')}
           </div>
           <div class="mt-2 text-3xl font-bold text-warning">{stats.pendingApplications}</div>
           <div class="mt-1 text-[10px] font-bold text-danger">{stats.rejectedApplications} rejected</div>
@@ -128,7 +128,7 @@
         <div class="rounded-2xl border border-border bg-surface p-5 shadow-vazhi-1">
           <div class="flex items-center gap-2 text-xs font-medium text-text-muted">
             <Users class="h-4 w-4 text-primary" />
-            Total Users
+            {t('ui.total.users')}
           </div>
           <div class="mt-2 text-3xl font-bold text-primary">{stats.totalUsers}</div>
           <div class="mt-1 text-[10px] font-bold text-text-muted">{stats.citizenUsers} citizens • {stats.operatorUsers + stats.officerUsers} officials</div>
@@ -137,7 +137,7 @@
         <div class="rounded-2xl border border-border bg-surface p-5 shadow-vazhi-1">
           <div class="flex items-center gap-2 text-xs font-medium text-text-muted">
             <Activity class="h-4 w-4 text-success" />
-            Total Services
+            {t('operator.stats.total')}
           </div>
           <div class="mt-2 text-3xl font-bold text-primary">{totalServices}</div>
           <div class="mt-1 text-[10px] font-bold text-text-muted">{nativeServices} native • {apiServices} API • {externalServices} external</div>
@@ -152,13 +152,13 @@
               <UserCheck class="h-4 w-4" />
             </div>
             <div>
-              <span class="text-xs font-bold text-text">Registration Approvals</span>
+              <span class="text-xs font-bold text-text">{t('ui.routes.admin.admin.756abc6f')}</span>
               {#if stats.pendingRegistrations > 0}
                 <span class="ml-1.5 inline-flex items-center justify-center w-5 h-5 rounded-full bg-danger text-white text-[9px] font-bold">{stats.pendingRegistrations}</span>
               {/if}
             </div>
           </div>
-          <p class="text-[10px] text-text-muted mt-2">Pending operator & officer approvals</p>
+          <p class="text-[10px] text-text-muted mt-2">{t('ui.routes.admin.admin.66964183')}</p>
         </a>
 
         <a href="/admin/helpdesk" class="rounded-2xl border border-border bg-surface p-5 shadow-vazhi-1 hover:shadow-vazhi-2 transition group">
@@ -167,13 +167,13 @@
               <MessageCircleQuestion class="h-4 w-4" />
             </div>
             <div>
-              <span class="text-xs font-bold text-text">Help Desk & Grievance</span>
+              <span class="text-xs font-bold text-text">{t('ui.routes.admin.admin.93e03965')}</span>
               {#if stats.pendingQuestions > 0}
                 <span class="ml-1.5 inline-flex items-center justify-center w-5 h-5 rounded-full bg-warning text-white text-[9px] font-bold">{stats.pendingQuestions}</span>
               {/if}
             </div>
           </div>
-          <p class="text-[10px] text-text-muted mt-2">User inquiries, grievances & replies</p>
+          <p class="text-[10px] text-text-muted mt-2">{t('ui.routes.admin.admin.159cacd6')}</p>
         </a>
 
         <a href="/admin/profile" class="rounded-2xl border border-border bg-surface p-5 shadow-vazhi-1 hover:shadow-vazhi-2 transition group">
@@ -181,9 +181,9 @@
             <div class="w-9 h-9 rounded-xl bg-success-soft text-success flex items-center justify-center group-hover:scale-110 transition">
               <Shield class="h-4 w-4" />
             </div>
-            <span class="text-xs font-bold text-text">Admin Profile</span>
+            <span class="text-xs font-bold text-text">{t('ui.routes.admin.admin.67674c70')}</span>
           </div>
-          <p class="text-[10px] text-text-muted mt-2">View account details</p>
+          <p class="text-[10px] text-text-muted mt-2">{t('ui.routes.admin.admin.bf97baab')}</p>
         </a>
       </div>
 
@@ -193,10 +193,10 @@
         <div class="rounded-2xl border border-border bg-surface p-6 shadow-vazhi-1">
           <div class="flex items-center gap-2 mb-5">
             <BarChart3 class="h-5 w-5 text-primary" />
-            <h2 class="text-sm font-bold text-text">Application Status Distribution</h2>
+            <h2 class="text-sm font-bold text-text">{t('ui.routes.admin.admin.5bf03866')}</h2>
           </div>
           {#if Object.keys(stats.statusBreakdown).length === 0}
-            <p class="text-xs text-text-faint text-center py-8">No application data yet</p>
+            <p class="text-xs text-text-faint text-center py-8">{t('ui.routes.admin.admin.de618bc4')}</p>
           {:else}
             <div class="space-y-2.5">
               {#each Object.entries(stats.statusBreakdown).sort((a, b) => Number(b[1]) - Number(a[1])) as [status, count]}
@@ -220,10 +220,10 @@
         <div class="rounded-2xl border border-border bg-surface p-6 shadow-vazhi-1">
           <div class="flex items-center gap-2 mb-5">
             <Building2 class="h-5 w-5 text-primary" />
-            <h2 class="text-sm font-bold text-text">Department Application Load</h2>
+            <h2 class="text-sm font-bold text-text">{t('ui.routes.admin.admin.c5753a1c')}</h2>
           </div>
           {#if Object.keys(stats.departmentBreakdown).length === 0}
-            <p class="text-xs text-text-faint text-center py-8">No application data yet</p>
+            <p class="text-xs text-text-faint text-center py-8">{t('ui.routes.admin.admin.de618bc4')}</p>
           {:else}
             <div class="space-y-2.5">
               {#each Object.entries(stats.departmentBreakdown).sort((a, b) => Number(b[1]) - Number(a[1])) as [deptId, count]}
@@ -251,38 +251,38 @@
             <Users class="h-6 w-6" />
           </div>
           <div class="text-2xl font-bold text-text">{stats.citizenUsers}</div>
-          <div class="text-[10px] font-bold text-text-muted uppercase mt-1">Registered Citizens</div>
+          <div class="text-[10px] font-bold text-text-muted uppercase mt-1">{t('ui.routes.admin.admin.5719b968')}</div>
         </div>
         <div class="rounded-2xl border border-border bg-surface p-5 shadow-vazhi-1 text-center">
           <div class="mx-auto w-14 h-14 rounded-2xl bg-success-soft text-success flex items-center justify-center mb-3">
             <TrendingUp class="h-6 w-6" />
           </div>
           <div class="text-2xl font-bold text-text">{stats.operatorUsers}</div>
-          <div class="text-[10px] font-bold text-text-muted uppercase mt-1">Kiosk Operators</div>
+          <div class="text-[10px] font-bold text-text-muted uppercase mt-1">{t('ui.routes.admin.admin.aae97a0c')}</div>
         </div>
         <div class="rounded-2xl border border-border bg-surface p-5 shadow-vazhi-1 text-center">
           <div class="mx-auto w-14 h-14 rounded-2xl bg-primary-soft text-primary-soft-text flex items-center justify-center mb-3">
             <Shield class="h-6 w-6" />
           </div>
           <div class="text-2xl font-bold text-text">{stats.officerUsers}</div>
-          <div class="text-[10px] font-bold text-text-muted uppercase mt-1">Department Officers</div>
+          <div class="text-[10px] font-bold text-text-muted uppercase mt-1">{t('ui.routes.admin.admin.1ba630cf')}</div>
         </div>
       </div>
 
       <!-- Service Architecture Matrix Table -->
       <div class="mt-8 rounded-2xl border border-border bg-surface p-6 shadow-vazhi-1">
-        <h2 class="text-lg font-bold text-text mb-4">Service Integration Architecture Matrix</h2>
+        <h2 class="text-lg font-bold text-text mb-4">{t('ui.routes.admin.admin.89e19b77')}</h2>
 
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs text-text">
             <thead class="bg-surface-container font-bold text-text-muted uppercase tracking-wider border-b border-border">
               <tr>
-                <th class="p-3">Service Name</th>
-                <th class="p-3">Department</th>
-                <th class="p-3">Category</th>
-                <th class="p-3">Implementation Mode</th>
-                <th class="p-3">SLA / Fee</th>
-                <th class="p-3">Status</th>
+                <th class="p-3">{t('ui.routes.admin.admin.6e88643e')}</th>
+                <th class="p-3">{t('ui.routes.admin.admin.1653860f')}</th>
+                <th class="p-3">{t('ui.routes.admin.admin.f0e88235')}</th>
+                <th class="p-3">{t('ui.routes.admin.admin.86682e84')}</th>
+                <th class="p-3">{t('ui.routes.admin.admin.ad095f1f')}</th>
+                <th class="p-3">{t('ui.routes.admin.admin.b7382851')}</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-border">
@@ -294,20 +294,20 @@
                   <td class="p-3">
                     {#if svc.implementationMode === 'NATIVE_WORKFLOW'}
                       <span class="inline-flex items-center gap-1 rounded-full bg-success-soft px-2.5 py-0.5 font-bold text-success">
-                        <CheckCircle class="h-3 w-3" /> Native
+                        <CheckCircle class="h-3 w-3" /> {t('ui.native')}
                       </span>
                     {:else if svc.implementationMode === 'API_INTEGRATED'}
                       <span class="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2.5 py-0.5 font-bold text-primary-soft-text">
-                        <Zap class="h-3 w-3" /> API
+                        <Zap class="h-3 w-3" /> {t('ui.api')}
                       </span>
                     {:else}
                       <span class="inline-flex items-center gap-1 rounded-full bg-warning-soft px-2.5 py-0.5 font-bold text-warning">
-                        <ExternalLink class="h-3 w-3" /> External
+                        <ExternalLink class="h-3 w-3" /> {t('ui.external')}
                       </span>
                     {/if}
                   </td>
                   <td class="p-3">{svc.processingTimeDays}d • ₹{svc.fee}</td>
-                  <td class="p-3 font-bold text-success">Active</td>
+                  <td class="p-3 font-bold text-success">{t('ui.routes.admin.admin.90831982')}</td>
                 </tr>
               {/each}
             </tbody>
