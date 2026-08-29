@@ -111,7 +111,7 @@
   }
 
   function getRoleBadge(role) {
-    if (role === "operator") return "Kiosk Operator";
+    if (role === "operator") return t("role.operator");
     if (role === "department_user") return "Department Officer";
     return role;
   }

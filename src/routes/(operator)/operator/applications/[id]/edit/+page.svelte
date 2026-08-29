@@ -439,10 +439,6 @@ async function deleteDraft() {
                   <label for="occupation" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.73e1739e')}</label>
                   <input id="occupation" type="text" bind:value={formData.occupation} required placeholder={t('ui.e.g.farmer.business')} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
                 </div>
-                <div class="sm:col-span-2">
-                  <label for="purpose" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.b94d3baf')}</label>
-                  <input id="purpose" type="text" bind:value={formData.purpose} placeholder={t('ui.e.g.scholarship.higher.education')} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
-                </div>
               {:else if service.slug === 'community-certificate'}
                 <div>
                   <label for="religion" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.d1635ec4')}</label>
@@ -491,10 +487,6 @@ async function deleteDraft() {
                   <label for="residenceDurationYears" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.e80113c8')}</label>
                   <input id="residenceDurationYears" type="number" bind:value={formData.residenceDurationYears} required placeholder={t('ui.e.g.15')} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
                 </div>
-                <div class="sm:col-span-2">
-                  <label for="purpose" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.b94d3baf')}</label>
-                  <input id="purpose" type="text" bind:value={formData.purpose} placeholder={t('ui.e.g.government.job.education')} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
-                </div>
               {:else}
                 <div>
                   <label for="doorNo" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.518c4d63')}</label>
@@ -523,10 +515,6 @@ async function deleteDraft() {
                 <div>
                   <label for="occupation" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.7344eada')}</label>
                   <input id="occupation" type="text" bind:value={formData.occupation} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
-                </div>
-                <div>
-                  <label for="purpose" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('ui.routes.operator.operator.applications.id.edit.82070a79')}</label>
-                  <input id="purpose" type="text" bind:value={formData.purpose} class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-3.5 text-xs font-medium outline-none focus:bg-white focus:border-primary-500 transition" />
                 </div>
               {/if}
             </div>
@@ -603,7 +591,6 @@ async function deleteDraft() {
                   {#if service.slug === 'income-certificate'}
                     <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.7e0ef584')}</dt><dd class="text-slate-900 font-bold">₹{formData.annualIncome || '—'}</dd>
                     <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.7344eada')}</dt><dd class="text-slate-900 font-bold">{formData.occupation || '—'}</dd>
-                    <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.82070a79')}</dt><dd class="text-slate-900 font-bold">{formData.purpose || '—'}</dd>
                   {/if}
 
                   {#if service.slug === 'community-certificate'}
@@ -615,7 +602,6 @@ async function deleteDraft() {
                   {#if service.slug === 'nativity-certificate'}
                     <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.1a10e399')}</dt><dd class="text-slate-900 font-bold">{formData.placeOfBirth || '—'}</dd>
                     <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.1d46a71c')}</dt><dd class="text-slate-900 font-bold">{formData.residenceDurationYears || '—'} Years</dd>
-                    <dt class="text-slate-500">{t('ui.routes.operator.operator.applications.id.edit.82070a79')}</dt><dd class="text-slate-900 font-bold">{formData.purpose || '—'}</dd>
                   {/if}
                 </dl>
               {/if}

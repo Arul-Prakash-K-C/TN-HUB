@@ -25,14 +25,19 @@ const application = $derived(data.application);
 const timelineEntries = $derived([...(application?.history ?? [])].sort((left, right) => left.timestamp.localeCompare(right.timestamp)));
 
 function getTimelineDescription(entry) {
-  if (currentLocale === 'ta' && entry.descriptionTA) return entry.descriptionTA;
+  if (currentLocale === 'ta' && entry.descriptionTA && entry.descriptionTA !== entry.description) {
+    return entry.descriptionTA;
+  }
   const normalizedDescription = String(entry.description ?? '').trim().toLowerCase();
   const normalizedStatus = String(entry.status ?? '').toUpperCase();
   const keyByDescription = {
     'application saved as draft': 'timeline.applicationSavedAsDraft',
     'application submitted': 'timeline.applicationSubmitted',
     'document verified': 'timeline.documentVerified',
+    'document rejected': 'timeline.documentRejected',
+    'simulated razorpay payment successful': 'timeline.paymentSuccessful',
     'payment successful': 'timeline.paymentSuccessful',
+    'simulated razorpay payment failed': 'timeline.paymentFailed',
     'payment failed': 'timeline.paymentFailed',
     'correction requested': 'timeline.correctionRequested',
     'application approved': 'timeline.applicationApproved',
@@ -41,7 +46,17 @@ function getTimelineDescription(entry) {
   };
   const key = keyByDescription[normalizedDescription] ?? `timeline.status.${normalizedStatus}`;
   const translated = t(key);
-  return translated === key ? (entry.description || getTimelineTitle(entry.status)) : translated;
+  if (translated !== key) return translated;
+  if (currentLocale === 'ta' && entry.descriptionTA) return entry.descriptionTA;
+  return entry.description || getTimelineTitle(entry.status);
+}
+
+function getActorNameLabel(actorName) {
+  if (!actorName) return '';
+  if (String(actorName).toLowerCase() === 'system') {
+    return currentLocale === 'ta' ? 'அமைப்பு' : 'System';
+  }
+  return actorName;
 }
 
 function getActorRoleLabel(role) {
@@ -328,7 +343,7 @@ async function downloadDocument(documentId) {
                     </p>
 
                     <div class="mt-3 flex flex-col gap-2 border-t border-border/70 pt-3 text-xs text-text-muted sm:flex-row sm:items-center sm:justify-between">
-                      <span>{t('ui.routes.citizen.applications.id.153b0e9b')} <strong class="text-text">{entry.actorName}</strong> ({getActorRoleLabel(entry.actorRole)})</span>
+                      <span>{t('ui.routes.citizen.applications.id.153b0e9b')} <strong class="text-text">{getActorNameLabel(entry.actorName)}</strong> ({getActorRoleLabel(entry.actorRole)})</span>
                       {#if entry.remarks}
                         <span class="max-w-full italic text-text-faint sm:text-right">"{entry.remarks}"</span>
                       {/if}

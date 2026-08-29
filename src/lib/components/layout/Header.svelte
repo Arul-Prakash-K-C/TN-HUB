@@ -96,8 +96,32 @@ function handleProtectedNav(targetPath, title, e) {
         </a>
       </nav>
 
-      <!-- Right Side Actions -->
+      <!-- Right Actions -->
       <div class="flex items-center gap-3">
+        <div class="hidden sm:flex items-center gap-1.5">
+          <button
+            type="button"
+            onclick={handleLanguageToggle}
+            class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-muted text-text-muted transition hover:bg-surface-container"
+            aria-label={t('a11y.changeLanguage')}
+            title={currentLocale === 'ta' ? 'English' : 'தமிழ்'}
+          >
+            <Globe class="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onclick={handleThemeToggle}
+            class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-muted text-text-muted transition hover:bg-surface-container"
+            aria-label={t('a11y.toggleTheme')}
+          >
+            {#if themeMode === 'dark'}
+              <Sun class="h-4 w-4" />
+            {:else}
+              <Moon class="h-4 w-4" />
+            {/if}
+          </button>
+        </div>
+
         {#if authenticated && user}
           <a
             href="/notifications"
@@ -154,28 +178,6 @@ function handleProtectedNav(targetPath, title, e) {
             {/if}
           </div>
         {:else}
-          <div class="hidden sm:flex items-center gap-2">
-            <button
-              type="button"
-              onclick={handleLanguageToggle}
-              class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-muted text-text-muted transition hover:bg-surface-container"
-              aria-label={t('a11y.changeLanguage')}
-            >
-              <Globe class="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onclick={handleThemeToggle}
-              class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-muted text-text-muted transition hover:bg-surface-container"
-              aria-label={t('a11y.toggleTheme')}
-            >
-              {#if themeMode === 'dark'}
-                <Sun class="h-4 w-4" />
-              {:else}
-                <Moon class="h-4 w-4" />
-              {/if}
-            </button>
-          </div>
           <a
             href="/login"
             class="rounded-full bg-primary px-6 py-2 text-sm font-bold text-white hover:bg-primary-hover transition shadow-sm"

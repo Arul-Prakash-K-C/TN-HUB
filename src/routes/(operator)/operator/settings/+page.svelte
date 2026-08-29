@@ -39,7 +39,7 @@ function saveSettings() {
         </div>
       {/if}
 
-      <!-- Kiosk Notification Section -->
+      <!-- Operator notification section -->
       <div class="space-y-4">
         <h3 class="text-sm font-bold text-text flex items-center gap-2">
           <Bell class="h-4 w-4 text-primary" /> {t('ui.kiosk.alerts.and.notifications')}

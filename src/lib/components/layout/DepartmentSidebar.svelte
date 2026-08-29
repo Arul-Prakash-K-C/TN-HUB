@@ -1,10 +1,10 @@
 <script>
 
   import { page } from '$app/stores';
-  import { LayoutDashboard, Inbox, Bell, User, Settings, LogOut, BarChart3, ShieldCheck, PhoneCall } from '@lucide/svelte';
+  import { LayoutDashboard, Inbox, Bell, User, Settings, LogOut, BarChart3, ShieldCheck, PhoneCall, Globe } from '@lucide/svelte';
   import { auth, currentUser } from '$lib/stores/auth';
   import LogoutModal from '$lib/components/ui/LogoutModal.svelte';
-  import { tt } from '$lib/i18n';
+  import { tt, locale } from '$lib/i18n';
   import BrandLogo from '$lib/components/ui/BrandLogo.svelte';
 
 let { isOpen = $bindable(false) } = $props();
@@ -105,6 +105,16 @@ $effect(() => {
       <PhoneCall class="h-4 w-4 shrink-0" />
       <span>{t('footer.contact')}</span>
     </a>
+
+    <button
+      type="button"
+      onclick={() => locale.toggle()}
+      class="flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-left text-xs font-medium text-[var(--color-sidebar-text-muted)] hover:bg-[var(--color-sidebar-hover)] hover:text-[var(--color-sidebar-text)] transition-all"
+      aria-label={t('a11y.changeLanguage')}
+    >
+      <Globe class="h-4 w-4 shrink-0" />
+      <span>{$locale === 'ta' ? 'English' : 'தமிழ்'}</span>
+    </button>
 
   </div>
 

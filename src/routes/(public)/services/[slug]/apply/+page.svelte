@@ -755,10 +755,6 @@
                   <label for="occupation" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.occupation')} *</label>
                   <input id="occupation" type="text" bind:value={formData.occupation} required placeholder={t('ui.e.g.farmer.business')} class="w-full rounded-lg border border-border bg-surface dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
-                <div class="sm:col-span-2">
-                  <label for="purpose" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.purpose')}</label>
-                  <input id="purpose" type="text" bind:value={formData.purpose} placeholder={t('ui.e.g.scholarship.higher.education')} class="w-full rounded-lg border border-border bg-surface dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
-                </div>
               {:else if service.slug === 'community-certificate'}
                 <div>
                   <label for="religion" class="block text-sm font-medium text-text mb-1.5">{t('ui.routes.public.services.slug.apply.266fa199')}</label>
@@ -807,10 +803,6 @@
                   <label for="residenceDurationYears" class="block text-sm font-medium text-text mb-1.5">{t('ui.routes.public.services.slug.apply.bff143f4')}</label>
                   <input id="residenceDurationYears" type="number" bind:value={formData.residenceDurationYears} required placeholder={t('ui.e.g.15')} class="w-full rounded-lg border border-border bg-surface dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
-                <div class="sm:col-span-2">
-                  <label for="purpose" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.purpose')}</label>
-                  <input id="purpose" type="text" bind:value={formData.purpose} placeholder={t('ui.e.g.government.job.education')} class="w-full rounded-lg border border-border bg-surface dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
-                </div>
               {:else}
                 <div>
                   <label for="doorNo" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.doorNo')} *</label>
@@ -834,15 +826,11 @@
                 </div>
                 <div>
                   <label for="pincode" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.pincode')} *</label>
-                  <input id="pincode" type="text" bind:value={formData.pincode} maxlength="6" pattern="[1-9][0-9]{'{'}5{'}'}" placeholder="600040" class="w-full rounded-lg border border-border bg-surface dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                  <input id="pincode" type="text" bind:value={formData.pincode} maxlength="6" pattern="[1-9][0-9]{5}" placeholder="600040" class="w-full rounded-lg border border-border bg-surface dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
                 <div>
                   <label for="occupation" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.occupation')}</label>
                   <input id="occupation" type="text" bind:value={formData.occupation} class="w-full rounded-lg border border-border bg-surface dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
-                </div>
-                <div>
-                  <label for="purpose" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.purpose')}</label>
-                  <input id="purpose" type="text" bind:value={formData.purpose} class="w-full rounded-lg border border-border bg-surface dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
                 </div>
               {/if}
             </div>
@@ -934,7 +922,6 @@
                   {#if service.slug === 'income-certificate'}
                     <dt class="text-text-muted">{t('ui.routes.public.services.slug.apply.975f4ce5')}</dt><dd class="text-text font-medium">₹{formData.annualIncome || '—'}</dd>
                     <dt class="text-text-muted">{t('ui.routes.public.services.slug.apply.f87cef33')}</dt><dd class="text-text font-medium">{formData.occupation || '—'}</dd>
-                    <dt class="text-text-muted">{t('ui.routes.public.services.slug.apply.31fc23b7')}</dt><dd class="text-text font-medium">{formData.purpose || '—'}</dd>
                   {:else}
                     <dt class="text-text-muted">{t('apply.field.fatherName')}</dt><dd class="text-text font-medium">{formData.fatherName || '—'}</dd>
                     <dt class="text-text-muted">{t('apply.field.dob')}</dt><dd class="text-text font-medium">{formData.dateOfBirth || '—'}</dd>
@@ -951,7 +938,6 @@
                   {#if service.slug === 'nativity-certificate'}
                     <dt class="text-text-muted">{t('ui.routes.public.services.slug.apply.eb59fe52')}</dt><dd class="text-text font-medium">{formData.placeOfBirth || '—'}</dd>
                     <dt class="text-text-muted">{t('ui.routes.public.services.slug.apply.d5ed6119')}</dt><dd class="text-text font-medium">{formData.residenceDurationYears || '—'} {t('common.years')}</dd>
-                    <dt class="text-text-muted">{t('ui.routes.public.services.slug.apply.31fc23b7')}</dt><dd class="text-text font-medium">{formData.purpose || '—'}</dd>
                   {/if}
                 </dl>
               {/if}
