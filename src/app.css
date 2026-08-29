@@ -6,8 +6,8 @@
 }
 
 /* ============================================
-   TN HUB DESIGN SYSTEM TOKENS
-   Vazhi-inspired semantic tokens for TN HUB
+   TN Kuviyam DESIGN SYSTEM TOKENS
+   Vazhi-inspired semantic tokens for TN Kuviyam
    ============================================ */
 
 @theme {
@@ -535,7 +535,7 @@ table {
 }
 
 /* ============================================
-   TN HUB DYNAMIC THEME SYSTEM OVERRIDES
+   TN Kuviyam DYNAMIC THEME SYSTEM OVERRIDES
    ============================================ */
 :root {
   --theme-primary: #316342;

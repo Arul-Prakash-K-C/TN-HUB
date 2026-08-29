@@ -1,13 +1,12 @@
 <script>
 
   import { goto } from '$app/navigation';
-  import { dev } from '$app/environment';
   import { page } from '$app/stores';
   import { get } from 'svelte/store';
-  import { onMount } from 'svelte';
   import { auth, currentUser, isAuthenticated, userRole } from '$lib/stores/auth';
   import { getPortalRedirectForRole } from '$lib/utils/authGuard';
   import { departments } from '$lib/data/departments';
+  import { demoCredentials as loginDemoCredentials } from '$lib/data/users';
   import { tt, locale } from '$lib/i18n';
   import { User, Building2, Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, UserPlus, Monitor } from '@lucide/svelte';
 
@@ -28,7 +27,7 @@ let loading = $state(false);
 let desiredDeptId = $state('dept-revenue');
 let registrationSuccess = $state(false);
 let officialAuthUser = null;
-let demoCredentials = $state([]);
+const demoCredentials = loginDemoCredentials;
 const demoRoleByTab = {
     citizen: 'citizen',
     operator: 'operator',
@@ -37,13 +36,6 @@ const demoRoleByTab = {
 };
 const demoAccount = $derived(demoCredentials.find((credential) => credential.role === demoRoleByTab[activeTab]) ?? null);
 const authenticated = $derived($isAuthenticated);
-
-onMount(async () => {
-    if (!dev)
-        return;
-    const module = await import('$lib/data/users');
-    demoCredentials = module.demoCredentials;
-});
 
 function getLoginRedirectTarget() {
     const redirectParam = $page.url.searchParams.get('redirect');

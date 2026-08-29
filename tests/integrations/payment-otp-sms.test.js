@@ -17,6 +17,9 @@ import {
 } from '../../src/lib/server/sms/applicationSms.js';
 import { POST as requestPaymentOtp } from '../../src/routes/api/applications/[id]/payment/otp/+server.js';
 import { POST as confirmPayment } from '../../src/routes/api/applications/[id]/payment/confirm/+server.js';
+import { PATCH as markNotificationRead } from '../../src/routes/api/notifications/[id]/+server.js';
+import { POST as markAllNotificationsRead } from '../../src/routes/api/notifications/read-all/+server.js';
+import { GET as listComplaints, POST as createComplaint } from '../../src/routes/api/complaints/+server.js';
 
 describe('simulated payment outcome validation', () => {
     it('accepts only explicit successful and failed outcomes', () => {
@@ -48,6 +51,14 @@ describe('payment OTP challenge verification', () => {
         expect(verifyPaymentOtpChallenge(challenge, DEMO_PAYMENT_OTP, 10 * 60 * 1000)).toEqual({
             ok: false,
             reason: 'Payment OTP has expired.'
+        });
+    });
+
+    it('enforces payment OTP attempt limits server-side', () => {
+        const challenge = createPaymentOtpChallenge(1_000);
+        expect(verifyPaymentOtpChallenge({ ...challenge, attempts: 3 }, DEMO_PAYMENT_OTP, 2_000)).toEqual({
+            ok: false,
+            reason: 'Too many invalid OTP attempts.'
         });
     });
 });
@@ -127,5 +138,33 @@ describe('payment API authorization boundary', () => {
 
         expect(response.status).toBe(401);
         await expect(response.json()).resolves.toMatchObject({ message: 'Authentication required.' });
+    });
+});
+
+describe('Phase 2 API authorization boundaries', () => {
+    it('rejects unauthenticated notification mutation requests', async () => {
+        await expect(markNotificationRead({ locals: {}, params: { id: 'note-1' } })).rejects.toMatchObject({
+            status: 401
+        });
+
+        await expect(markAllNotificationsRead({ locals: {} })).rejects.toMatchObject({
+            status: 401
+        });
+    });
+
+    it('rejects unauthenticated complaint list and create requests', async () => {
+        await expect(listComplaints({ locals: {} })).rejects.toMatchObject({
+            status: 401
+        });
+
+        await expect(createComplaint({
+            locals: {},
+            request: new Request('http://localhost/api/complaints', {
+                method: 'POST',
+                body: JSON.stringify({ subject: 'Delay', description: 'Service delayed' })
+            })
+        })).rejects.toMatchObject({
+            status: 401
+        });
     });
 });

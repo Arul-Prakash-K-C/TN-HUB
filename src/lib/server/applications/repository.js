@@ -1093,14 +1093,6 @@ export async function reviewApplicationDocument(user, applicationId, documentId,
     const application = await getApplicationForUser(user, applicationId);
     if (!application)
         throw new Error('Application not found.');
-    if (smsEvent) {
-        await sendApplicationSms({
-            phoneNumber: application.formData?.phone,
-            applicationId: application.id,
-            trackingId: application.applicationNumber,
-            event: smsEvent
-        });
-    }
     return application;
 }
 export async function markApplicationDocumentViewed(user, applicationId, documentId) {

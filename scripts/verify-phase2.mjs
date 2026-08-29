@@ -87,18 +87,18 @@ async function cleanupApplication(db, storage, applicationId) {
 
 try {
   const [adminModule, sessionModule, catalogModule, applicationsModule, notificationsModule, authSessionRoute, applicationsRoute, submitRoute, uploadRoute, actionRoute, reviewRoute, operatorRoute] = await Promise.all([
-    server.ssrLoadModule('/src/lib/server/firebase/admin.ts'),
-    server.ssrLoadModule('/src/lib/server/auth/session.ts'),
-    server.ssrLoadModule('/src/lib/server/catalog/repository.ts'),
-    server.ssrLoadModule('/src/lib/server/applications/repository.ts'),
-    server.ssrLoadModule('/src/lib/server/notifications/repository.ts'),
-    server.ssrLoadModule('/src/routes/api/auth/session/+server.ts'),
-    server.ssrLoadModule('/src/routes/api/applications/+server.ts'),
-    server.ssrLoadModule('/src/routes/api/applications/[id]/submit/+server.ts'),
-    server.ssrLoadModule('/src/routes/api/applications/[id]/documents/+server.ts'),
-    server.ssrLoadModule('/src/routes/api/applications/[id]/actions/+server.ts'),
-    server.ssrLoadModule('/src/routes/api/applications/[id]/documents/[documentId]/+server.ts'),
-    server.ssrLoadModule('/src/routes/api/operator/applications/+server.ts')
+    server.ssrLoadModule('/src/lib/server/firebase/admin.js'),
+    server.ssrLoadModule('/src/lib/server/auth/session.js'),
+    server.ssrLoadModule('/src/lib/server/catalog/repository.js'),
+    server.ssrLoadModule('/src/lib/server/applications/repository.js'),
+    server.ssrLoadModule('/src/lib/server/notifications/repository.js'),
+    server.ssrLoadModule('/src/routes/api/auth/session/+server.js'),
+    server.ssrLoadModule('/src/routes/api/applications/+server.js'),
+    server.ssrLoadModule('/src/routes/api/applications/[id]/submit/+server.js'),
+    server.ssrLoadModule('/src/routes/api/applications/[id]/documents/+server.js'),
+    server.ssrLoadModule('/src/routes/api/applications/[id]/actions/+server.js'),
+    server.ssrLoadModule('/src/routes/api/applications/[id]/documents/[documentId]/+server.js'),
+    server.ssrLoadModule('/src/routes/api/operator/applications/+server.js')
   ]);
   const { getFirebaseAdminAuth, getFirebaseAdminFirestore, getFirebaseAdminStorage } = adminModule;
   const db = getFirebaseAdminFirestore();
@@ -146,10 +146,37 @@ try {
   assert(revenueService, 'no native Revenue service available for application testing');
   record('Firestore departments and service catalog', `${catalog.departments.length} departments, ${catalog.services.length} active services`);
 
+  function phase2ApplicationFormData(label) {
+    return {
+      fullName: `Phase 2 ${label} Demo`,
+      fatherName: 'Phase 2 Guardian',
+      dateOfBirth: '1990-01-01',
+      gender: 'female',
+      phone: '9876543210',
+      aadhaarNumber: '123456789012',
+      purpose: 'integration test',
+      district: 'Chennai',
+      taluk: 'Mambalam',
+      village: 'Mambalam',
+      surveyNumber: '142/3A',
+      annualIncome: 120000,
+      occupation: 'Farmer',
+      religion: 'Hindu',
+      communityCategory: 'BC',
+      subCaste: 'Demo community',
+      placeOfBirth: 'Chennai',
+      residenceDurationYears: 15,
+      doorNo: '12',
+      street: 'Demo Street',
+      area: 'Mambalam',
+      pincode: '600040'
+    };
+  }
+
   async function createSubmittedApplication(label) {
     const created = await parseResponse(await applicationsRoute.POST(handlerEvent({
       user: users.citizen,
-      body: { serviceId: revenueService.id, formData: { fullName: `Phase 2 ${label} Demo`, purpose: 'integration test' }, submit: false }
+      body: { serviceId: revenueService.id, formData: phase2ApplicationFormData(label), submit: false }
     })), `${label} draft creation`);
     const applicationId = created.application.id;
     cleanup.applicationIds.add(applicationId);
@@ -186,11 +213,13 @@ try {
   const approvedDocuments = await db.collection('documents').where('applicationId', '==', approvedApplicationId).get();
   assert(!approvedDocuments.empty, 'no application documents were stored');
   const firstDocumentId = approvedDocuments.docs[0].id;
-  await parseResponse(await reviewRoute.PATCH(handlerEvent({
-    user: users['department revenue'],
-    params: { id: approvedApplicationId, documentId: firstDocumentId },
-    body: { status: 'verified', comment: 'Verified during Phase 2 audit.' }
-  })), 'department document review');
+  for (const document of approvedDocuments.docs) {
+    await parseResponse(await reviewRoute.PATCH(handlerEvent({
+      user: users['department revenue'],
+      params: { id: approvedApplicationId, documentId: document.id },
+      body: { status: 'verified', comment: 'Verified during Phase 2 audit.' }
+    })), `department document review ${document.id}`);
+  }
   const availableActions = await applicationsModule.getApplicationWorkflowActions(users['department revenue'], approvedApplicationId);
   const verifyTransition = availableActions.find((action) => action.toState === 'OFFICER_REVIEW');
   assert(verifyTransition, 'department verification action was unavailable');
@@ -245,11 +274,11 @@ try {
   record('multilingual Firestore notifications', 'citizen and department recipients receive private application notifications');
 
   await applicationsModule.getApplicationForUser(users.citizen, approvedApplicationId);
-  const ownDownload = await (await server.ssrLoadModule('/src/lib/server/documents/repository.ts')).getAuthorizedDocumentDownloadUrl(users.citizen, firstDocumentId);
+  const ownDownload = await (await server.ssrLoadModule('/src/lib/server/documents/repository.js')).getAuthorizedDocumentDownloadUrl(users.citizen, firstDocumentId);
   assert(typeof ownDownload === 'string' && ownDownload.startsWith('https://'), 'authorized document access did not issue a signed URL');
   let foreignDocumentDenied = false;
   try {
-    await (await server.ssrLoadModule('/src/lib/server/documents/repository.ts')).getAuthorizedDocumentDownloadUrl(users['department civil supplies'], firstDocumentId);
+    await (await server.ssrLoadModule('/src/lib/server/documents/repository.js')).getAuthorizedDocumentDownloadUrl(users['department civil supplies'], firstDocumentId);
   } catch {
     foreignDocumentDenied = true;
   }
@@ -259,7 +288,7 @@ try {
   console.table(results);
 } finally {
   try {
-    const adminModule = await server.ssrLoadModule('/src/lib/server/firebase/admin.ts');
+    const adminModule = await server.ssrLoadModule('/src/lib/server/firebase/admin.js');
     const db = adminModule.getFirebaseAdminFirestore();
     const storage = adminModule.getFirebaseAdminStorage();
     for (const applicationId of cleanup.applicationIds) await cleanupApplication(db, storage, applicationId);
