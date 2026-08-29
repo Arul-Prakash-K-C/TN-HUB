@@ -51,38 +51,44 @@
 
   onMount(() => {
     if (draftApplication) {
-        activeDraftId = draftApplication.id;
-        activeTrackingId = draftApplication.applicationNumber;
-        applicationId = draftApplication.applicationNumber;
-        formData = { ...draftApplication.formData };
-        declarationAgreed = true;
-        if (formData.phone) {
-            phoneVerified = true;
-            verifiedPhoneNumber = formData.phone;
-        }
-        const requestedStep = Number($page.url.searchParams.get('step'));
-        if (requestedStep) {
-            currentStep = requestedStep;
-        }
-        else if (formData.lastStep) {
-            currentStep = Number(formData.lastStep);
-        }
-        const nextUploadedDocs = {};
-        for (const doc of draftApplication.documents ?? []) {
-            nextUploadedDocs[doc.documentId] = {
-                id: doc.id,
-                name: doc.fileName || doc.name,
-                size: doc.fileSize
-            };
-        }
-        uploadedDocs = nextUploadedDocs;
+      activeDraftId = draftApplication.id;
+      activeTrackingId = draftApplication.applicationNumber;
+      applicationId = draftApplication.applicationNumber;
+      formData = { ...draftApplication.formData };
+      declarationAgreed = true;
+      if (formData.phone) {
+        phoneVerified = true;
+        verifiedPhoneNumber = formData.phone;
+      }
+      const nextUploadedDocs = {};
+      for (const doc of draftApplication.documents ?? []) {
+        nextUploadedDocs[doc.documentId] = {
+          id: doc.id,
+          name: doc.fileName || doc.name,
+          size: doc.fileSize
+        };
+      }
+      uploadedDocs = nextUploadedDocs;
     }
-    const requestedStep = Number($page.url.searchParams.get('step') ?? '');
-    if (Number.isInteger(requestedStep) && requestedStep >= 0 && requestedStep < steps.length) {
-        currentStep = requestedStep;
+
+    const stepParam = $page.url.searchParams.get('step');
+    if (stepParam !== null && stepParam.trim() !== '') {
+      const parsedStep = Number(stepParam);
+      if (Number.isInteger(parsedStep) && parsedStep >= 0 && parsedStep < steps.length) {
+        currentStep = parsedStep;
+        return;
+      }
     }
-    else if (draftApplication) {
-        currentStep = steps.length - 1;
+
+    if (draftApplication) {
+      if (draftApplication.formData?.lastStep !== undefined) {
+        const lastStepNum = Number(draftApplication.formData.lastStep);
+        if (Number.isInteger(lastStepNum) && lastStepNum >= 0 && lastStepNum < steps.length) {
+          currentStep = lastStepNum;
+          return;
+        }
+      }
+      currentStep = steps.length - 1;
     }
   });
 

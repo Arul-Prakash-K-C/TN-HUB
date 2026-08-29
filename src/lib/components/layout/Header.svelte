@@ -27,6 +27,7 @@ let mobileMenuOpen = $state(false);
 let profileMenuOpen = $state(false);
 let loginGuardModal = $state({ open: false, target: '', title: '' });
 const t = $derived($tt);
+const currentLocale = $derived($locale);
 const user = $derived($currentUser);
 const authenticated = $derived($isAuthenticated);
 const role = $derived($userRole);
