@@ -16,12 +16,12 @@ $effect(() => {
     }
 });
 const conceptSteps = [
-    { label: 'DISCOVER', desc: 'Find the exact service you need across all departments.' },
-    { label: 'CHECK ELIGIBILITY', desc: 'Instantly verify if you meet the requirements.' },
-    { label: 'APPLY', desc: 'Fill out one unified, simple form.' },
-    { label: 'UPLOAD DOCUMENTS', desc: 'Pull directly from DigiLocker or upload securely.' },
-    { label: 'TRACK', desc: 'Monitor your application status in real-time.' },
-    { label: 'GET RESULT', desc: 'Download your approved certificate or result instantly.' }
+    { labelKey: 'home.step.discover', descKey: 'home.step.discoverDesc' },
+    { labelKey: 'home.step.eligibility', descKey: 'home.step.eligibilityDesc' },
+    { labelKey: 'home.step.apply', descKey: 'home.step.applyDesc' },
+    { labelKey: 'home.step.documents', descKey: 'home.step.documentsDesc' },
+    { labelKey: 'home.step.track', descKey: 'home.step.trackDesc' },
+    { labelKey: 'home.step.result', descKey: 'home.step.resultDesc' }
 ];
 </script>
 
@@ -111,8 +111,8 @@ const conceptSteps = [
             <div class="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full border-4 border-border bg-surface shadow-md text-text font-black text-sm transition-transform group-hover:scale-110 group-hover:border-primary">
               {i + 1}
             </div>
-            <h3 class="mt-4 text-xs font-black text-text tracking-widest uppercase">{step.label}</h3>
-            <p class="mt-2 text-[11px] font-medium text-text-muted leading-relaxed max-w-[140px]">{step.desc}</p>
+            <h3 class="mt-4 text-xs font-black text-text tracking-widest uppercase">{t(step.labelKey)}</h3>
+            <p class="mt-2 text-[11px] font-medium text-text-muted leading-relaxed max-w-[140px]">{t(step.descKey)}</p>
             
             {#if i < conceptSteps.length - 1}
               <div class="sm:hidden mt-6 text-text-faint">

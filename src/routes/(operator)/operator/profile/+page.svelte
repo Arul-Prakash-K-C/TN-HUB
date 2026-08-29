@@ -1,35 +1,35 @@
 <script>
-
   import { tt, locale } from '$lib/i18n';
   import { currentUser, isAuthenticated } from '$lib/stores/auth';
   import { User, Mail, Phone, MapPin, Globe, ShieldCheck, Check } from '@lucide/svelte';
   import { applyThemeMode } from '$lib/utils/theme';
 
-const t = $derived($tt);
-const currentLocale = $derived($locale);
-const user = $derived($currentUser);
-const authenticated = $derived($isAuthenticated);
-let savedNotice = $state(false);
-let profilePhone = $state('');
-let isDark = $state(false);
-$effect(() => {
+  const t = $derived($tt);
+  const currentLocale = $derived($locale);
+  const user = $derived($currentUser);
+  const authenticated = $derived($isAuthenticated);
+  let savedNotice = $state(false);
+  let profilePhone = $state('');
+  let isDark = $state(false);
+
+  $effect(() => {
     profilePhone = user?.phone ?? '';
     if (typeof window !== 'undefined') {
-        isDark = localStorage.getItem('theme-mode') === 'dark';
+      isDark = localStorage.getItem('theme-mode') === 'dark';
     }
-});
-async function saveProfile() {
+  });
+
+  async function saveProfile() {
     const response = await fetch('/api/profile', {
-        method: 'PATCH',
-        credentials: 'same-origin',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ phone: profilePhone, preferredLanguage: currentLocale })
+      method: 'PATCH',
+      credentials: 'same-origin',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ phone: profilePhone, preferredLanguage: currentLocale })
     });
-    if (!response.ok)
-        return;
+    if (!response.ok) return;
     savedNotice = true;
     setTimeout(() => savedNotice = false, 2000);
-}
+  }
 </script>
 
 <svelte:head>
@@ -37,7 +37,7 @@ async function saveProfile() {
 </svelte:head>
 
 <div class="bg-background text-text min-h-screen pb-12 flex flex-col w-full">
-  <!-- Page Header (Green Banner matching Public Pages) -->
+  <!-- Page Header (Banner matching Public Pages) -->
   <div class="public-banner px-6 py-8 sm:px-8 shadow-md">
     <div class="mx-auto max-w-7xl">
       <h1 class="text-2xl font-black tracking-tight text-white">{t('ui.routes.operator.operator.profile.87e6d64d')}</h1>
@@ -59,7 +59,7 @@ async function saveProfile() {
           </div>
           <div class="min-w-0">
             <h2 class="text-2xl font-bold text-text">{user.name}</h2>
-            <p class="text-xs text-text-muted">{user.email} • Role: <strong class="text-primary capitalize">{user.role.replace('_', ' ')}</strong></p>
+            <p class="text-xs text-text-muted">{user.email} • {t('profile.role')}: <strong class="text-primary capitalize">{t('role.' + user.role) !== 'role.' + user.role ? t('role.' + user.role) : user.role.replace('_', ' ')}</strong></p>
           </div>
         </div>
 
@@ -88,8 +88,8 @@ async function saveProfile() {
             </div>
 
             <div>
-              <label for="profile-kiosk" class="block text-xs font-semibold text-text-muted mb-1">{t('ui.routes.operator.operator.profile.20d664dc')}</label>
-              <input id="profile-kiosk" type="text" value="ESV-CHN-0042 (Egmore Center)" readonly class="w-full rounded-xl border border-border bg-muted p-2.5 text-xs font-semibold text-text" />
+              <label for="profile-service-center" class="block text-xs font-semibold text-text-muted mb-1">{t('ui.routes.operator.operator.profile.20d664dc')}</label>
+              <input id="profile-service-center" type="text" value="ESV-CHN-0042 (Egmore Center)" readonly class="w-full rounded-xl border border-border bg-muted p-2.5 text-xs font-semibold text-text" />
             </div>
           </div>
         </div>
@@ -100,7 +100,7 @@ async function saveProfile() {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <span class="block text-xs font-semibold text-text-muted mb-2">{t('ui.routes.operator.operator.profile.0da93da1')}</span>
-               <div class="flex flex-wrap items-center gap-3">
+              <div class="flex flex-wrap items-center gap-3">
                 <button
                   type="button"
                   onclick={() => locale.set('en')}
@@ -117,8 +117,6 @@ async function saveProfile() {
                 </button>
               </div>
             </div>
-
-
 
             <div>
               <span class="block text-xs font-semibold text-text-muted mb-2">{t('ui.routes.operator.operator.profile.888f3cc6')}</span>

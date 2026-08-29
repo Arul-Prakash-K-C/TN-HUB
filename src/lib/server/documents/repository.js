@@ -243,3 +243,59 @@ export async function getAuthorizedDocumentDownloadUrl(user, documentId) {
     });
     return url;
 }
+
+/** Deletes a citizen's own standalone vault document from Firestore and Cloud Storage. */
+export async function deleteCitizenDocument(user, documentId) {
+    if (!user || (user.role !== 'citizen' && user.role !== 'admin')) {
+        throw new Error('Only citizens can delete their own documents.');
+    }
+    const db = getFirebaseAdminFirestore();
+    const documentRef = db.collection('documents').doc(documentId);
+    
+    let storagePathToDelete = null;
+
+    await db.runTransaction(async (transaction) => {
+        const snapshot = await transaction.get(documentRef);
+        if (!snapshot.exists) {
+            throw new Error('Document not found.');
+        }
+        const data = snapshot.data();
+        const citizenId = stringValue(data.citizenId);
+        const applicationId = stringValue(data.applicationId);
+
+        // Security: only owner or admin can delete
+        if (user.role !== 'admin' && citizenId !== user.uid) {
+            throw new Error('Document not found.');
+        }
+
+        // Cannot delete documents attached to active or submitted applications via vault
+        if (applicationId) {
+            throw new Error('Application-attached documents cannot be deleted from the vault.');
+        }
+
+        const rawStoragePath = stringValue(data.storagePath);
+        // Security check: ensure storage path is scoped to the citizen or document ID
+        if (rawStoragePath && (rawStoragePath.startsWith(`citizens/${user.uid}/`) || rawStoragePath.includes(documentId) || user.role === 'admin')) {
+            storagePathToDelete = rawStoragePath;
+        }
+
+        transaction.delete(documentRef);
+
+        const now = Timestamp.now();
+        writeAuditLogInTransaction(db, transaction, {
+            actor: user,
+            action: 'DOCUMENT_DELETED',
+            entityType: 'document',
+            entityId: documentId,
+            timestamp: now,
+            metadata: { documentType: data.documentType || data.name || 'Document' }
+        });
+    });
+
+    if (storagePathToDelete) {
+        await removePrivateFile(storagePathToDelete);
+    }
+
+    return { success: true, id: documentId };
+}
+

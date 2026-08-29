@@ -118,7 +118,7 @@ const navigation = $derived(actionOptions.filter(a => a.id === 'back' || a.id ==
                 <ShieldCheck class="w-[12px] h-[12px]" /> {t('chatbot.controlled.badge')}
               </span>
             </div>
-            <p class="mt-1 text-[15px] text-text-muted">{history.length > 1 ? resolveText(screen.description) : 'Choose guided options to find services, start applications, track status, review document requirements, and get TN Kuviyam help.'}</p>
+            <p class="mt-1 text-[15px] text-text-muted">{history.length > 1 ? resolveText(screen.description) : t('chatbot.controlled.subheader')}</p>
           </div>
           
           {#if history.length > 1}

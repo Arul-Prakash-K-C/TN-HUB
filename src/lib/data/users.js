@@ -7,7 +7,7 @@ export const demoCredentials = [
     { email: 'health_officer@demo.com', password: 'demo123', role: 'department_user', name: 'Dr. Nithya R (Health Dept)' },
     { email: 'drugs_officer@demo.com', password: 'demo123', role: 'department_user', name: 'Elangovan M (Drugs Control)' },
     { email: 'transport_officer@demo.com', password: 'demo123', role: 'department_user', name: 'Kathiravan S (Transport Dept)' },
-    { email: 'kannan@demo.com', password: 'demo123', role: 'operator', name: 'Kannan M (TN Kuviyam Kiosk Operator)' },
+    { email: 'kannan@demo.com', password: 'demo123', role: 'operator', name: 'Kannan M (Operator)' },
     { email: 'priya@demo.com', password: 'demo123', role: 'tnhub_admin', name: 'Priya Sundaram (Admin)' }
 ];
 
@@ -185,7 +185,7 @@ export const demoOperator = {
     isActive: true,
     preferredLanguage: 'en',
     kioskId: 'KVM-CHN-0042',
-    centerLocation: 'Egmore TN Kuviyam Kiosk Center',
+    centerLocation: 'Egmore TN Kuviyam Assisted Services Center',
     district: 'Chennai'
 };
 

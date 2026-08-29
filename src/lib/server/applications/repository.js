@@ -293,6 +293,7 @@ export async function createCitizenApplication(citizen, input) {
     }
     return createApplicationForCitizen(citizen, input);
 }
+
 async function createApplicationForCitizen(citizen, input, assistedByOperator) {
     const service = await getCatalogService(input.serviceId);
     if (!service || !service.isActive || !service.isOnline) {
@@ -301,8 +302,6 @@ async function createApplicationForCitizen(citizen, input, assistedByOperator) {
     if (!service.workflowId) {
         throw new Error('This service is unavailable.');
     }
-    // Services are configured by administrators, but the application record
-    // must still resolve to an active, real department on the server.
     const department = await getCatalogDepartment(service.departmentId);
     if (!department || !department.isActive) {
         throw new Error('The department responsible for this service is unavailable.');
@@ -356,6 +355,7 @@ async function createApplicationForCitizen(citizen, input, assistedByOperator) {
             changedByRole: assistedByOperator?.role ?? citizen.role,
             actorName: assistedByOperator?.displayName ?? citizen.displayName,
             comment: input.submit ? 'Application submitted' : 'Application saved as draft',
+            commentTA: input.submit ? 'விண்ணப்பம் சமர்ப்பிக்கப்பட்டது' : 'விண்ணப்பம் வரைவாக சேமிக்கப்பட்டது',
             createdAt: now
         });
         const actor = assistedByOperator ?? citizen;
@@ -384,6 +384,7 @@ async function createApplicationForCitizen(citizen, input, assistedByOperator) {
         submittedAt: input.submit ? toIso(now) : undefined
     };
 }
+
 /**
  * Operators may create a draft for a known citizen UID, but cannot submit or
  * process it. This gives assisted-service support without broad citizen or
@@ -471,6 +472,7 @@ export async function createAssistedApplicationDraft(operator, citizenIdOrEmailO
     };
     return createApplicationForCitizen(citizen, { ...updatedInput, submit: false }, operator);
 }
+
 /**
  * Lists only the applications visible to the verified user. Department and
  * operator queries are scoped in Firestore before the result is mapped.

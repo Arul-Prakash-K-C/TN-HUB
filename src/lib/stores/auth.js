@@ -75,9 +75,6 @@ function createAuthStore() {
         try {
             const user = await establishServerSession(firebaseUser);
             if (syncId === latestSync) {
-                // A profile preference is authoritative after login, while the locale
-                // store continues to persist the same choice across navigation.
-                locale.set(user.preferredLanguage);
                 commit({ user, isAuthenticated: true, isLoading: false, isRestored: true });
             }
             return true;
@@ -93,9 +90,6 @@ function createAuthStore() {
         subscribe,
         /** Synchronously seeds the auth store from server SSR data (+layout.server.ts). */
         setInitialUser(user) {
-            if (user) {
-                locale.set(user.preferredLanguage);
-            }
             commit({
                 user,
                 isAuthenticated: !!user,

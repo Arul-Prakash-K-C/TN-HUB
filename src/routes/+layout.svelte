@@ -20,6 +20,16 @@
   let lastNotificationUserKey = $state(null);
 
   onMount(() => {
+    if (data.locale) {
+      try {
+        const stored = localStorage.getItem('tnhub-locale');
+        if (!stored) {
+          locale.set(data.locale);
+        }
+      } catch {
+        locale.set(data.locale);
+      }
+    }
     auth.setInitialUser(data.user);
     auth.restore();
     loadSavedTheme();

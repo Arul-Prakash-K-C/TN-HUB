@@ -3,7 +3,7 @@
 
   import { tt, locale } from '$lib/i18n';
   import { mockDigiLockerDocuments } from '$lib/data/documents';
-  import { FileText, Shield, Upload, Download, CheckCircle, RefreshCw, Lock, AlertCircle } from '@lucide/svelte';
+  import { FileText, Shield, Upload, Download, Trash2, CheckCircle, RefreshCw, Lock, AlertCircle } from '@lucide/svelte';
 
   const t = $derived($tt);
   const currentLocale = $derived($locale);
@@ -13,6 +13,11 @@
   let showConsentModal = $state(false);
   let vaultDocuments = $state([]);
   let uploadInput;
+
+  // Deletion state
+  let deleteModalState = $state({ open: false, docId: null, docName: '' });
+  let isDeleting = $state(false);
+  let deleteError = $state('');
 
   $effect(() => {
     vaultDocuments = data.documents;
@@ -81,6 +86,46 @@
       alert(cause instanceof Error ? cause.message : t('errors.accessDocument'));
     }
   }
+
+  function promptDeleteDocument(doc) {
+    deleteError = '';
+    deleteModalState = {
+      open: true,
+      docId: doc.id,
+      docName: currentLocale === 'ta' ? (doc.nameTA || doc.name) : doc.name
+    };
+  }
+
+  function cancelDelete() {
+    if (isDeleting) return;
+    deleteModalState = { open: false, docId: null, docName: '' };
+    deleteError = '';
+  }
+
+  async function confirmDelete() {
+    if (!deleteModalState.docId || isDeleting) return;
+    isDeleting = true;
+    deleteError = '';
+
+    try {
+      const response = await fetch(`/api/documents/${deleteModalState.docId}`, {
+        method: 'DELETE',
+        credentials: 'same-origin'
+      });
+      const body = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(body?.message || t('documents.deleteFailed'));
+      }
+      
+      const removedId = deleteModalState.docId;
+      vaultDocuments = vaultDocuments.filter(doc => doc.id !== removedId);
+      deleteModalState = { open: false, docId: null, docName: '' };
+    } catch (cause) {
+      deleteError = cause instanceof Error ? cause.message : t('documents.deleteFailed');
+    } finally {
+      isDeleting = false;
+    }
+  }
 </script>
 
 <svelte:head>
@@ -129,57 +174,81 @@
     </div>
   </div>
 
-  <!-- Document Grid -->
+  <!-- Main Content Area -->
   <div class="flex-grow py-8 px-6 md:px-12 w-full">
     <div class="max-w-7xl mx-auto w-full">
       {#if activeTab === 'vault'}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {#each citizenDocs as doc}
-            <!-- Document Card -->
-            <div class="bg-surface border border-border rounded-2xl p-6 flex flex-col hover:border-primary/50 hover:shadow-md transition-all">
-              <div class="flex justify-between items-start mb-4">
-                <div class="w-12 h-12 bg-primary-soft text-primary-soft-text rounded-xl flex items-center justify-center">
-                  <FileText class="h-6 w-6" />
-                </div>
-                {#if doc.verificationStatus === 'verified'}
-                  <span class="bg-primary-soft text-primary-soft-text px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                    <CheckCircle class="h-3.5 w-3.5" /> {t('documents.verified')}
-                  </span>
-                {:else}
-                  <span class="bg-surface-container-highest text-text-muted px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                    <AlertCircle class="h-3.5 w-3.5" /> {t(`status.${doc.verificationStatus}`)}
-                  </span>
-                {/if}
-              </div>
-              
-              <h3 class="text-base font-bold text-text mb-1 line-clamp-1">
-                {currentLocale === 'ta' ? doc.nameTA : doc.name}
-              </h3>
-              <p class="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-4 line-clamp-1">
-                {t('documents.issuedBy')}: {doc.issuedBy || t('documents.governmentOfTamilNadu')}
-              </p>
-              
-              <div class="bg-surface-container-low border border-border p-3 rounded-xl mb-6">
-                <p class="text-[11px] font-bold text-text font-mono text-center">
-                  {#if doc.documentNumber}
-                    {t('documents.documentId')}: {doc.documentNumber}
-                  {:else}
-                    <span class="text-text-faint">{t('ui.routes.citizen.documents.cd4c33b0')}</span>
-                  {/if}
-                </p>
-              </div>
-              
-              <div class="mt-auto flex justify-between items-center pt-4 border-t border-border">
-                <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider">
-                  {(doc.fileSize / 1024).toFixed(0)} KB - {getSourceLabel(doc.source)}
-                </span>
-                <button onclick={() => downloadDocument(doc.id)} class="text-primary hover:text-primary-hover text-xs font-bold flex items-center gap-1 hover:underline">
-                  <Download class="h-4 w-4" /> {t('ui.download')}
-                </button>
-              </div>
+        {#if citizenDocs.length === 0}
+          <!-- Empty State -->
+          <div class="rounded-3xl border border-border bg-surface p-12 text-center shadow-xs max-w-2xl mx-auto my-8">
+            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-soft text-primary">
+              <FileText class="h-8 w-8" />
             </div>
-          {/each}
-        </div>
+            <h3 class="mt-5 text-lg font-bold text-text">{t('documents.empty')}</h3>
+            <p class="mt-1 text-xs text-text-muted max-w-md mx-auto leading-relaxed">{t('documents.emptySubtitle')}</p>
+            <button
+              onclick={() => uploadInput?.click()}
+              class="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs font-bold text-white shadow-md transition hover:bg-primary-hover"
+            >
+              <Upload class="h-4 w-4" />
+              {t('documents.uploadFirst')}
+            </button>
+          </div>
+        {:else}
+          <!-- Document Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {#each citizenDocs as doc}
+              <!-- Document Card -->
+              <div class="bg-surface border border-border rounded-2xl p-6 flex flex-col hover:border-primary/50 hover:shadow-md transition-all">
+                <div class="flex justify-between items-start mb-4">
+                  <div class="w-12 h-12 bg-primary-soft text-primary-soft-text rounded-xl flex items-center justify-center">
+                    <FileText class="h-6 w-6" />
+                  </div>
+                  {#if doc.verificationStatus === 'verified'}
+                    <span class="bg-primary-soft text-primary-soft-text px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                      <CheckCircle class="h-3.5 w-3.5" /> {t('documents.verified')}
+                    </span>
+                  {:else}
+                    <span class="bg-surface-container-highest text-text-muted px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                      <AlertCircle class="h-3.5 w-3.5" /> {t(`status.${doc.verificationStatus}`)}
+                    </span>
+                  {/if}
+                </div>
+                
+                <h3 class="text-base font-bold text-text mb-1 line-clamp-1">
+                  {currentLocale === 'ta' ? (doc.nameTA || doc.name) : doc.name}
+                </h3>
+                <p class="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-4 line-clamp-1">
+                  {t('documents.issuedBy')}: {doc.issuedBy || t('documents.governmentOfTamilNadu')}
+                </p>
+                
+                <div class="bg-surface-container-low border border-border p-3 rounded-xl mb-6">
+                  <p class="text-[11px] font-bold text-text font-mono text-center">
+                    {#if doc.documentNumber}
+                      {t('documents.documentId')}: {doc.documentNumber}
+                    {:else}
+                      <span class="text-text-faint">{t('ui.routes.citizen.documents.cd4c33b0')}</span>
+                    {/if}
+                  </p>
+                </div>
+                
+                <div class="mt-auto flex justify-between items-center pt-4 border-t border-border">
+                  <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider">
+                    {(doc.fileSize / 1024).toFixed(0)} KB - {getSourceLabel(doc.source)}
+                  </span>
+                  <div class="flex items-center gap-3">
+                    <button onclick={() => downloadDocument(doc.id)} class="text-primary hover:text-primary-hover text-xs font-bold flex items-center gap-1 hover:underline">
+                      <Download class="h-4 w-4" /> {t('ui.download')}
+                    </button>
+                    <button onclick={() => promptDeleteDocument(doc)} class="text-danger hover:text-danger-hover text-xs font-bold flex items-center gap-1 hover:underline">
+                      <Trash2 class="h-4 w-4" /> {t('documents.delete')}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            {/each}
+          </div>
+        {/if}
       {:else}
         <!-- DigiLocker Integration -->
         <div class="mx-auto max-w-4xl">
@@ -261,7 +330,57 @@
   </div>
 </div>
 
-<!-- Consent Modal -->
+<!-- Delete Confirmation Modal -->
+{#if deleteModalState.open}
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-[#071A28]/60 p-4 backdrop-blur-xs animate-fade-in">
+    <div class="w-full max-w-md rounded-2xl bg-surface border border-border p-6 shadow-2xl">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-danger-soft text-danger">
+          <Trash2 class="h-5 w-5" />
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-text">{t('documents.deleteConfirmTitle')}</h3>
+          <p class="text-xs text-text-muted truncate max-w-xs">{deleteModalState.docName}</p>
+        </div>
+      </div>
+
+      <p class="text-xs text-text-muted leading-relaxed mb-6">
+        {t('documents.deleteConfirmMessage')}
+      </p>
+
+      {#if deleteError}
+        <div class="mb-4 rounded-xl bg-danger-soft border border-danger/20 p-3 text-xs text-danger font-medium">
+          {deleteError}
+        </div>
+      {/if}
+
+      <div class="flex justify-end gap-3">
+        <button
+          onclick={cancelDelete}
+          disabled={isDeleting}
+          class="rounded-xl border border-border px-4 py-2 text-xs font-bold text-text hover:bg-muted transition disabled:opacity-50"
+        >
+          {t('ui.cancel')}
+        </button>
+        <button
+          onclick={confirmDelete}
+          disabled={isDeleting}
+          class="inline-flex items-center gap-2 rounded-xl bg-danger px-5 py-2 text-xs font-bold text-white shadow-md transition hover:bg-danger-hover disabled:opacity-50"
+        >
+          {#if isDeleting}
+            <RefreshCw class="h-3.5 w-3.5 animate-spin" />
+            {t('documents.deleting')}
+          {:else}
+            <Trash2 class="h-3.5 w-3.5" />
+            {t('documents.delete')}
+          {/if}
+        </button>
+      </div>
+    </div>
+  </div>
+{/if}
+
+<!-- DigiLocker Consent Modal -->
 {#if showConsentModal}
   <div class="fixed inset-0 z-50 flex items-center justify-center bg-[#071A28]/60 p-4 backdrop-blur-sm animate-fade-in">
     <div class="w-full max-w-md rounded-2xl bg-surface dark:bg-surface-container-highest p-6 shadow-2xl">

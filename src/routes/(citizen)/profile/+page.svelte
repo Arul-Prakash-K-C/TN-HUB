@@ -59,7 +59,7 @@ async function saveProfile() {
           </div>
           <div>
             <h2 class="text-2xl font-bold text-text">{user.name}</h2>
-            <p class="text-xs text-text-muted">{user.email} • {t('profile.role')}: <strong class="capitalize text-primary">{user.role.replace('_', ' ')}</strong></p>
+            <p class="text-xs text-text-muted">{user.email} • {t('profile.role')}: <strong class="capitalize text-primary">{t('role.' + user.role) !== 'role.' + user.role ? t('role.' + user.role) : user.role.replace('_', ' ')}</strong></p>
           </div>
         </div>
 

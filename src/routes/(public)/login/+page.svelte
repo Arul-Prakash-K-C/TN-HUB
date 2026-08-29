@@ -258,7 +258,7 @@ async function handleAuthentication() {
               {#if activeTab === 'citizen'}
                 <strong>{t('auth.tabCitizen')} Workspace:</strong> {t('auth.citizenWorkspace')}
               {:else if activeTab === 'operator'}
-                <strong>{currentLocale === 'ta' ? 'உதவி கியோஸ்க் போர்டல்' : 'Assisted Kiosk Portal'}:</strong> {currentLocale === 'ta' ? 'குடிமக்களுக்கு உதவ விண்ணப்ப வரைவுகளை உருவாக்கவும்.' : 'Assist citizens and create application drafts on their behalf.'}
+                <strong>{t('operator.kioskPortal')}:</strong> {t('operator.assistedPortalDesc')}
               {:else if activeTab === 'department'}
                 <strong>{t('auth.tabDepartment')} Official Workspace:</strong> {t('auth.officerWorkspace')}
               {:else}
@@ -382,7 +382,7 @@ async function handleAuthentication() {
                   {:else}
                     {t('auth.signInTo', { 
                       portal: activeTab === 'citizen' ? t('auth.tabCitizen') : 
-                              activeTab === 'operator' ? (currentLocale === 'ta' ? 'இயக்குநர் போர்டல்' : 'Operator Kiosk') :
+                              activeTab === 'operator' ? t('operator.portal') :
                               activeTab === 'department' ? t('auth.tabDepartment') : 
                               (currentLocale === 'ta' ? 'நிர்வாக போர்டல்' : 'Admin Console')
                     })}

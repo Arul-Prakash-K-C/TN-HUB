@@ -1,18 +1,16 @@
 <script>
-
-  import { Menu, Bell } from '@lucide/svelte';
-  
-const t = $derived($tt);
-import { auth, isAuthenticated, currentUser } from '$lib/stores/auth';
-  import { tt } from '$lib/i18n';
+  import { Menu, Bell, Globe } from '@lucide/svelte';
+  import { auth, isAuthenticated, currentUser } from '$lib/stores/auth';
+  import { tt, locale } from '$lib/i18n';
   import BrandLogo from '$lib/components/ui/BrandLogo.svelte';
   import { notificationUnreadCount } from '$lib/stores/notifications';
 
-const authenticated = $derived($isAuthenticated);
-const user = $derived($currentUser);
-let { isOpen = $bindable(false), portal = 'citizen' } = $props();
-const isDept = $derived(portal === 'department');
-const unreadCount = $derived($notificationUnreadCount);
+  const t = $derived($tt);
+  const authenticated = $derived($isAuthenticated);
+  const user = $derived($currentUser);
+  let { isOpen = $bindable(false), portal = 'citizen' } = $props();
+  const isDept = $derived(portal === 'department');
+  const unreadCount = $derived($notificationUnreadCount);
 </script>
 
 <header class="sticky top-0 z-30 flex w-full items-center justify-between border-b px-4 py-3.5 text-white shadow-xs md:hidden {portal === 'operator' || portal === 'admin' || isDept ? 'border-border bg-[var(--color-sidebar-bg)]' : 'border-border bg-[var(--color-sidebar-bg)]'}">
@@ -32,6 +30,15 @@ const unreadCount = $derived($notificationUnreadCount);
   </div>
 
   <div class="flex items-center gap-2">
+    <button
+      type="button"
+      onclick={() => locale.toggle()}
+      class="rounded-lg p-1.5 text-white transition-colors hover:bg-white/10"
+      aria-label={t('a11y.changeLanguage')}
+      title={t('a11y.changeLanguage')}
+    >
+      <Globe class="h-4 w-4" />
+    </button>
     {#if authenticated && user}
       <a href={isDept ? "/department/notifications" : portal === 'citizen' ? "/notifications" : "#"} class="relative text-white hover:bg-white/10 rounded-lg p-1.5 transition-colors">
         <Bell class="h-4 w-4" />

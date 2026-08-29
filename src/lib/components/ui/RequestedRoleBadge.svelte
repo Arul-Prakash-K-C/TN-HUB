@@ -4,7 +4,7 @@
   let { role = 'operator' } = $props();
 
   function getRoleLabel(value) {
-    if (value === 'operator') return 'Kiosk Operator';
+    if (value === 'operator') return 'Operator';
     if (value === 'department_user') return 'Department Officer';
     return value || 'User Role';
   }

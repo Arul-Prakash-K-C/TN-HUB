@@ -1,37 +1,67 @@
-node_modules
+# Dependencies
+node_modules/
 
-# Output
-.output
-.vercel
-.netlify
-.wrangler
-/.svelte-kit
-/build
+# Production and Build Outputs
+.svelte-kit/
+build/
+dist/
+.output/
+.vercel/
+.netlify/
+.wrangler/
+.vite/
 
-# OS
-.DS_Store
-Thumbs.db
+# Vite Timestamps
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
 
-# Env
+# Test and Coverage Outputs
+coverage/
+test-results/
+playwright-report/
+
+# Logs and Debugging
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.out
+*.err
+
+# Temporary and Local Scratch Artifacts
+scratch/
+tmp/
+temp/
+~$*.docx
+
+# Environment and Secrets
 .env
 .env.*
 !.env.example
 !.env.test
+*.pem
+service-account*.json
+serviceAccountKey*.json
+firebase-adminsdk*.json
 
-# Vite
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
+# IDE and Editor Metadata
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
 
-# Local scratch/work artifacts
-scratch/
-~$*.docx
+# Operating System Metadata
+.DS_Store
+Thumbs.db
+desktop.ini
 
-# Gemini / AGY / Graphify
+# AI Agent / Tooling Metadata
 .gemini/
 graphify-out/
-.agents/mcp_config.json
-
-
-
-# MCP config with secrets
 .agents/mcp_config.json
