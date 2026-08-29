@@ -519,11 +519,11 @@
       });
       const body = await response.json().catch(() => null);
       if (!response.ok) {
-        throw new Error(body?.message ?? 'Unable to confirm simulated payment.');
+        throw new Error(body?.message ?? t('errors.confirmPayment'));
       }
       if (body?.payment?.status === 'FAILED') {
         showPaymentModal = false;
-        showMessage('Payment failed', 'Payment has been failed. You can retry the simulated payment.', true, '');
+        showMessage(t('payment.failedTitle'), t('payment.failedRetry'), true, '');
         return;
       }
       applicationId = body?.application?.applicationNumber ?? body?.application?.trackingId ?? activeTrackingId;
@@ -531,8 +531,8 @@
       showPaymentModal = false;
       showMessage(t('success.applicationSubmitted'), t('success.applicationSubmitted'), false, '/applications');
     } catch (cause) {
-      stepError = cause instanceof Error ? cause.message : 'Unable to confirm simulated payment.';
-      showMessage('Payment failed', stepError, true, '');
+      stepError = cause instanceof Error ? cause.message : t('errors.confirmPayment');
+      showMessage(t('payment.failedTitle'), stepError, true, '');
     } finally {
       paymentLoading = false;
       isSubmitting = false;
@@ -700,7 +700,7 @@
                     {#if otpLoading}
                       <span class="inline-block h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent mr-1"></span>
                     {/if}
-                    Verify
+                    {t('ui.verify')}
                   </button>
                 {/if}
               </div>
@@ -711,7 +711,7 @@
             </div>
             <div>
               <label for="aadhaarNumber" class="block text-sm font-medium text-text mb-1.5">{t('apply.field.aadhaar')} *</label>
-              <input id="aadhaarNumber" type="text" pattern="[0-9]{12}" bind:value={formData.aadhaarNumber} maxlength="12" class="w-full rounded-lg border border-border bg-surface dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="12-digit number" />
+                <input id="aadhaarNumber" type="text" pattern="[0-9]{12}" bind:value={formData.aadhaarNumber} maxlength="12" class="w-full rounded-lg border border-border bg-surface dark:bg-surface-container-highest dark:text-text py-2.5 px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder={t('apply.placeholder.aadhaar')} />
             </div>
           </div>
 
@@ -894,7 +894,11 @@
                             { type: "application/pdf" }
                           );
                           const mockFile = new File([dummyBlob], `${doc.id}_digilocker.pdf`, { type: "application/pdf" });
-                          uploadedDocs[doc.id] = { name: `${doc.name} (Demo DigiLocker).pdf`, size: mockFile.size, file: mockFile };
+                          uploadedDocs[doc.id] = {
+                            name: `${currentLocale === 'ta' ? doc.nameTA : doc.name} (${t('ui.digilocker.demo')}).pdf`,
+                            size: mockFile.size,
+                            file: mockFile
+                          };
                         }}
                         class="rounded-lg border border-primary/25 bg-primary-soft px-4 py-2 text-xs font-medium text-primary-soft-text hover:bg-primary/10 transition"
                       >
@@ -913,7 +917,7 @@
           <div class="space-y-4">
             <div class="rounded-lg bg-surface p-4">
               <h3 class="text-sm font-semibold text-text mb-3">
-                {service.slug === 'e-adangal-extract' ? 'Land Cultivation Details' : t('apply.step.personal')}
+                {service.slug === 'e-adangal-extract' ? t('apply.review.landCultivationDetails') : t('apply.step.personal')}
               </h3>
               {#if service.slug === 'e-adangal-extract'}
                 <dl class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
@@ -946,7 +950,7 @@
 
                   {#if service.slug === 'nativity-certificate'}
                     <dt class="text-text-muted">{t('ui.routes.public.services.slug.apply.eb59fe52')}</dt><dd class="text-text font-medium">{formData.placeOfBirth || '—'}</dd>
-                    <dt class="text-text-muted">{t('ui.routes.public.services.slug.apply.d5ed6119')}</dt><dd class="text-text font-medium">{formData.residenceDurationYears || '—'} Years</dd>
+                    <dt class="text-text-muted">{t('ui.routes.public.services.slug.apply.d5ed6119')}</dt><dd class="text-text font-medium">{formData.residenceDurationYears || '—'} {t('common.years')}</dd>
                     <dt class="text-text-muted">{t('ui.routes.public.services.slug.apply.31fc23b7')}</dt><dd class="text-text font-medium">{formData.purpose || '—'}</dd>
                   {/if}
                 </dl>
@@ -958,7 +962,7 @@
                 <div class="flex items-center justify-between py-1.5 text-sm">
                   <span class="text-text-muted">{currentLocale === 'ta' ? doc.nameTA : doc.name}</span>
                   <span class="font-medium {uploadedDocs[doc.id] ? 'text-success' : 'text-danger'}">
-                    {uploadedDocs[doc.id] ? 'Uploaded' : 'Missing'}
+                    {uploadedDocs[doc.id] ? t('status.uploaded') : t('status.missing')}
                   </span>
                 </div>
               {/each}
@@ -1005,7 +1009,7 @@
               class="inline-flex items-center gap-2 rounded-lg border border-danger/25 bg-danger-soft px-4 py-2.5 text-sm font-medium text-danger transition hover:bg-danger-soft/80 disabled:opacity-50"
             >
               <Trash2 class="h-4 w-4" />
-              {isDeletingDraft ? 'Deleting...' : 'Delete Draft'}
+              {isDeletingDraft ? t('common.deleting') : t('ui.delete.draft')}
             </button>
           {/if}
           {#if currentStep === steps.length - 1}
@@ -1016,7 +1020,7 @@
               class="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2.5 text-sm font-medium text-text transition hover:bg-surface-container disabled:opacity-50"
             >
               <FileText class="h-4 w-4" />
-              {isSavingDraft ? 'Saving Draft...' : 'Save Draft'}
+              {isSavingDraft ? t('apply.savingDraft') : t('apply.saveDraft')}
             </button>
           {/if}
           {#if currentStep < steps.length - 1}
@@ -1037,7 +1041,7 @@
               {#if isSubmitting}
                 {t('common.loading')}
               {:else}
-                Submit
+                {t('apply.submit')}
               {/if}
             </button>
           {/if}
@@ -1051,9 +1055,9 @@
       <div class="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-xl animate-scale-up">
         <h3 class="mb-3 text-lg font-black text-text">{t('ui.routes.public.services.slug.apply.1fceecc1')}</h3>
         <p class="text-sm text-text-muted leading-relaxed mb-6">
-          Confirm that the entered details are correct.
+          {t('apply.confirm.detailsCorrect')}
           {#if paymentRequired}
-            This paid service will open a simulated Razorpay payment screen before submission.
+            {t('apply.confirm.paymentBeforeSubmission')}
           {/if}
         </p>
         <div class="flex items-center justify-end gap-3">
@@ -1067,7 +1071,7 @@
             onclick={submitApplication}
             class="rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-white hover:bg-primary-hover transition"
           >
-            {paymentRequired ? 'Continue to Payment' : 'Submit'}
+            {paymentRequired ? t('payment.continueToPayment') : t('apply.submit')}
           </button>
         </div>
       </div>
@@ -1123,7 +1127,7 @@
             disabled={paymentLoading}
             class="rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-white transition hover:bg-primary-hover disabled:opacity-60"
           >
-            {paymentLoading ? 'Verifying...' : 'Payment Successful'}
+            {paymentLoading ? t('common.verifying') : t('payment.markSuccessful')}
           </button>
         </div>
         <button
@@ -1163,7 +1167,7 @@
             disabled={isDeletingDraft}
             class="rounded-lg border border-danger/30 bg-danger-soft px-5 py-2.5 text-sm font-bold text-danger transition hover:bg-danger-soft/80 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isDeletingDraft ? 'Deleting...' : 'Yes, Delete'}
+            {isDeletingDraft ? t('common.deleting') : t('common.yesDelete')}
           </button>
         </div>
       </div>

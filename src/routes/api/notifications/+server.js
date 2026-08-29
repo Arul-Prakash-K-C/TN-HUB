@@ -9,7 +9,7 @@ export const GET = async ({ locals }) => {
     const notifications = await listNotificationsForUser(locals.user);
     return json({ notifications });
   } catch (cause) {
-    const message = cause instanceof Error ? cause.message : 'Unable to list notifications.';
-    throw error(500, message);
+    console.error('[notifications list]', cause);
+    throw error(500, 'Unable to list notifications.');
   }
 };

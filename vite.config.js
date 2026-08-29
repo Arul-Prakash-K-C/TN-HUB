@@ -27,8 +27,20 @@ export default defineConfig({
             'undici'
         ]
     },
+    optimizeDeps: {
+        include: ['@lucide/svelte', 'svelte', 'svelte/store']
+    },
     server: {
-        // Give the SSR module runner longer to resolve heavy server-only modules.
+        watch: {
+            ignored: [
+                '**/.git/**',
+                '**/.svelte-kit/**',
+                '**/node_modules/**',
+                '**/coverage/**',
+                '**/tests/**',
+                '**/.system_generated/**'
+            ]
+        },
         hmr: {
             timeout: 30000
         }

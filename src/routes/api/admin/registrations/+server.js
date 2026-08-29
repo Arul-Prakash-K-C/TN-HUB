@@ -40,8 +40,8 @@ export const GET = async ({ locals }) => {
         return json({ users });
     }
     catch (cause) {
-        const message = cause instanceof Error ? cause.message : 'Unable to list registrations.';
-        throw error(500, message);
+        console.error('[admin registrations list]', cause);
+        throw error(500, 'Unable to list registrations.');
     }
 };
 export const PATCH = async ({ request, locals, url }) => {
@@ -146,7 +146,7 @@ export const PATCH = async ({ request, locals, url }) => {
         if (cause?.status) {
             throw cause;
         }
-        const message = cause instanceof Error ? cause.message : 'Unable to update registration.';
-        throw error(500, message);
+        console.error('[admin registration update]', cause);
+        throw error(500, 'Unable to update registration.');
     }
 };

@@ -86,7 +86,7 @@ export async function updateComplaintStatus(user, complaintId, newStatus, remark
     }
     const existing = snap.data();
     const role = normalizeUserRole(user.role);
-    if (role === 'department_user' && existing.departmentId && existing.departmentId !== user.departmentId) {
+    if (role === 'department_user' && (!user.departmentId || existing.departmentId !== user.departmentId)) {
         throw new Error('Unauthorized to update complaints for another department.');
     }
     const now = new Date().toISOString();

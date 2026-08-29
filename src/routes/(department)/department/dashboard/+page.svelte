@@ -2,7 +2,7 @@
 
   import { currentUser, isRestored } from '$lib/stores/auth';
   import { canAccessRoute } from '$lib/utils/authGuard';
-  import { locale } from '$lib/i18n';
+  import { t, locale } from '$lib/i18n';
   import {
     AlertTriangle,
     CheckCircle2,

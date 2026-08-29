@@ -487,8 +487,7 @@ export async function listApplicationsForUser(user, maxResults = 100) {
         snapshot = await applications.where('departmentId', '==', user.departmentId).limit(maxResults).get();
     }
     else if (user.role === 'operator') {
-        // Mock Hackathon: Operators apply as themselves, so we query citizenId
-        snapshot = await applications.where('citizenId', '==', user.uid).limit(maxResults).get();
+        snapshot = await applications.where('assistedByOperatorId', '==', user.uid).limit(maxResults).get();
     }
     else {
         snapshot = await applications.limit(maxResults).get();

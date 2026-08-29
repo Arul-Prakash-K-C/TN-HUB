@@ -44,8 +44,8 @@ export const GET = async ({ locals, url }) => {
         return json({ settings: snap.data() });
     }
     catch (cause) {
-        const message = cause instanceof Error ? cause.message : 'Unable to load department settings.';
-        throw error(500, message);
+        console.error('[department settings load]', cause);
+        throw error(500, 'Unable to load department settings.');
     }
 };
 export const POST = async ({ request, locals, url }) => {
@@ -91,7 +91,7 @@ export const POST = async ({ request, locals, url }) => {
         return json({ settings });
     }
     catch (cause) {
-        const message = cause instanceof Error ? cause.message : 'Unable to save department settings.';
-        throw error(500, message);
+        console.error('[department settings save]', cause);
+        throw error(500, 'Unable to save department settings.');
     }
 };

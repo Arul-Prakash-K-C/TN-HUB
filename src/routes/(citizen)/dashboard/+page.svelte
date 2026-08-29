@@ -73,7 +73,7 @@ function getStatusBadge(status) {
             <span class="text-xs font-black tracking-tight text-white/75">{t('ui.routes.citizen.dashboard.f01058f7')}</span>
             <span class="rounded-full bg-white/10 px-2.5 py-0.5 text-[10px] font-bold text-white uppercase border border-white/20">{t('ui.routes.citizen.dashboard.0d57e2c6')}</span>
           </div>
-          <h1 class="text-2xl font-black tracking-tight text-white">Welcome back, {user.name}</h1>
+          <h1 class="text-2xl font-black tracking-tight text-white">{t('dashboard.welcome', { name: user.name })}</h1>
           <p class="public-banner-subtitle mt-1 max-w-2xl text-xs font-medium">{t('ui.routes.citizen.dashboard.b1fc4364')}</p>
         </div>
         <div class="flex items-center gap-3">

@@ -124,24 +124,24 @@ const faqs = [
 ];
 const policies = [
     {
-        title: 'Privacy Policy',
+        titleKey: 'help.policies.privacy.title',
         icon: ShieldCheck,
-        desc: 'Your personal data is collected solely for government service delivery. We follow IT Act 2000, DPDP Act 2023, and Government of Tamil Nadu data governance guidelines. Data is encrypted in transit and at rest.'
+        descKey: 'help.policies.privacy.desc'
     },
     {
-        title: 'Terms of Service',
+        titleKey: 'help.policies.terms.title',
         icon: Scale,
-        desc: 'By using TN Kuviyam, you agree to provide accurate information for government service applications. Misrepresentation may result in application rejection and legal action under applicable Indian Penal Code provisions.'
+        descKey: 'help.policies.terms.desc'
     },
     {
-        title: 'Grievance Redressal Policy',
+        titleKey: 'help.policies.grievance.title',
         icon: AlertTriangle,
-        desc: 'Citizens may file grievances for service delays, incorrect rejections, or officer misconduct. All grievances are acknowledged within 24 hours and resolved within the prescribed SLA (typically 7-15 working days).'
+        descKey: 'help.policies.grievance.desc'
     },
     {
-        title: 'Accessibility Statement',
+        titleKey: 'help.policies.accessibility.title',
         icon: FileText,
-        desc: 'TN Kuviyam is designed to meet WCAG 2.1 AA accessibility standards. We support screen readers, keyboard navigation, high-contrast modes, and bilingual Tamil/English content to ensure inclusive access.'
+        descKey: 'help.policies.accessibility.desc'
     }
 ];
 </script>
@@ -192,7 +192,9 @@ const policies = [
   {#if activeTab === 'faq'}
     <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6">
       <!-- FAQ Count -->
-      <p class="mb-5 text-xs font-bold uppercase tracking-wider text-text-faint">{faqs.length} Frequently Asked Questions</p>
+      <p class="mb-5 text-xs font-bold uppercase tracking-wider text-text-faint">
+        {t('help.faq.count', { count: faqs.length })}
+      </p>
 
       <div class="space-y-3">
         {#each faqs as faq, i}
@@ -289,7 +291,7 @@ const policies = [
                 class="flex items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-bold text-white shadow transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Send class="h-4 w-4" />
-                {submitting ? 'Sending...' : 'Submit to Help Desk'}
+                {submitting ? t('common.sending') : t('help.ask.submit')}
               </button>
             </div>
           </form>
@@ -311,8 +313,8 @@ const policies = [
                 <policy.icon class="h-5 w-5" />
               </div>
               <div>
-                <h3 class="mb-2 text-sm font-bold text-text">{policy.title}</h3>
-                <p class="text-xs leading-relaxed text-text-muted">{policy.desc}</p>
+                <h3 class="mb-2 text-sm font-bold text-text">{t(policy.titleKey)}</h3>
+                <p class="text-xs leading-relaxed text-text-muted">{t(policy.descKey)}</p>
               </div>
             </div>
           </div>

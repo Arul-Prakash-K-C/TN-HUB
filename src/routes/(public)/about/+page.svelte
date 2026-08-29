@@ -1,33 +1,35 @@
 <script>
 
   import { Eye, Building2, Shield, Briefcase, FileText, Users, Award, Sparkles, Network, Layers, CheckCircle2 } from '@lucide/svelte';
-  import { t } from '$lib/i18n';
+  import { tt } from '$lib/i18n';
+
+const t = $derived($tt);
 
 const committeeMembers = [
-    { nr: 1, position: 'The Principal Secretary to Government, IT Department', role: 'Chairman', class: 'bg-primary-950 text-white' },
-    { nr: 2, position: 'The Chief Executive Officer, TN Kuviyam', role: 'Member Secretary', class: 'bg-primary-500/10 border-primary-500/30 text-primary-950' },
-    { nr: 3, position: 'The State Informatics Officer, National Informatics Centre (NIC)', role: 'Member', class: 'bg-slate-50 border-slate-200' },
-    { nr: 4, position: 'The Secretary to Government, Finance (Expenditure) Department', role: 'Member', class: 'bg-slate-50 border-slate-200' },
-    { nr: 5, position: 'The Managing Director, ELCOT', role: 'Member', class: 'bg-slate-50 border-slate-200' },
-    { nr: 6, position: 'The Managing Director, TACTV', role: 'Member', class: 'bg-slate-50 border-slate-200' },
-    { nr: 7, position: 'The Registrar of Co-operative Societies', role: 'Member', class: 'bg-slate-50 border-slate-200' },
-    { nr: 8, position: 'The Managing Director, TN Corporation for Development of Women', role: 'Member', class: 'bg-slate-50 border-slate-200' }
+    { nr: 1, positionKey: 'about.committee.principalSecretary', roleKey: 'about.committee.chairman', class: 'bg-primary-950 text-white' },
+    { nr: 2, positionKey: 'about.committee.ceo', roleKey: 'about.committee.memberSecretary', class: 'bg-primary-500/10 border-primary-500/30 text-primary-950' },
+    { nr: 3, positionKey: 'about.committee.stateInformaticsOfficer', roleKey: 'about.committee.member', class: 'bg-slate-50 border-slate-200' },
+    { nr: 4, positionKey: 'about.committee.financeSecretary', roleKey: 'about.committee.member', class: 'bg-slate-50 border-slate-200' },
+    { nr: 5, positionKey: 'about.committee.elcotManagingDirector', roleKey: 'about.committee.member', class: 'bg-slate-50 border-slate-200' },
+    { nr: 6, positionKey: 'about.committee.tactvManagingDirector', roleKey: 'about.committee.member', class: 'bg-slate-50 border-slate-200' },
+    { nr: 7, positionKey: 'about.committee.cooperativeRegistrar', roleKey: 'about.committee.member', class: 'bg-slate-50 border-slate-200' },
+    { nr: 8, positionKey: 'about.committee.womenDevelopmentManagingDirector', roleKey: 'about.committee.member', class: 'bg-slate-50 border-slate-200' }
 ];
 const initiatives = [
     {
-        title: 'National e-Governance Plan (NeGP)',
+        titleKey: 'about.initiatives.negp.title',
         icon: Network,
-        content: 'Tamil Nadu has progressively aligned its e-Governance strategies in consonance with NeGP since its formulation in May 2006. TN Kuviyam extends this vision into a modern, unified citizen interface layer.'
+        contentKey: 'about.initiatives.negp.content'
     },
     {
-        title: 'Common Service Centres (CSCs / TN Kuviyam Kiosks)',
+        titleKey: 'about.initiatives.csc.title',
         icon: Building2,
-        content: 'CSCs and TN Kuviyam Kiosks across rural and urban districts act as essential last-mile delivery networks, ensuring citizens are supported by assisted service operators.'
+        contentKey: 'about.initiatives.csc.content'
     },
     {
-        title: 'State Infrastructure Backbone',
+        titleKey: 'about.initiatives.infrastructure.title',
         icon: Layers,
-        content: 'Secured via high-speed Tamil Nadu State Wide Area Network (TNSWAN), State Data Centre (SDC), and State Resident Data Hub (SRDH) to ensure authenticated, real-time service orchestration.'
+        contentKey: 'about.initiatives.infrastructure.content'
     }
 ];
 </script>
@@ -124,7 +126,7 @@ const initiatives = [
           <div class="relative flex justify-center">
             <div class="relative z-10 w-full transform rounded-2xl bg-primary px-6 py-4 text-center text-white shadow-lg transition hover:scale-105 sm:w-96">
               <span class="mb-1 block text-[10px] font-black uppercase tracking-widest text-white/65">{t('ui.routes.public.about.5dffd3e6')}</span>
-              <h3 class="text-sm font-bold leading-tight">{committeeMembers[0].position}</h3>
+              <h3 class="text-sm font-bold leading-tight">{t(committeeMembers[0].positionKey)}</h3>
             </div>
           </div>
 
@@ -132,7 +134,7 @@ const initiatives = [
           <div class="relative flex justify-center">
             <div class="relative z-10 w-full transform rounded-2xl border-2 border-primary/20 bg-surface-container px-6 py-4 text-center shadow-sm transition hover:border-primary/40 sm:w-96">
               <span class="mb-1 block text-[10px] font-black uppercase tracking-widest text-primary">{t('ui.routes.public.about.48a5a2e1')}</span>
-              <h3 class="text-sm font-bold leading-tight text-text">{committeeMembers[1].position}</h3>
+              <h3 class="text-sm font-bold leading-tight text-text">{t(committeeMembers[1].positionKey)}</h3>
             </div>
           </div>
 
@@ -151,8 +153,8 @@ const initiatives = [
                     <div class="h-2 w-2 rounded-full bg-current transition-colors"></div>
                   </div>
                   <div>
-                    <span class="mb-0.5 block text-[9px] font-black uppercase tracking-widest text-text-faint">{member.role}</span>
-                    <h3 class="text-xs font-bold leading-snug text-text transition group-hover:text-primary">{member.position}</h3>
+                    <span class="mb-0.5 block text-[9px] font-black uppercase tracking-widest text-text-faint">{t(member.roleKey)}</span>
+                    <h3 class="text-xs font-bold leading-snug text-text transition group-hover:text-primary">{t(member.positionKey)}</h3>
                   </div>
                 </div>
               {/each}
@@ -170,8 +172,8 @@ const initiatives = [
           <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft text-primary">
             <init.icon class="h-5 w-5" />
           </div>
-          <h3 class="mb-2 text-sm font-black text-text">{init.title}</h3>
-          <p class="text-xs font-medium leading-relaxed text-text-muted">{init.content}</p>
+          <h3 class="mb-2 text-sm font-black text-text">{t(init.titleKey)}</h3>
+          <p class="text-xs font-medium leading-relaxed text-text-muted">{t(init.contentKey)}</p>
         </div>
       {/each}
     </div>

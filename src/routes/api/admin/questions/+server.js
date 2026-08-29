@@ -27,8 +27,8 @@ export const GET = async ({ locals }) => {
         return json({ questions: questions.sort((a, b) => b.createdAt.localeCompare(a.createdAt)) });
     }
     catch (cause) {
-        const message = cause instanceof Error ? cause.message : 'Unable to list questions.';
-        throw error(500, message);
+        console.error('[admin questions list]', cause);
+        throw error(500, 'Unable to list questions.');
     }
 };
 export const POST = async ({ request, locals }) => {
@@ -76,8 +76,8 @@ export const POST = async ({ request, locals }) => {
         return json({ question: newQuestion }, { status: 201 });
     }
     catch (cause) {
-        const message = cause instanceof Error ? cause.message : 'Unable to submit question.';
-        throw error(500, message);
+        console.error('[admin question create]', cause);
+        throw error(500, 'Unable to submit question.');
     }
 };
 export const PATCH = async ({ request, locals }) => {
@@ -124,7 +124,7 @@ export const PATCH = async ({ request, locals }) => {
         return json({ success: true, message: 'Reply sent!' });
     }
     catch (cause) {
-        const message = cause instanceof Error ? cause.message : 'Unable to send reply.';
-        throw error(500, message);
+        console.error('[admin question reply]', cause);
+        throw error(500, 'Unable to send reply.');
     }
 };

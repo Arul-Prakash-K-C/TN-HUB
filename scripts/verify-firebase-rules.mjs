@@ -29,13 +29,22 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-// Use the 'default' database instance as configured in this project
 const db = getFirestore(app, 'default');
 
 const results = [];
+const OPERATION_TIMEOUT_MS = 25_000;
 
 function record(test, status, details = '') {
   results.push({ test, status, details });
+}
+
+function withTimeout(promise, label, timeoutMs = OPERATION_TIMEOUT_MS) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      setTimeout(() => reject(new Error(`${label} timed out after ${timeoutMs}ms`)), timeoutMs);
+    })
+  ]);
 }
 
 async function run() {
@@ -44,14 +53,14 @@ async function run() {
   // 1. Unauthenticated checks
   await signOut(auth).catch(() => {});
   try {
-    const userDoc = await getDoc(doc(db, 'users', 'some-random-id'));
+    await withTimeout(getDoc(doc(db, 'users', 'some-random-id')), 'Unauthenticated user read');
     record('Unauthenticated user read', 'failed', 'Unauthenticated read was allowed unexpectedly');
   } catch (err) {
     record('Unauthenticated user read', 'passed', 'Denied as expected: ' + err.code);
   }
 
   try {
-    await setDoc(doc(db, 'auditLogs', 'test-log'), { test: true });
+    await withTimeout(setDoc(doc(db, 'auditLogs', 'test-log'), { test: true }), 'Unauthenticated auditLog write');
     record('Unauthenticated auditLog write', 'failed', 'Unauthenticated write was allowed');
   } catch (err) {
     record('Unauthenticated auditLog write', 'passed', 'Denied as expected: ' + err.code);
@@ -59,20 +68,27 @@ async function run() {
 
   // 2. Citizen login (meena@demo.com)
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, 'meena@demo.com', 'demo123');
+    const userCredential = await withTimeout(
+      signInWithEmailAndPassword(auth, 'meena@demo.com', 'demo123'),
+      'Citizen authentication'
+    );
     const uid = userCredential.user.uid;
 
     // Citizen reads own profile
     try {
-      const ownProfile = await getDoc(doc(db, 'users', uid));
-      record('Citizen own profile read', ownProfile.exists() ? 'passed' : 'passed', 'Can read own profile');
+      const ownProfile = await withTimeout(getDoc(doc(db, 'users', uid)), 'Citizen own profile read');
+      record(
+        'Citizen own profile read',
+        ownProfile.exists() ? 'passed' : 'failed',
+        ownProfile.exists() ? 'Can read own profile' : `users/${uid} does not exist`
+      );
     } catch (err) {
       record('Citizen own profile read', 'failed', err.message);
     }
 
     // Citizen attempts forbidden profile update (updating role)
     try {
-      await updateDoc(doc(db, 'users', uid), { role: 'admin' });
+      await withTimeout(updateDoc(doc(db, 'users', uid), { role: 'admin' }), 'Citizen profile role escalation');
       record('Citizen profile role escalation', 'failed', 'Role escalation write was permitted');
     } catch (err) {
       record('Citizen profile role escalation', 'passed', 'Blocked profile role change: ' + err.code);
@@ -80,7 +96,7 @@ async function run() {
 
     // Citizen reads audit logs (forbidden)
     try {
-      await getDocs(collection(db, 'auditLogs'));
+      await withTimeout(getDocs(collection(db, 'auditLogs')), 'Citizen auditLogs read');
       record('Citizen auditLogs read', 'failed', 'Citizen read audit logs');
     } catch (err) {
       record('Citizen auditLogs read', 'passed', 'Blocked auditLog read: ' + err.code);
@@ -93,23 +109,30 @@ async function run() {
 
   // 3. Department User login (rajesh@demo.com - Revenue)
   try {
-    await signInWithEmailAndPassword(auth, 'rajesh@demo.com', 'demo123');
+    await withTimeout(
+      signInWithEmailAndPassword(auth, 'rajesh@demo.com', 'demo123'),
+      'Department user authentication'
+    );
 
     // Revenue user queries applications
     try {
       const q = query(collection(db, 'applications'), where('departmentId', '==', 'dept-revenue'));
-      const snapshot = await getDocs(q);
+      const snapshot = await withTimeout(getDocs(q), 'Department user scoped application read');
       record('Department user scoped application read', 'passed', `Found ${snapshot.docs.length} Revenue applications`);
     } catch (err) {
-      record('Department user scoped application read', 'failed', err.code);
+      record('Department user scoped application read', 'failed', err.code || err.message);
     }
 
     // Revenue user attempts to read Civil Supplies applications directly
     try {
       const q = query(collection(db, 'applications'), where('departmentId', '==', 'dept-civil-supplies'));
-      const snapshot = await getDocs(q);
+      const snapshot = await withTimeout(getDocs(q), 'Department user foreign application read');
       // In rules, if query contains departmentId == dept-civil-supplies, department_user rule checks request.auth.token.departmentId == resource.data.departmentId
-      record('Department user foreign application read', snapshot.empty ? 'passed' : 'passed', `QueryResult length: ${snapshot.docs.length}`);
+      record(
+        'Department user foreign application read',
+        snapshot.empty ? 'passed' : 'failed',
+        `QueryResult length: ${snapshot.docs.length}`
+      );
     } catch (err) {
       record('Department user foreign application read', 'passed', 'Denied foreign department query: ' + err.code);
     }
@@ -120,7 +143,7 @@ async function run() {
   }
 
   console.table(results);
-  process.exit(0);
+  process.exit(results.some((result) => result.status === 'failed') ? 1 : 0);
 }
 
 run().catch((err) => {

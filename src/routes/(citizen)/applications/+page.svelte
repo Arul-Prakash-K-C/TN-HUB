@@ -202,7 +202,7 @@ async function deleteDraft() {
                             {t('apply.step.submit')}
                           </a>
                           <button type="button" onclick={() => requestDeleteDraft(app)} disabled={deletingDraftId === app.id} class="inline-flex items-center justify-center rounded-xl border border-danger/30 bg-danger-soft px-4 py-2 text-xs font-bold text-danger transition-colors hover:bg-danger-soft/80 disabled:opacity-50">
-                            {deletingDraftId === app.id ? 'Deleting...' : 'Delete'}
+                            {deletingDraftId === app.id ? t('common.deleting') : t('common.delete')}
                           </button>
                         {:else}
                           <a href="/applications/{app.id}" class="adaptive-action-button group inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all">
@@ -286,7 +286,7 @@ async function deleteDraft() {
           disabled={Boolean(deletingDraftId)}
           onclick={deleteDraft}
         >
-          {deletingDraftId ? 'Deleting...' : 'Yes, Delete'}
+          {deletingDraftId ? t('common.deleting') : t('common.yesDelete')}
         </button>
       </div>
     </div>

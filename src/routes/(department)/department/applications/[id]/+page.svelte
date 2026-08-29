@@ -41,6 +41,13 @@
       !allDocumentsViewed
   );
 
+  function getDocumentMetaLabel(value) {
+    const normalized = String(value ?? '').toLowerCase();
+    const key = `status.${normalized}`;
+    const translated = t(key);
+    return translated === key ? value : translated;
+  }
+
   async function toggleDocStatus(docId) {
     if (!appState) return;
     const status = docVerificationMap[docId] === 'VERIFIED' ? 'rejected' : 'verified';
@@ -262,7 +269,7 @@
                 {t('application.documents')}
               </h2>
               <span class="px-3 py-1 bg-surface-container text-text-muted rounded-full text-xs font-bold border border-border">
-                {Object.values(docVerificationMap).filter(v => v === 'VERIFIED').length} / {appState.documents.length} Verified
+                {Object.values(docVerificationMap).filter(v => v === 'VERIFIED').length} / {appState.documents.length} {t('documents.verified')}
               </span>
             </div>
             
@@ -277,9 +284,9 @@
                       <h3 class="font-bold text-text text-sm">{doc.name}</h3>
                       <div class="flex flex-wrap items-center gap-2 mt-1.5">
                         <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold tracking-widest uppercase border {docVerificationMap[doc.id] === 'VERIFIED' ? 'bg-success-soft text-success border-success/30' : 'bg-danger-soft text-danger border-danger/30'}">
-                          {docVerificationMap[doc.id]}
+                          {getDocumentMetaLabel(docVerificationMap[doc.id])}
                         </span>
-                        <span class="text-[11px] font-bold text-text-faint uppercase tracking-wide">{doc.source}</span>
+                        <span class="text-[11px] font-bold text-text-faint uppercase tracking-wide">{getDocumentMetaLabel(doc.source)}</span>
                       </div>
                     </div>
                   </div>
@@ -290,9 +297,9 @@
                     </button>
                     <button onclick={() => toggleDocStatus(doc.id)} class="flex-1 sm:flex-none flex justify-center items-center gap-1.5 px-4 py-2 text-[11px] font-bold rounded-xl transition-colors border {docVerificationMap[doc.id] === 'VERIFIED' ? 'bg-surface border-border text-text-muted hover:bg-danger-soft hover:text-danger hover:border-danger/30' : 'bg-success border-success text-white hover:bg-success/90'}">
                       {#if docVerificationMap[doc.id] === 'VERIFIED'}
-                        <AlertCircle class="h-3.5 w-3.5" /> Flag Issue
+                        <AlertCircle class="h-3.5 w-3.5" /> {t('documents.flagIssue')}
                       {:else}
-                        <CheckCircle2 class="h-3.5 w-3.5" /> Verify
+                        <CheckCircle2 class="h-3.5 w-3.5" /> {t('ui.verify')}
                       {/if}
                     </button>
                   </div>

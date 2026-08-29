@@ -13,8 +13,8 @@ export const GET = async ({ locals }) => {
         return json({ complaints });
     }
     catch (cause) {
-        const message = cause instanceof Error ? cause.message : 'Unable to list complaints.';
-        throw error(500, message);
+        console.error('[complaints list]', cause);
+        throw error(500, 'Unable to list complaints.');
     }
 };
 export const POST = async ({ request, locals }) => {
@@ -92,7 +92,7 @@ export const PATCH = async ({ request, locals }) => {
         return json({ success: true, complaint: updated });
     }
     catch (cause) {
-        const message = cause instanceof Error ? cause.message : 'Unable to update grievance status.';
-        throw error(500, message);
+        console.error('[complaint status update]', cause);
+        throw error(500, 'Unable to update grievance status.');
     }
 };
