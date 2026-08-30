@@ -1,15 +1,13 @@
 <script>
 
   import { page } from '$app/stores';
-  import { LayoutDashboard, Grid, LogOut, AlertCircle, User, Settings, HelpCircle, FileText, MessageSquare, Bell, Globe } from '@lucide/svelte';
+  import { LayoutDashboard, Grid, LogOut, AlertCircle, User, Settings, HelpCircle, FileText, MessageSquare, Globe } from '@lucide/svelte';
   import { auth, isAuthenticated } from '$lib/stores/auth';
-  import { notificationUnreadCount } from '$lib/stores/notifications';
   import LogoutModal from '$lib/components/ui/LogoutModal.svelte';
   import BrandLogo from '$lib/components/ui/BrandLogo.svelte';
   import { tt, locale } from '$lib/i18n';
 
 const authenticated = $derived($isAuthenticated);
-const unreadCount = $derived($notificationUnreadCount);
 const t = $derived($tt);
 const navItemClass = 'flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition-all';
 const inactiveNavClass = 'text-[var(--color-sidebar-text-muted)] hover:bg-[var(--color-sidebar-hover)] hover:text-[var(--color-sidebar-text)]';
@@ -67,24 +65,6 @@ $effect(() => {
     >
       <FileText class="h-4 w-4 shrink-0" />
       <span>{t('operator.applications')}</span>
-    </a>
-
-    <a 
-      href="/operator/notifications" 
-      class="{navItemClass} {isActive('/operator/notifications') ? activeNavClass : inactiveNavClass}"
-    >
-      <div class="relative flex items-center">
-        <Bell class="h-4 w-4 shrink-0" />
-        {#if unreadCount > 0}
-          <span class="absolute -top-1 -right-1 flex h-2 w-2 rounded-full bg-danger"></span>
-        {/if}
-      </div>
-      <span class="flex-1">{t('nav.notifications')}</span>
-      {#if unreadCount > 0}
-        <span class="rounded-full bg-danger px-1.5 py-0.5 text-[9px] font-bold text-white shadow-xs">
-          {unreadCount}
-        </span>
-      {/if}
     </a>
 
     <a 

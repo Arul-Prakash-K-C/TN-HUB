@@ -88,7 +88,7 @@ function handleProtectedNav(targetPath, title, e) {
 
         <a href="/help" class="px-3 py-2 transition hover:text-primary border-b-2 {currentPath === '/help' ? 'border-primary text-primary' : 'border-transparent'}">{t('nav.help')}</a>
 
-        <a href="/contact" class="px-3 py-2 transition hover:text-primary border-b-2 {currentPath === '/contact' ? 'border-primary text-primary' : 'border-transparent'}">{t('footer.contact')}</a>
+        <a href="/contact" class="px-3 py-2 transition hover:text-primary border-b-2 {currentPath === '/contact' ? 'border-primary text-primary' : 'border-transparent'}">{t('nav.contact')}</a>
         <a href="/tutorials" class="px-3 py-2 transition hover:text-primary border-b-2 {currentPath === '/tutorials' ? 'border-primary text-primary' : 'border-transparent'}">
           <span class="flex items-center gap-1.5">
             <GraduationCap class="h-4 w-4" />
@@ -221,7 +221,7 @@ function handleProtectedNav(targetPath, title, e) {
       {/if}
 
       <a href="/contact" onclick={() => mobileMenuOpen = false} class="block rounded-xl px-4 py-3 hover:bg-muted">
-        <span class="flex items-center gap-2"><Phone class="h-4 w-4" /> {t('footer.contact')}</span>
+        <span class="flex items-center gap-2"><Phone class="h-4 w-4" /> {t('nav.contact')}</span>
       </a>
       <a href="/tutorials" onclick={() => mobileMenuOpen = false} class="block rounded-xl px-4 py-3 hover:bg-muted">
         <span class="flex items-center gap-2"><GraduationCap class="h-4 w-4" /> {t('nav.tutorials')}</span>
