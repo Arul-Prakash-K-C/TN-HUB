@@ -1,19 +1,17 @@
 <script>
-
+  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  
-const t = $derived($tt);
-import { currentUser, isAuthenticated, isRestored } from '$lib/stores/auth';
+  import { currentUser, isAuthenticated, isRestored } from '$lib/stores/auth';
   import { canAccessRoute } from '$lib/utils/authGuard';
   import { Shield, UserCheck, PlusCircle, Search, FileText, CheckCircle2, Clock, Eye, AlertTriangle } from '@lucide/svelte';
-  import { tt } from '$lib/i18n';
+  import { tt, locale } from '$lib/i18n';
 
 let { data } = $props();
+const t = $derived($tt);
+const currentLocale = $derived($locale);
 const user = $derived($currentUser);
 const restored = $derived($isRestored);
 const guard = $derived(canAccessRoute(user, '/operator/dashboard'));
-let createError = $state('');
-let creatingServiceId = $state(null);
 const applications = $derived(data.applications || []);
 const stats = $derived({
     total: applications.length,
@@ -24,28 +22,6 @@ const stats = $derived({
 const popularServices = $derived(data.catalog.services
     .filter((service) => service.implementationMode === 'NATIVE_WORKFLOW')
     .slice(0, 4));
-async function createAssistedDraft(serviceId) {
-    creatingServiceId = serviceId;
-    createError = '';
-    try {
-        const response = await fetch('/api/operator/applications', {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({ citizenId: '', serviceId, formData: {} })
-        });
-        const body = await response.json().catch(() => null);
-        if (!response.ok || !body?.application?.id)
-            throw new Error(body?.message ?? t('operator.createDraftError'));
-        await goto(`/operator/applications/${body.application.id}/edit`);
-    }
-    catch (cause) {
-        createError = cause instanceof Error ? cause.message : t('operator.createDraftError');
-    }
-    finally {
-        creatingServiceId = null;
-    }
-}
 </script>
 
 <svelte:head>
@@ -146,34 +122,28 @@ async function createAssistedDraft(serviceId) {
               </a>
             </div>
 
-            {#if createError}
-              <div class="mb-4 rounded-xl bg-danger-soft border border-danger/20 p-3 text-xs font-bold text-danger">
-                {createError}
-              </div>
-            {/if}
-
             <div class="grid gap-4 sm:grid-cols-2">
               {#each popularServices as svc}
-                <div class="rounded-2xl border border-border bg-muted/60 p-4 flex flex-col justify-between hover:border-primary/30 hover:bg-primary-soft/40 transition-all">
+                <a
+                  href={`/services/${svc.slug}`}
+                  class="rounded-2xl border border-border bg-muted/60 p-4 flex flex-col justify-between hover:border-primary/30 hover:bg-primary-soft/40 transition-all group block"
+                >
                   <div>
                     <div class="flex items-center justify-between">
                       <span class="text-[10px] font-bold uppercase tracking-wider text-text-faint">{svc.departmentId.replace('dept-', '')}</span>
                       <span class="text-[11px] font-bold text-[#316342]">₹{svc.fee}</span>
                     </div>
-                    <h3 class="text-sm font-bold text-text mt-1">{svc.name}</h3>
-                    <p class="text-xs text-text-muted mt-1 line-clamp-2">{svc.description}</p>
+                    <h3 class="text-sm font-bold text-text group-hover:text-primary mt-1 transition-colors">{currentLocale === 'ta' ? svc.nameTA : svc.name}</h3>
+                    <p class="text-xs text-text-muted mt-1 line-clamp-2">{currentLocale === 'ta' ? (svc.descriptionTA || svc.shortDescriptionTA) : svc.description}</p>
                   </div>
 
-                  <button
-                    type="button"
-                    onclick={() => createAssistedDraft(svc.id)}
-                    disabled={creatingServiceId !== null}
-                    class="mt-4 flex items-center justify-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-primary-hover transition-all"
+                  <div
+                    class="mt-4 flex items-center justify-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-white shadow-sm group-hover:bg-primary-hover transition-all"
                   >
                     <PlusCircle class="h-3.5 w-3.5" />
-                    <span>{creatingServiceId === svc.id ? t('operator.creatingDraft') : t('operator.startService')}</span>
-                  </button>
-                </div>
+                    <span>{t('operator.startService')}</span>
+                  </div>
+                </a>
               {/each}
             </div>
           </div>
